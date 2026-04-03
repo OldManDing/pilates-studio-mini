@@ -1,0 +1,30 @@
+@import '../../styles/variables.scss';
+
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: $font-weight-semibold;
+
+  &__currency {
+    font-size: 0.65em;
+    margin-right: 2px;
+  }
+
+  &__integer {
+    font-size: inherit;
+  }
+
+  &__decimal {
+    font-size: 0.65em;
+  }
+
+  &--small { font-size: $font-size-sm; }
+  &--normal { font-size: $font-size-md; }
+  &--large { font-size: $font-size-xl; }
+  &--xl { font-size: $font-size-2xl; }
+
+  &--primary { color: $mint; }
+  &--accent { color: $violet; }
+  &--danger { color: $error; }
+  &--default { color: $text-primary; }
+}

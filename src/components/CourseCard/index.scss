@@ -1,0 +1,67 @@
+@import '../../styles/variables.scss';
+
+.course-card {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: all $duration-fast $ease-in-out;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__tags {
+    display: flex;
+    gap: $spacing-xs;
+  }
+
+  &__duration {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+    display: block;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: $line-height-normal;
+    margin-bottom: $spacing-sm;
+    display: block;
+  }
+
+  &__coach {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $border-light;
+  }
+
+  &__coach-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-full;
+    background: $gray-200;
+  }
+
+  &__coach-name {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}

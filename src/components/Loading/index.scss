@@ -1,0 +1,28 @@
+@import '../../styles/variables.scss';
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl;
+
+  &__spinner {
+    width: 64px;
+    height: 64px;
+    border: 4px solid $gray-200;
+    border-top-color: $mint;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: $spacing-md;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

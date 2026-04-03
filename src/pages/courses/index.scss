@@ -1,0 +1,75 @@
+@import '../../styles/variables.scss';
+
+.courses {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__filters {
+    background: $white;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__filter-scroll {
+    white-space: nowrap;
+    margin-bottom: $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__filter-group {
+    display: inline-flex;
+    gap: $spacing-sm;
+    padding: 0 $spacing-md;
+  }
+
+  &__filter-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    padding: 0 $spacing-md;
+    border-radius: $radius-full;
+    background: $gray-100;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    transition: all $duration-fast $ease-in-out;
+
+    &--active {
+      background: $mint;
+      color: $text-inverse;
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
+
+  &__list {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  &__loading-more,
+  &__no-more {
+    text-align: center;
+    padding: $spacing-md 0;
+  }
+
+  &__loading-more-text,
+  &__no-more-text {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+}

@@ -1,0 +1,255 @@
+@import '../../styles/variables.scss';
+
+.home {
+  min-height: 100vh;
+  background: $bg-gray;
+
+  &__banner {
+    height: 360px;
+    background: linear-gradient(135deg, $mint 0%, $violet 100%);
+    border-radius: 0 0 $radius-xl $radius-xl;
+    padding: $spacing-lg;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+    }
+  }
+
+  &__welcome {
+    color: $text-inverse;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-xs;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: $font-size-sm;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__content {
+    padding: 0 $spacing-lg $spacing-lg;
+    margin-top: -60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  &__quick-actions {
+    display: flex;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__quick-action {
+    flex: 1;
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-md;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    transition: all $duration-fast $ease-in-out;
+
+    &:active {
+      transform: translateY(2px);
+      box-shadow: $shadow-sm;
+    }
+
+    &-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: $radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+
+      &--mint {
+        background: $mint-light;
+      }
+
+      &--violet {
+        background: $violet-light;
+      }
+
+      &--orange {
+        background: $orange-light;
+      }
+
+      &--pink {
+        background: $pink-light;
+      }
+    }
+
+    &-text {
+      font-size: $font-size-sm;
+      color: $text-primary;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &__section {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  &__section-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    position: relative;
+    padding-left: $spacing-sm;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 28px;
+      background: linear-gradient(180deg, $mint 0%, $violet 100%);
+      border-radius: 3px;
+    }
+  }
+
+  &__section-more {
+    display: flex;
+    align-items: center;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  &__course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  &__coach-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__stats {
+    display: flex;
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    box-shadow: $shadow-sm;
+    gap: $spacing-md;
+  }
+
+  &__stat {
+    flex: 1;
+    text-align: center;
+    padding: $spacing-sm;
+    border-right: 1px solid $border-light;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &-value {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $mint;
+      display: block;
+      margin-bottom: $spacing-xs;
+    }
+
+    &-label {
+      font-size: $font-size-xs;
+      color: $text-muted;
+    }
+  }
+
+  &__membership-card {
+    background: linear-gradient(135deg, $violet 0%, $violet-dark 100%);
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    color: $text-inverse;
+    box-shadow: $shadow-violet;
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-md;
+    }
+
+    &-title {
+      font-size: $font-size-md;
+      font-weight: $font-weight-medium;
+    }
+
+    &-status {
+      font-size: $font-size-xs;
+      padding: 4px $spacing-sm;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: $radius-full;
+    }
+
+    &-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    &-stat {
+      text-align: center;
+
+      &-value {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+        display: block;
+      }
+
+      &-label {
+        font-size: $font-size-xs;
+        opacity: 0.8;
+        margin-top: 4px;
+        display: block;
+      }
+    }
+
+    &-valid {
+      font-size: $font-size-xs;
+      opacity: 0.8;
+      margin-top: $spacing-sm;
+    }
+  }
+}

@@ -1,0 +1,155 @@
+@import '../../styles/variables.scss';
+
+.course-detail {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__header {
+    background: linear-gradient(135deg, $mint 0%, $violet 100%);
+    padding: $spacing-lg;
+    color: $text-inverse;
+  }
+
+  &__tags {
+    display: flex;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__name {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-sm;
+    display: block;
+  }
+
+  &__meta {
+    display: flex;
+    gap: $spacing-md;
+  }
+
+  &__meta-item {
+    font-size: $font-size-sm;
+    opacity: 0.9;
+  }
+
+  &__card {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    margin: $spacing-md;
+    box-shadow: $shadow-sm;
+  }
+
+  &__card-title {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-md;
+    display: block;
+  }
+
+  &__coach {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__coach-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: $radius-full;
+    background: $gray-200;
+  }
+
+  &__coach-info {
+    flex: 1;
+  }
+
+  &__coach-name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+    display: block;
+  }
+
+  &__coach-bio {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: $line-height-normal;
+    display: block;
+  }
+
+  &__description {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    line-height: $line-height-relaxed;
+    display: block;
+  }
+
+  &__sessions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__session {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md;
+    background: $gray-100;
+    border-radius: $radius-md;
+  }
+
+  &__session-info {
+    flex: 1;
+  }
+
+  &__session-time {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  &__session-capacity {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    display: block;
+  }
+
+  &__session-btn {
+    height: 64px;
+    padding: 0 $spacing-lg;
+    background: linear-gradient(135deg, $mint 0%, $mint-dark 100%);
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-inverse;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    box-shadow: $shadow-mint;
+
+    &:active {
+      opacity: 0.9;
+      transform: translateY(1px);
+    }
+
+    &--disabled {
+      background: $gray-400;
+      box-shadow: none;
+      pointer-events: none;
+    }
+  }
+}

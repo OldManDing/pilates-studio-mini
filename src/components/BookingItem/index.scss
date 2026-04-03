@@ -1,0 +1,72 @@
+@import '../../styles/variables.scss';
+
+.booking-item {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-md;
+
+  &:active {
+    background: $gray-100;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-sm;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__code {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__code-label {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__code-value {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    font-weight: $font-weight-medium;
+  }
+
+  &__content {
+    margin-bottom: $spacing-sm;
+  }
+
+  &__course {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+    display: block;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__detail {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  &__footer {
+    padding-top: $spacing-sm;
+    border-top: 1px solid $border-light;
+  }
+
+  &__time {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+}

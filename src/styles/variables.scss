@@ -1,0 +1,131 @@
+/* ========================================
+   Brand Colors - Pilates Studio
+   ======================================== */
+
+// Primary brand colors
+$mint: #43c7ab;
+$mint-light: #e6f7f4;
+$mint-dark: #35a090;
+
+$violet: #8b7cff;
+$violet-light: #f0eeff;
+$violet-dark: #6b5fd9;
+
+// Accent colors
+$orange: #ffb760;
+$orange-light: #fff4e6;
+$orange-dark: #e09a4a;
+
+$pink: #ff8da8;
+$pink-light: #ffeef2;
+$pink-dark: #e0708f;
+
+// Functional colors
+$success: $mint;
+$warning: $orange;
+$error: #ff4d4f;
+$info: $violet;
+
+// Neutral colors
+$white: #ffffff;
+$black: #000000;
+
+$gray-100: #f7f9fc;
+$gray-200: #eef1f7;
+$gray-300: #e2e8f0;
+$gray-400: #cbd5e0;
+$gray-500: #a0aec0;
+$gray-600: #6f8198;
+$gray-700: #4a5568;
+$gray-800: #2d3748;
+$gray-900: #1a202c;
+
+// Text colors
+$text-primary: $gray-800;
+$text-secondary: $gray-600;
+$text-muted: $gray-500;
+$text-inverse: $white;
+
+// Background colors
+$bg-white: $white;
+$bg-gray: $gray-100;
+$bg-dark: $gray-800;
+
+// Border colors
+$border-light: $gray-200;
+$border-default: $gray-300;
+$border-dark: $gray-400;
+
+/* ========================================
+   Spacing Scale
+   ======================================== */
+
+$spacing-unit: 4px;
+
+$spacing-xs: $spacing-unit * 2;   // 8px
+$spacing-sm: $spacing-unit * 3;   // 12px
+$spacing-md: $spacing-unit * 4;   // 16px
+$spacing-lg: $spacing-unit * 6;   // 24px
+$spacing-xl: $spacing-unit * 8;   // 32px
+$spacing-2xl: $spacing-unit * 12; // 48px
+
+/* ========================================
+   Border Radius
+   ======================================== */
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+/* ========================================
+   Shadows
+   ======================================== */
+
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-mint: 0 4px 16px rgba(67, 199, 171, 0.24);
+$shadow-violet: 0 4px 16px rgba(139, 124, 255, 0.24);
+
+/* ========================================
+   Typography
+   ======================================== */
+
+$font-size-xs: 20px;   // 10pt
+$font-size-sm: 24px;   // 12pt
+$font-size-base: 28px; // 14pt
+$font-size-md: 32px;   // 16pt
+$font-size-lg: 36px;   // 18pt
+$font-size-xl: 40px;   // 20pt
+$font-size-2xl: 48px;  // 24pt
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+/* ========================================
+   Animation
+   ======================================== */
+
+$duration-fast: 0.15s;
+$duration-normal: 0.3s;
+$duration-slow: 0.5s;
+
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+/* ========================================
+   Layout
+   ======================================== */
+
+$tabbar-height: 100px;
+$navbar-height: 88px;
+$safe-area-bottom: constant(safe-area-inset-bottom);

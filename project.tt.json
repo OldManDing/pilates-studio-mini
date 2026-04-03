@@ -1,0 +1,9 @@
+{
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": false,
+    "minified": true
+  },
+  "appid": "testAppId"
+}

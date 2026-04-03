@@ -1,0 +1,72 @@
+@import '../../styles/variables.scss';
+
+.coach-card {
+  display: flex;
+  align-items: center;
+  background: $white;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: all $duration-fast $ease-in-out;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: $radius-full;
+    background: $gray-200;
+    margin-right: $spacing-md;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+    display: block;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__tag {
+    font-size: $font-size-xs;
+    color: $violet;
+    background: $violet-light;
+    padding: 2px $spacing-xs;
+    border-radius: $radius-sm;
+  }
+
+  &__courses {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__arrow {
+    width: 16px;
+    height: 16px;
+    border-top: 2px solid $gray-400;
+    border-right: 2px solid $gray-400;
+    transform: rotate(45deg);
+    margin-left: $spacing-sm;
+    flex-shrink: 0;
+  }
+}

@@ -1,0 +1,32 @@
+@import '../../styles/variables.scss';
+
+.coaches {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__list {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+  }
+
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__loading-more,
+  &__no-more {
+    text-align: center;
+    padding: $spacing-md 0;
+  }
+
+  &__loading-more-text,
+  &__no-more-text {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+}

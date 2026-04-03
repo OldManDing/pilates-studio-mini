@@ -1,0 +1,71 @@
+@import '../../styles/variables.scss';
+
+.my-bookings {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__tabs {
+    display: flex;
+    background: $white;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 88px;
+    font-size: $font-size-md;
+    color: $text-secondary;
+    position: relative;
+    transition: all $duration-fast $ease-in-out;
+
+    &--active {
+      color: $mint;
+      font-weight: $font-weight-semibold;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48px;
+        height: 4px;
+        background: $mint;
+        border-radius: 2px;
+      }
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  &__list {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__loading-more,
+  &__no-more {
+    text-align: center;
+    padding: $spacing-md 0;
+  }
+
+  &__loading-more-text,
+  &__no-more-text {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+}

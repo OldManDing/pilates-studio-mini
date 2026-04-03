@@ -1,0 +1,30 @@
+@import '../../styles/variables.scss';
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  font-weight: $font-weight-medium;
+
+  &--small {
+    height: 36px;
+    padding: 0 $spacing-xs;
+    font-size: $font-size-xs;
+  }
+
+  &--normal {
+    height: 44px;
+    padding: 0 $spacing-sm;
+    font-size: $font-size-sm;
+  }
+
+  &--outline {
+    border: 1px solid;
+    background: transparent !important;
+  }
+
+  &__text {
+    line-height: 1;
+  }
+}

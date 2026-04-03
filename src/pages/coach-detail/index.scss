@@ -1,0 +1,176 @@
+@import '../../styles/variables.scss';
+
+.coach-detail {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__header {
+    background: linear-gradient(135deg, $violet 0%, $violet-dark 100%);
+    padding: $spacing-2xl $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $text-inverse;
+  }
+
+  &__avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: $radius-full;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    background: $gray-200;
+    margin-bottom: $spacing-md;
+  }
+
+  &__name {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    justify-content: center;
+  }
+
+  &__tag {
+    padding: 4px $spacing-sm;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+  }
+
+  &__card {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    margin: $spacing-md;
+    box-shadow: $shadow-sm;
+  }
+
+  &__card-title {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-md;
+    display: block;
+  }
+
+  &__info-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__info-label {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  &__info-value {
+    font-size: $font-size-sm;
+    color: $text-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &__bio {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    line-height: $line-height-relaxed;
+    display: block;
+  }
+
+  &__certifications {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__cert-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm;
+    background: $violet-light;
+    border-radius: $radius-md;
+  }
+
+  &__cert-icon {
+    font-size: $font-size-md;
+  }
+
+  &__cert-text {
+    font-size: $font-size-sm;
+    color: $violet;
+  }
+
+  &__courses {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $border-light;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__course-name {
+    font-size: $font-size-sm;
+    color: $text-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &__course-type {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__schedule {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__schedule-item {
+    padding: $spacing-md;
+    background: $gray-100;
+    border-radius: $radius-md;
+  }
+
+  &__schedule-time {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  &__schedule-course {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    display: block;
+  }
+}

@@ -1,0 +1,98 @@
+@import '../../styles/variables.scss';
+
+.transactions {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__summary {
+    background: linear-gradient(135deg, $mint 0%, $mint-dark 100%);
+    padding: $spacing-2xl $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $text-inverse;
+    border-radius: 0 0 $radius-xl $radius-xl;
+  }
+
+  &__summary-title {
+    font-size: $font-size-sm;
+    opacity: 0.9;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__summary-count {
+    font-size: $font-size-sm;
+    opacity: 0.8;
+    margin-top: $spacing-xs;
+  }
+
+  &__list {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__item {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  &__item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__item-info {
+    flex: 1;
+  }
+
+  &__item-kind {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    display: block;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__item-date {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $border-light;
+  }
+
+  &__item-code {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__loading-more,
+  &__no-more {
+    text-align: center;
+    padding: $spacing-md 0;
+  }
+
+  &__loading-more-text,
+  &__no-more-text {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+}

@@ -1,0 +1,181 @@
+@import '../../styles/variables.scss';
+
+.membership {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-gray;
+
+  &__tabs {
+    display: flex;
+    background: $white;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 88px;
+    font-size: $font-size-md;
+    color: $text-secondary;
+    position: relative;
+    transition: all $duration-fast $ease-in-out;
+
+    &--active {
+      color: $mint;
+      font-weight: $font-weight-semibold;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48px;
+        height: 4px;
+        background: $mint;
+        border-radius: 2px;
+      }
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+  }
+
+  &__list,
+  &__plans {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__card {
+    background: linear-gradient(135deg, $violet 0%, $violet-dark 100%);
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    color: $text-inverse;
+    box-shadow: $shadow-violet;
+  }
+
+  &__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  &__card-name {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__card-status {
+    font-size: $font-size-xs;
+    padding: 4px $spacing-sm;
+    border-radius: $radius-full;
+    font-weight: $font-weight-medium;
+
+    &--active {
+      background: $mint;
+    }
+
+    &--inactive,
+    &--expired {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  &__card-body {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: $spacing-md;
+  }
+
+  &__card-stat {
+    text-align: center;
+  }
+
+  &__card-stat-value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  &__card-stat-label {
+    font-size: $font-size-xs;
+    opacity: 0.8;
+  }
+
+  &__card-footer {
+    padding-top: $spacing-sm;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  &__card-date {
+    font-size: $font-size-xs;
+    opacity: 0.8;
+  }
+
+  &__plan-card {
+    background: $white;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  &__plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__plan-info {
+    flex: 1;
+  }
+
+  &__plan-name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  &__plan-code {
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__plan-desc {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin-bottom: $spacing-md;
+    display: block;
+  }
+
+  &__plan-tags {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__plan-tag {
+    font-size: $font-size-xs;
+    color: $violet;
+    background: $violet-light;
+    padding: 4px $spacing-sm;
+    border-radius: $radius-sm;
+  }
+}
