@@ -13,7 +13,7 @@ const config = {
   defineConstants: {
     API_BASE_URL: process.env.API_BASE_URL
       ? JSON.stringify(process.env.API_BASE_URL)
-      : JSON.stringify('http://localhost:3000/api')
+      : JSON.stringify('http://127.0.0.1:3000/api')
   },
   copy: {
     patterns: [],

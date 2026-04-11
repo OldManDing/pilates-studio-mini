@@ -1,7 +1,9 @@
 import Taro from '@tarojs/taro';
 
-// API base URL from environment
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000/api';
+declare const API_BASE_URL: string;
+
+// API base URL injected by Taro defineConstants
+const REQUEST_BASE_URL = API_BASE_URL;
 
 // Request config interface
 interface RequestConfig {
@@ -54,7 +56,7 @@ async function request<T = any>(config: RequestConfig): Promise<ApiResponse<T>> 
 
   try {
     // Build query string for GET requests
-    let fullUrl = `${API_BASE_URL}${url}`;
+    let fullUrl = `${REQUEST_BASE_URL}${url}`;
     if (params && method === 'GET') {
       const queryString = Object.entries(params)
         .filter(([, value]) => value !== undefined && value !== null)

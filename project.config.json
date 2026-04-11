@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "pilates-studio-mini",
   "description": "Pilates Studio Mini Program",
-  "appid": "touristappid",
+  "appid": "wx9608a7c1e99814f2",
   "setting": {
     "urlCheck": true,
     "es6": true,
@@ -39,10 +39,20 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
-    "useCompilerPlugins": false
+    "useCompilerPlugins": false,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "condition": {}
+  "condition": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
 }
