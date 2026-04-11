@@ -1,85 +1,62 @@
 @import '../../styles/variables.scss';
 
-.profile {
+$profile-avatar-size: $spacing-unit * 14;
+$profile-icon-size: $spacing-unit * 10;
+$profile-glyph-size: $spacing-unit * 4;
+$profile-menu-indent: $spacing-xl + $spacing-lg;
+$profile-stat-divider-height: $spacing-unit * 9;
+
+.profile-shell {
   min-height: 100vh;
   background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
 
   &__content {
-    height: 100vh;
-  }
-
-  &__shell {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
     padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
   }
 
   &__heading {
-    margin-bottom: $spacing-md;
+    margin-bottom: calc($spacing-xs / 2);
   }
 
-  &__eyebrow,
-  &__section-label,
-  &__badge-text,
-  &__menu-icon-text {
-    font-size: $font-size-xs;
-    letter-spacing: 2px;
-  }
-
-  &__eyebrow,
-  &__section-label,
-  &__phone,
-  &__meta,
-  &__stat-label,
-  &__menu-desc,
-  &__signout-text,
-  &__menu-arrow {
-    color: $ink-soft;
-  }
-
-  &__eyebrow,
-  &__section-label {
+  &__eyebrow {
     display: block;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+    letter-spacing: 2px;
+    color: rgba($ink-soft, 0.58);
   }
+}
 
-  &__section {
-    margin-bottom: 28px;
+.profile-shell-card {
+  background: $white;
+  border: 1px solid rgba($cream-300, 0.72);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-soft;
+}
 
-    &--bottom {
-      margin-top: $spacing-xl;
-      margin-bottom: 0;
-    }
-  }
+.profile-account-card {
+  padding: $spacing-xl;
 
-  &__section-label {
-    margin-bottom: 12px;
-    padding-left: 4px;
-    font-weight: $font-weight-medium;
-    color: #cdcdcd;
-  }
-
-  &__card {
-    background: $white;
-    border-radius: $radius-xl;
-    box-shadow: $shadow-soft;
-
-    &--profile {
-      padding: 28px 32px;
-    }
-
-    &--menu {
-      overflow: hidden;
-    }
-  }
-
-  &__card-top {
+  &__top,
+  &__identity-row,
+  &__badge,
+  &__stats,
+  &__stat-value-row {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 24px;
+  }
+
+  &__top {
+    gap: ($spacing-lg - $spacing-unit);
+    margin-bottom: $spacing-lg;
   }
 
   &__avatar-wrap {
-    width: 56px;
-    height: 56px;
+    width: $profile-avatar-size;
+    height: $profile-avatar-size;
     flex-shrink: 0;
   }
 
@@ -91,7 +68,7 @@
   }
 
   &__avatar-image {
-    background: linear-gradient(135deg, rgba($gold, 0.08) 0%, rgba($gold, 0.02) 100%);
+    background: linear-gradient(135deg, rgba($gold, 0.12) 0%, rgba($gold, 0.04) 100%);
   }
 
   &__avatar-fallback {
@@ -99,12 +76,13 @@
     align-items: center;
     justify-content: center;
     border: 1px solid rgba($gold, 0.2);
-    background: linear-gradient(135deg, rgba($gold, 0.12) 0%, rgba($gold, 0.05) 100%);
+    background: linear-gradient(135deg, rgba($gold, 0.12) 0%, rgba($gold, 0.06) 100%);
   }
 
   &__avatar-text {
     font-size: $font-size-lg;
     font-weight: 300;
+    line-height: $line-height-tight;
     color: $gold-dark;
   }
 
@@ -114,68 +92,56 @@
   }
 
   &__identity-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: $spacing-sm;
+    margin-bottom: calc($spacing-xs / 2);
     flex-wrap: wrap;
   }
 
   &__name {
     font-size: $font-size-lg;
     font-weight: $font-weight-medium;
-    color: $ink;
     line-height: $line-height-tight;
+    color: $ink;
   }
 
   &__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
+    gap: calc($spacing-xs / 2);
+    padding: calc($spacing-xs / 2) $spacing-sm;
+    border: 1px solid rgba($gold, 0.28);
     border-radius: $radius-full;
-    border: 1px solid rgba($gold, 0.3);
-    background: transparent;
+    background: rgba($white, 0.96);
   }
 
   &__badge-dot {
-    width: 3.5px;
-    height: 3.5px;
+    width: calc($spacing-xs / 2);
+    height: calc($spacing-xs / 2);
     border-radius: $radius-full;
     background: $gold;
   }
 
   &__badge-text {
+    font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
-    color: $gold-dark;
-    font-size: 9px;
     letter-spacing: 2px;
+    color: $gold-dark;
   }
 
   &__phone,
-  &__meta,
-  &__menu-desc,
-  &__signout-text {
+  &__stat-label,
+  &__stat-unit {
     font-size: $font-size-xs;
   }
 
-  &__phone,
-  &__menu-title {
+  &__phone {
     display: block;
-    margin-bottom: 4px;
-  }
-
-  &__meta {
-    display: block;
-    line-height: $line-height-normal;
+    color: rgba($ink-soft, 0.56);
   }
 
   &__stats {
-    display: flex;
     align-items: stretch;
-    padding: 20px 0;
+    padding: ($spacing-lg - $spacing-unit) 0;
     border-radius: $radius-lg;
-    background: #fafafa;
+    background: rgba($gray-100, 0.72);
   }
 
   &__stat {
@@ -185,13 +151,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: calc($spacing-xs / 4);
   }
 
   &__stat-value-row {
-    display: flex;
+    gap: calc($spacing-xs / 2);
     align-items: flex-end;
-    gap: 4px;
   }
 
   &__stat-value {
@@ -201,13 +166,12 @@
     color: $ink;
   }
 
-  &__stat-unit,
-  &__stat-label {
-    font-size: 9px;
+  &__stat-unit {
+    color: rgba($ink-soft, 0.44);
   }
 
-  &__stat-unit {
-    color: $gray-400;
+  &__stat-label {
+    color: rgba($ink-soft, 0.56);
   }
 
   &__stat-divider {
@@ -215,84 +179,283 @@
     top: 50%;
     right: 0;
     width: 1px;
-    height: 36px;
-    background: #ebebeb;
+    height: $profile-stat-divider-height;
+    background: rgba($cream-300, 0.88);
     transform: translateY(-50%);
   }
+}
 
-  &__menu-item {
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
-    padding: 18px 28px;
-  }
+.profile-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
 
-  &__menu-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: $radius-lg;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f8f8;
-  }
-
-  &__menu-icon-text {
+  &__label {
+    display: block;
+    padding-left: calc($spacing-xs / 2);
+    font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    color: $gray-500;
-    font-size: 16px;
-    letter-spacing: 0;
+    letter-spacing: 2px;
+    color: rgba($ink-soft, 0.58);
   }
 
-  &__menu-body {
+  &__card {
+    overflow: hidden;
+  }
+
+  &__item,
+  &__icon {
+    display: flex;
+    align-items: center;
+  }
+
+  &__item {
+    gap: $spacing-md;
+    padding: $spacing-md ($spacing-xl - $spacing-unit);
+  }
+
+  &__icon {
+    width: $profile-icon-size;
+    height: $profile-icon-size;
+    justify-content: center;
+    border: 1px solid rgba($cream-300, 0.72);
+    border-radius: $radius-md;
+    background: rgba($gray-100, 0.84);
+
+    &--bookings {
+      background: rgba($gold-light, 0.96);
+      color: $gold-dark;
+    }
+
+    &--records {
+      background: rgba($mint-light, 0.96);
+      color: $mint-dark;
+    }
+
+    &--membership {
+      background: rgba($violet-light, 0.96);
+      color: $violet-dark;
+    }
+
+    &--notifications {
+      background: rgba($orange-light, 0.96);
+      color: $orange-dark;
+    }
+
+    &--support {
+      background: rgba($pink-light, 0.96);
+      color: $pink-dark;
+    }
+
+    &--settings {
+      background: rgba($gray-200, 0.96);
+      color: $gray-700;
+    }
+  }
+
+  &__glyph {
+    position: relative;
+    width: $profile-glyph-size;
+    height: $profile-glyph-size;
+    color: inherit;
+
+    &--bookings {
+      border: 1px solid currentColor;
+      border-radius: calc($radius-sm / 2);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: calc($spacing-xs / 2);
+        right: calc($spacing-xs / 2);
+        top: calc($spacing-xs - $spacing-unit / 2);
+        height: 1px;
+        background: currentColor;
+      }
+    }
+
+    &--records {
+      border: 1px solid currentColor;
+      border-radius: calc($radius-sm / 2);
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: calc($spacing-xs / 2);
+        bottom: calc($spacing-xs / 2);
+        width: 1px;
+        background: currentColor;
+      }
+
+      &::before {
+        left: calc($spacing-xs / 2 + $spacing-unit / 2);
+      }
+
+      &::after {
+        right: calc($spacing-xs / 2 + $spacing-unit / 2);
+      }
+    }
+
+    &--membership {
+      border: 1px solid currentColor;
+      border-radius: calc($radius-sm / 2);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: calc($spacing-xs / 2);
+        right: calc($spacing-xs / 2);
+        top: calc($spacing-sm - $spacing-unit / 2);
+        height: 1px;
+        background: currentColor;
+      }
+    }
+
+    &--notifications {
+      border: 1px solid currentColor;
+      border-radius: $radius-full $radius-full calc($radius-sm / 2) calc($radius-sm / 2);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: calc(-1 * $spacing-unit / 2);
+        width: calc($spacing-xs / 2);
+        height: calc($spacing-xs / 2);
+        border-radius: $radius-full;
+        background: currentColor;
+        transform: translateX(-50%);
+      }
+    }
+
+    &--support {
+      border: 1px solid currentColor;
+      border-radius: $radius-full;
+
+      &::before {
+        content: '?';
+        position: absolute;
+        inset: 0;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        line-height: $profile-glyph-size;
+        text-align: center;
+        color: currentColor;
+      }
+    }
+
+    &--settings {
+      border: 1px solid currentColor;
+      border-radius: $radius-full;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        background: currentColor;
+        transform: translate(-50%, -50%);
+      }
+
+      &::before {
+        width: calc($spacing-sm - $spacing-unit);
+        height: 1px;
+      }
+
+      &::after {
+        width: 1px;
+        height: calc($spacing-sm - $spacing-unit);
+      }
+    }
+  }
+
+  &__body {
     flex: 1;
     min-width: 0;
   }
 
-  &__menu-title {
-    font-size: 14px;
+  &__title {
+    display: block;
+    margin-bottom: calc($spacing-xs / 4);
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
     color: $ink;
   }
 
-  &__menu-desc {
+  &__description {
     display: block;
+    font-size: $font-size-xs;
     line-height: $line-height-normal;
-    color: #cdcdcd;
+    color: rgba($ink-soft, 0.62);
   }
 
-  &__menu-arrow {
+  &__arrow {
     flex-shrink: 0;
-    font-size: 14px;
-    color: #e5e5e5;
+    font-size: $font-size-sm;
+    color: rgba($ink-soft, 0.36);
   }
 
-  &__menu-divider {
+  &__divider {
     height: 1px;
-    margin-left: 80px;
-    background: #ebebeb;
+    margin-left: $profile-menu-indent;
+    background: rgba($cream-300, 0.72);
   }
+}
 
-  &__signout {
+.profile-signout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  min-height: $spacing-2xl;
+  border: 1px solid rgba($cream-300, 0.72);
+  border-radius: $radius-lg;
+  background: rgba($white, 0.94);
+
+  &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: $spacing-xs;
-    height: 72px;
-    border-radius: $radius-xl;
-    border: 1px solid #f0f0f0;
-    background: rgba($white, 0.95);
-    box-shadow: none;
   }
 
-  &__signout-icon {
-    font-size: 14px;
-    color: #d0d0d0;
+  &__icon-glyph {
+    position: relative;
+    width: $profile-glyph-size;
+    height: $profile-glyph-size;
+    color: rgba($ink-soft, 0.56);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+    }
+
+    &::before {
+      left: 0;
+      top: calc($spacing-xs / 4);
+      bottom: calc($spacing-xs / 4);
+      width: 1px;
+      background: currentColor;
+    }
+
+    &::after {
+      right: 0;
+      top: 50%;
+      width: calc($spacing-sm - $spacing-unit / 2);
+      height: calc($spacing-sm - $spacing-unit / 2);
+      border-top: 1px solid currentColor;
+      border-right: 1px solid currentColor;
+      transform: translateY(-50%) rotate(45deg);
+    }
   }
 
-  &__signout-text {
-    color: #cdcdcd;
-    letter-spacing: 0.6px;
+  &__text {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+    letter-spacing: 1px;
+    color: rgba($ink-soft, 0.7);
   }
 }
