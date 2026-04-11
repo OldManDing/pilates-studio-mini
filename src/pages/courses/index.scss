@@ -1,265 +1,284 @@
 @import '../../styles/variables.scss';
 
-.booking-page {
+.booking-shell {
   min-height: 100vh;
-  background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
+  background: #fafafa;
 
-  &__hero {
-    padding: ($spacing-2xl + 20px) $spacing-lg 8px;
-    background: linear-gradient(180deg, $white 0%, rgba($cream-100, 0.92) 100%);
+  &__content {
+    padding: ($spacing-2xl + 8px) $spacing-lg ($spacing-2xl + $tabbar-height);
   }
 
-  &__hero-top {
+  &__section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  &__section-title {
+    font-size: 34px;
+    font-weight: 500;
+    color: $ink;
+    letter-spacing: 0.3px;
+  }
+
+  &__section-count {
+    font-size: 20px;
+    color: #cdcdcd;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.booking-hero {
+  padding: 56px 0 8px;
+
+  &__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 4px;
-    gap: $spacing-md;
   }
 
-  &__hero-label {
-    font-size: $font-size-xs;
-    color: $ink-soft;
+  &__eyebrow {
+    font-size: 10px;
+    color: #c8c8c8;
     letter-spacing: 2px;
   }
 
-  &__hero-link {
-    font-size: $font-size-sm;
-    color: $ink-soft;
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__action-text {
+    font-size: 11px;
+    color: #bcbcbc;
+  }
+
+  &__action-arrow {
+    font-size: 12px;
+    color: #d0d0d0;
   }
 
   &__title {
     display: block;
-    margin-bottom: 6px;
+    margin: 8px 0;
     font-size: 48px;
     font-weight: 300;
     color: $ink;
-    line-height: $line-height-tight;
+    line-height: 1.2;
   }
 
   &__subtitle {
     display: block;
-    font-size: 22px;
+    font-size: 24px;
     color: #cdcdcd;
   }
+}
 
-  &__content {
-    padding: 0 $spacing-lg ($spacing-2xl + $tabbar-height);
-  }
+.booking-date-strip {
+  padding: 24px 0 24px;
 
-  &__date-strip {
-    margin-top: $spacing-sm;
-    margin-bottom: 24px;
-  }
-
-  &__date-row {
+  &__row {
     display: flex;
-    gap: $spacing-xs;
+    gap: 8px;
     white-space: nowrap;
   }
 
-  &__date-pill {
-    min-width: 54px;
-    padding: 10px 10px 8px;
+  &__pill {
+    min-width: 48px;
+    padding: 10px 12px;
     border-radius: 14px;
-    border: 1px solid $cream-300;
-    background: rgba($white, 0.9);
+    border: 0.5px solid #f0f0f0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 3px;
-
-    &--active {
-      background: $ink;
-      border-color: $ink;
-
-      .booking-page__date-weekday,
-      .booking-page__date-label {
-        color: rgba($white, 0.52);
-      }
-
-      .booking-page__date-day {
-        color: $white;
-      }
-    }
-  }
-
-  &__date-weekday,
-  &__date-label {
-    font-size: 14px;
-    color: #cdcdcd;
-    letter-spacing: 1.4px;
-  }
-
-  &__date-day {
-    font-size: 32px;
-    font-weight: 300;
-    color: $ink;
-    line-height: 1;
-  }
-
-  &__category-row {
-    display: flex;
-    gap: $spacing-xs;
-    overflow-x: auto;
-    white-space: nowrap;
-    margin-bottom: 24px;
-  }
-
-  &__category-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px;
-    height: 38px;
-    border-radius: $radius-full;
-    border: 1px solid $cream-300;
+    gap: 4px;
     background: transparent;
 
     &--active {
       background: $ink;
       border-color: $ink;
 
-      .booking-page__category-text {
+      .booking-date-strip__weekday,
+      .booking-date-strip__label {
+        color: rgba($white, 0.52);
+      }
+
+      .booking-date-strip__day {
         color: $white;
       }
     }
   }
 
-  &__category-text {
+  &__weekday,
+  &__label {
+    font-size: 8px;
+    color: #cdcdcd;
+    letter-spacing: 1.4px;
+  }
+
+  &__day {
+    font-size: 18px;
+    font-weight: 300;
+    color: $ink;
+    line-height: 1;
+  }
+}
+
+.booking-category-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    border: 0.5px solid #ebebeb;
+    background: transparent;
+
+    &--active {
+      background: $ink;
+      border-color: $ink;
+
+      .booking-category-pills__text {
+        color: $white;
+      }
+    }
+  }
+
+  &__text {
     font-size: 12px;
     color: #8a8a8a;
   }
+}
 
-  &__section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
+.booking-course-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 24px;
+  background: $white;
+  box-shadow: $shadow-soft;
 
-  &__section-title {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__section-count {
-    font-size: $font-size-xs;
-    color: $ink-soft;
-  }
-
-  &__empty-wrap {
-    background: $white;
-    border-radius: $radius-xl;
-    box-shadow: $shadow-soft;
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  &__card {
-    display: flex;
-    gap: 20px;
-    padding: 24px;
-    border-radius: $radius-xl;
-    background: $white;
-    box-shadow: $shadow-soft;
-  }
-
-  &__card-thumb {
+  &__thumb {
     position: relative;
-    width: 88px;
-    height: 88px;
+    width: 72px;
+    height: 72px;
     flex-shrink: 0;
-    border-radius: $radius-lg;
+    border-radius: 18px;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba($gold, 0.18) 0%, rgba($gold, 0.05) 100%);
+
+    &--yoga {
+      background: linear-gradient(135deg, #f0eadf 0%, #efe7d9 100%);
+    }
+
+    &--pilates {
+      background: linear-gradient(135deg, #efede8 0%, #e7e2d6 100%);
+    }
+
+    &--meditation {
+      background: linear-gradient(135deg, #48443f 0%, #272422 100%);
+    }
+
+    &--dark {
+      background: linear-gradient(135deg, #3b352f 0%, #161413 100%);
+    }
   }
 
-  &__card-thumb-image {
-    width: 100%;
-    height: 100%;
-  }
-
-  &__card-thumb-overlay {
+  &__full-badge {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba($ink, 0.08) 0%, rgba($ink, 0.38) 100%);
-  }
-
-  &__card-thumb-text {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    color: $white;
-    letter-spacing: 1.2px;
-  }
-
-  &__card-thumb-badge {
-    position: absolute;
-    inset: auto $spacing-xs $spacing-xs auto;
-    padding: 2px $spacing-xs;
-    border-radius: $radius-full;
-    background: rgba($ink, 0.8);
-    color: $white;
-    font-size: $font-size-xs;
-  }
-
-  &__card-body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  &__card-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: $spacing-sm;
-    margin-bottom: 8px;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    color: $white;
+    font-size: 9px;
+    letter-spacing: 1px;
   }
 
-  &__card-title {
-    font-size: 28px;
-    font-weight: $font-weight-medium;
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 500;
     color: $ink;
-    line-height: $line-height-tight;
   }
 
-  &__card-time {
-    margin-bottom: 8px;
-    font-size: 20px;
+  &__meta-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  &__clock {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #cdcdcd;
+    border-radius: 50%;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 2px;
+      width: 1px;
+      height: 3px;
+      background: #cdcdcd;
+      transform: translateX(-50%);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 3px;
+      height: 1px;
+      background: #cdcdcd;
+      transform: translateY(-50%);
+    }
+  }
+
+  &__time,
+  &__duration {
+    font-size: 11px;
     color: #ababab;
   }
 
-  &__card-meta {
-    margin-bottom: 0;
-    font-size: 18px;
+  &__meta {
+    display: block;
+    font-size: 11px;
     color: #cdcdcd;
   }
 
-  &__card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 8px;
-  }
-
-  &__card-spots {
-    font-size: 18px;
+  &__spots {
+    align-self: flex-end;
+    font-size: 10px;
     color: $gold-dark;
+    letter-spacing: 0.3px;
 
-    &--muted {
-      color: $ink-soft;
+    &--full {
+      color: #d0d0d0;
     }
   }
 }
