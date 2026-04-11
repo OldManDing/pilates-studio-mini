@@ -1,279 +1,53 @@
 @import '../../styles/variables.scss';
 
-.home {
+.home-shell {
   min-height: 100vh;
   background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
 
-  &__hero {
-    position: relative;
-    overflow: hidden;
-    padding: $spacing-2xl $spacing-lg $spacing-2xl;
-    padding-top: ($spacing-2xl + $spacing-xl);
-    background: linear-gradient(180deg, $white 0%, rgba($cream-100, 0.92) 100%);
-    border-radius: 0 0 $radius-2xl $radius-2xl;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -$spacing-2xl;
-      right: -$spacing-xl;
-      width: $spacing-2xl * 4;
-      height: $spacing-2xl * 4;
-      background: radial-gradient(circle, rgba($gold, 0.18) 0%, rgba($gold, 0) 72%);
-      border-radius: $radius-full;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -$spacing-xl;
-      left: -$spacing-xl;
-      width: $spacing-2xl * 3;
-      height: $spacing-2xl * 3;
-      background: radial-gradient(circle, rgba($mint, 0.1) 0%, rgba($mint, 0) 72%);
-      border-radius: $radius-full;
-    }
-  }
-
-  &__hero-top {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-xl;
-  }
-
-  &__hero-date {
-    font-size: $font-size-xs;
-    color: $ink-soft;
-    letter-spacing: 2px;
-  }
-
-  &__hero-badge {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    padding: 3px 10px;
-    border-radius: $radius-full;
-    border: 1px solid rgba($gold, 0.28);
-    background: rgba($white, 0.72);
-  }
-
-  &__hero-badge-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: $radius-full;
-    background: $gold;
-  }
-
-  &__hero-badge-text {
-    font-size: 9px;
-    font-weight: $font-weight-semibold;
-    color: $gold-dark;
-    letter-spacing: 2.6px;
-  }
-
-  &__hero-title {
-    position: relative;
-    z-index: 1;
-    display: block;
-    margin-bottom: $spacing-sm;
-    font-size: $font-size-4xl;
-    font-weight: 300;
-    line-height: $line-height-tight;
-    color: $ink;
-  }
-
-  &__hero-subtitle {
-    position: relative;
-    z-index: 1;
-    display: block;
-    font-size: $font-size-sm;
-    color: $ink-soft;
-  }
-
   &__content {
-    position: relative;
-    z-index: 2;
-    margin-top: -$spacing-xl;
-    padding: 0 $spacing-lg;
-    padding-bottom: ($spacing-2xl + $tabbar-height);
-  }
-
-  &__section {
-    margin-bottom: $spacing-lg;
-  }
-
-  &__panel {
-    background: $white;
-    border-radius: $radius-xl;
-    box-shadow: $shadow-soft;
-  }
-
-  &__membership-card,
-  &__today-card,
-  &__empty-card {
-    padding: $spacing-xl;
-  }
-
-  &__membership-head,
-  &__section-heading {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-md;
+    flex-direction: column;
+    gap: $spacing-lg;
+    padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
+  }
+}
+
+.home-shell-card {
+  position: relative;
+  overflow: hidden;
+  background: $white;
+  border: 1px solid rgba($cream-300, 0.72);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-soft;
+
+  &--hero {
+    background:
+      radial-gradient(circle at top right, rgba($gold, 0.18) 0%, rgba($gold, 0) 56%),
+      radial-gradient(circle at bottom left, rgba($mint, 0.16) 0%, rgba($mint, 0) 58%),
+      linear-gradient(180deg, rgba($white, 0.98) 0%, rgba($cream-100, 0.96) 100%);
+  }
+}
+
+.home-shell-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: $spacing-2xl;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-lg;
+
+  &--primary {
+    background: linear-gradient(135deg, $gold 0%, $gold-dark 100%);
+    box-shadow: $shadow-gold;
   }
 
-  &__membership-head {
-    margin-bottom: $spacing-lg;
+  &--secondary {
+    border: 1px solid rgba($gold, 0.2);
+    background: rgba($white, 0.92);
   }
 
-  &__membership-label,
-  &__section-status-text,
-  &__course-card-tag {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    letter-spacing: 2px;
-  }
-
-  &__membership-label {
-    color: $gold-dark;
-  }
-
-  &__membership-link,
-  &__section-link {
-    font-size: $font-size-sm;
-    color: $ink-soft;
-  }
-
-  &__membership-name,
-  &__today-title,
-  &__empty-card-title,
-  &__course-card-title {
-    display: block;
-    color: $ink;
-  }
-
-  &__membership-name {
-    margin-bottom: $spacing-lg;
-    font-size: $font-size-2xl;
-    font-weight: 300;
-    line-height: $line-height-tight;
-  }
-
-  &__membership-empty-desc,
-  &__today-desc,
-  &__empty-card-desc,
-  &__course-card-desc {
-    display: block;
-    font-size: $font-size-sm;
-    line-height: $line-height-normal;
-    color: $ink-soft;
-  }
-
-  &__membership-empty-desc {
-    margin-bottom: $spacing-lg;
-  }
-
-  &__membership-stats {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
-  }
-
-  &__membership-stat {
-    flex: 1;
-
-    &--right {
-      text-align: right;
-    }
-  }
-
-  &__membership-stat-label,
-  &__today-time,
-  &__today-length,
-  &__course-card-duration {
-    display: block;
-    font-size: $font-size-xs;
-    color: $ink-soft;
-  }
-
-  &__membership-stat-label {
-    margin-bottom: $spacing-md;
-  }
-
-  &__membership-stat-value {
-    display: block;
-    font-size: $font-size-2xl;
-    font-weight: 300;
-    line-height: 1;
-    color: $ink;
-  }
-
-  &__membership-progress {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-lg;
-  }
-
-  &__membership-progress-track {
-    flex: 1;
-    height: $spacing-xs;
-    overflow: hidden;
-    border-radius: $radius-full;
-    background: $cream-200;
-  }
-
-  &__membership-progress-fill {
-    height: 100%;
-    border-radius: $radius-full;
-    background: linear-gradient(90deg, $gold 0%, $gold-dark 100%);
-  }
-
-  &__membership-progress-text {
-    font-size: $font-size-xs;
-    color: $gold-dark;
-    white-space: nowrap;
-  }
-
-  &__divider {
-    height: 1px;
-    margin-bottom: $spacing-lg;
-    background: $cream-300;
-  }
-
-  &__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: $spacing-sm $spacing-lg;
-    border-radius: $radius-lg;
-
-    &--primary {
-      background: linear-gradient(135deg, $gold 0%, $gold-dark 100%);
-      box-shadow: $shadow-gold;
-    }
-
-    &--ghost {
-      padding-left: $spacing-lg;
-      padding-right: $spacing-lg;
-      border: 1px solid $cream-300;
-      background: rgba($cream-100, 0.8);
-    }
-
-    &--flex {
-      flex: 1;
-    }
-  }
-
-  &__button-text {
+  &__text {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
 
@@ -281,485 +55,832 @@
       color: $white;
     }
 
-    &--ghost {
-      color: $ink-soft;
+    &--secondary {
+      color: $gold-dark;
     }
   }
+}
 
-  &__section-heading {
-    margin-bottom: $spacing-md;
-  }
+.home-hero {
+  padding: $spacing-xl;
 
-  &__section-title {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__section-status {
+  &__top,
+  &__footer,
+  &__link,
+  &__badge {
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
   }
 
-  &__section-status-dot {
-    width: $spacing-xs;
-    height: $spacing-xs;
+  &__top,
+  &__footer {
+    justify-content: space-between;
+    gap: $spacing-md;
+  }
+
+  &__top {
+    margin-bottom: $spacing-xl;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: calc($spacing-xs / 2);
+  }
+
+  &__eyebrow,
+  &__date,
+  &__badge-text,
+  &__footer-copy,
+  &__link-text,
+  &__link-arrow {
+    color: $ink-soft;
+  }
+
+  &__eyebrow,
+  &__badge-text {
+    font-size: $font-size-xs;
+    letter-spacing: 2px;
+  }
+
+  &__date,
+  &__footer-copy,
+  &__link-text,
+  &__link-arrow {
+    font-size: $font-size-sm;
+  }
+
+  &__badge {
+    gap: calc($spacing-xs / 2);
+    padding: calc($spacing-xs / 2) $spacing-sm;
+    border: 1px solid rgba($gold, 0.24);
+    border-radius: $radius-full;
+    background: rgba($white, 0.74);
+  }
+
+  &__badge-dot {
+    width: calc($spacing-xs / 2);
+    height: calc($spacing-xs / 2);
     border-radius: $radius-full;
     background: $gold;
   }
 
-  &__today-meta {
+  &__badge-text {
+    color: $gold-dark;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__title {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-4xl;
+    font-weight: 300;
+    line-height: $line-height-tight;
+    color: $ink;
+  }
+
+  &__subtitle {
+    display: block;
+    margin-bottom: $spacing-xl;
+    font-size: $font-size-base;
+    line-height: $line-height-relaxed;
+    color: rgba($ink, 0.72);
+  }
+
+  &__footer {
+    padding-top: $spacing-lg;
+    border-top: 1px solid rgba($cream-300, 0.72);
+  }
+
+  &__footer-copy {
+    flex: 1;
+    line-height: $line-height-normal;
+  }
+
+  &__link {
+    flex-shrink: 0;
+    gap: calc($spacing-xs / 2);
+  }
+
+  &__link-text,
+  &__link-arrow {
+    color: $gold-dark;
+  }
+}
+
+.home-membership-card,
+.home-today-course-card,
+.home-monthly-summary,
+.home-upcoming-list {
+  padding: $spacing-xl;
+}
+
+.home-membership-card {
+  &__top,
+  &__status,
+  &__metrics,
+  &__progress,
+  &__actions {
     display: flex;
     align-items: center;
+  }
+
+  &__top,
+  &__progress {
+    justify-content: space-between;
+  }
+
+  &__top,
+  &__metrics,
+  &__progress {
+    gap: $spacing-md;
+  }
+
+  &__top {
+    margin-bottom: $spacing-md;
+  }
+
+  &__label,
+  &__status-text,
+  &__metric-label,
+  &__progress-label,
+  &__progress-value {
+    font-size: $font-size-xs;
+  }
+
+  &__label {
+    color: $gold-dark;
+    letter-spacing: 2px;
+  }
+
+  &__status {
+    gap: calc($spacing-xs / 2);
+  }
+
+  &__status-dot {
+    width: calc($spacing-xs / 2);
+    height: calc($spacing-xs / 2);
+    border-radius: $radius-full;
+    background: $mint;
+  }
+
+  &__status-text,
+  &__metric-label {
+    color: $ink-soft;
+  }
+
+  &__title {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-2xl;
+    font-weight: 300;
+    line-height: $line-height-tight;
+    color: $ink;
+  }
+
+  &__description {
+    display: block;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-sm;
+    line-height: $line-height-relaxed;
+    color: $ink-soft;
+  }
+
+  &__metrics {
+    margin-bottom: $spacing-md;
+    align-items: flex-end;
+  }
+
+  &__metric {
+    flex: 1;
+
+    &--right {
+      text-align: right;
+    }
+  }
+
+  &__metric-label {
+    display: block;
+    margin-bottom: calc($spacing-xs / 2);
+  }
+
+  &__metric-value {
+    display: block;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+    color: $ink;
+  }
+
+  &__progress {
+    margin-bottom: $spacing-sm;
+  }
+
+  &__progress-label,
+  &__progress-value {
+    color: $gold-dark;
+  }
+
+  &__progress-bar {
+    height: $spacing-xs;
+    margin-bottom: $spacing-lg;
+    overflow: hidden;
+    border-radius: $radius-full;
+    background: $gold-light;
+  }
+
+  &__progress-fill {
+    width: 68%;
+    height: 100%;
+    border-radius: $radius-full;
+    background: linear-gradient(90deg, $gold 0%, $gold-dark 100%);
+  }
+
+  &__actions {
     gap: $spacing-sm;
+  }
+}
+
+.home-today-course-card {
+  background:
+    radial-gradient(circle at top right, rgba($gold, 0.16) 0%, rgba($gold, 0) 40%),
+    linear-gradient(180deg, rgba($white, 1) 0%, rgba($cream-100, 0.94) 100%);
+
+  &__header,
+  &__meta-row,
+  &__time-chip,
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  &__header,
+  &__meta-row {
+    justify-content: space-between;
+    gap: $spacing-md;
+  }
+
+  &__header {
+    margin-bottom: $spacing-md;
+  }
+
+  &__label,
+  &__status,
+  &__time,
+  &__duration,
+  &__meta,
+  &__note {
+    font-size: $font-size-xs;
+  }
+
+  &__label {
+    color: $gold-dark;
+    letter-spacing: 2px;
+  }
+
+  &__status {
+    color: $ink-soft;
+  }
+
+  &__meta-row {
     margin-bottom: $spacing-lg;
   }
 
-  &__today-time {
-    color: $gold-dark;
-  }
-
-  &__today-length {
-    padding: 0 $spacing-xs;
+  &__time-chip {
+    gap: calc($spacing-xs / 2);
+    padding: calc($spacing-xs / 2) $spacing-sm;
     border-radius: $radius-full;
     background: $gold-light;
+  }
+
+  &__clock {
+    width: $spacing-sm;
+    height: $spacing-sm;
+    border: 1px solid rgba($gold-dark, 0.52);
+    border-radius: $radius-full;
+  }
+
+  &__time,
+  &__duration {
     color: $gold-dark;
   }
 
-  &__today-title {
+  &__duration {
+    padding: calc($spacing-xs / 2) $spacing-sm;
+    border-radius: $radius-full;
+    background: rgba($white, 0.9);
+  }
+
+  &__title {
+    display: block;
     margin-bottom: $spacing-xs;
     font-size: $font-size-xl;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
+    color: $ink;
   }
 
-  &__today-desc {
+  &__meta,
+  &__note {
+    display: block;
+    line-height: $line-height-normal;
+    color: $ink-soft;
+  }
+
+  &__meta {
+    margin-bottom: calc($spacing-xs / 2);
+  }
+
+  &__note {
     margin-bottom: $spacing-lg;
   }
 
-  &__today-actions {
-    display: flex;
+  &__actions {
     gap: $spacing-sm;
   }
+}
 
-  &__service-band {
-    display: flex;
-    padding: 0;
-    overflow: hidden;
-  }
+.home-service-band {
+  display: flex;
+  align-items: stretch;
+  padding: $spacing-sm;
 
-  &__service-item {
-    position: relative;
+  &__item {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: $spacing-xs;
-    padding: $spacing-lg $spacing-sm;
+    gap: calc($spacing-xs / 2);
+    padding: $spacing-md calc($spacing-xs / 2);
+  }
 
-    &:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translateY(-50%);
-      width: 1px;
-      height: $spacing-2xl;
-      background: $cream-300;
+  &__icon {
+    width: calc($spacing-2xl + $spacing-xs);
+    min-height: calc($spacing-2xl + $spacing-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-lg;
+    border: 1px solid rgba($white, 0.7);
+
+    &--mint {
+      background: $mint-light;
+    }
+
+    &--violet {
+      background: $violet-light;
+    }
+
+    &--orange {
+      background: $orange-light;
+    }
+
+    &--pink {
+      background: $pink-light;
     }
   }
 
-  &__service-item-label {
+  &__icon-text,
+  &__description {
+    font-size: $font-size-xs;
+  }
+
+  &__icon-text {
+    color: $ink-soft;
+    letter-spacing: 1px;
+  }
+
+  &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     color: $ink;
   }
 
-  &__service-item-sub {
-    font-size: $font-size-xs;
+  &__description {
+    text-align: center;
+    line-height: $line-height-normal;
     color: $ink-soft;
-    letter-spacing: 2px;
   }
+}
 
-  &__course-list {
+.home-monthly-summary {
+  &__layout,
+  &__value-row,
+  &__side-value-row {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-md;
+    align-items: stretch;
   }
 
-  &__course-card {
-    background: $white;
-    border-radius: $radius-xl;
+  &__layout {
+    gap: $spacing-sm;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__hero {
+    flex: 1.2;
     padding: $spacing-lg;
-    box-shadow: $shadow-soft;
-
-    &:active {
-      transform: translateY(2px);
-    }
+    border-radius: $radius-lg;
+    background: linear-gradient(180deg, rgba($gold-light, 0.92) 0%, rgba($white, 1) 100%);
   }
 
-  &__course-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__course-card-tag {
-    color: $gold-dark;
-  }
-
-  &__course-card-duration {
-    color: $ink-soft;
-  }
-
-  &__course-card-title {
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-md;
-    font-weight: $font-weight-medium;
-  }
-
-  &__empty-card-title {
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-md;
-    font-weight: $font-weight-medium;
-  }
-
-  &__simple-title {
-    display: block;
-    margin-bottom: $spacing-sm;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__summary-card {
-    padding: $spacing-xl;
-  }
-
-  &__summary-main {
-    flex: 1;
-  }
-
-  &__summary-label,
-  &__summary-side-label {
-    display: block;
-    margin-bottom: $spacing-sm;
+  &__label,
+  &__description,
+  &__side-label,
+  &__side-detail,
+  &__progress-text {
     font-size: $font-size-xs;
+  }
+
+  &__label,
+  &__side-label,
+  &__progress-text {
     color: $ink-soft;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: $spacing-md;
     letter-spacing: 2px;
   }
 
-  &__summary-main-row,
-  &__summary-side-row {
-    display: flex;
+  &__value-row,
+  &__side-value-row {
     align-items: flex-end;
-    gap: 4px;
+    gap: calc($spacing-xs / 2);
   }
 
-  &__summary-main-value {
+  &__value-row {
+    margin-bottom: $spacing-sm;
+  }
+
+  &__value {
     font-size: $font-size-4xl;
     font-weight: 300;
     line-height: 1;
     color: $ink;
   }
 
-  &__summary-main-unit,
-  &__summary-side-unit {
+  &__unit,
+  &__side-unit {
     font-size: $font-size-sm;
     color: $ink-soft;
   }
 
-  &__summary-divider {
-    width: 1px;
-    height: 48px;
-    margin: 0 $spacing-lg;
-    background: $cream-300;
+  &__description {
+    display: block;
+    line-height: $line-height-relaxed;
+    color: rgba($ink, 0.68);
   }
 
-  &__summary-side {
+  &__side {
+    flex: 0.9;
     display: flex;
-    gap: $spacing-lg;
+    flex-direction: column;
+    gap: $spacing-sm;
   }
 
-  &__summary-side-value {
-    font-size: $font-size-lg;
-    font-weight: 300;
+  &__side-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: $spacing-lg $spacing-md;
+    border-radius: $radius-lg;
+    background: rgba($gray-100, 0.86);
+  }
+
+  &__side-label {
+    display: block;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__side-value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-medium;
     line-height: 1;
     color: $ink;
   }
 
-  &__summary-progress {
-    margin-top: $spacing-lg;
-  }
-
-  &__summary-progress-track {
-    height: 2px;
-    overflow: hidden;
-    border-radius: $radius-full;
-    background: $cream-200;
-  }
-
-  &__summary-progress-fill {
-    height: 100%;
-    border-radius: $radius-full;
-    background: linear-gradient(90deg, $gold 0%, $gold-dark 100%);
-  }
-
-  &__summary-progress-text {
+  &__side-detail {
     display: block;
     margin-top: $spacing-xs;
-    font-size: $font-size-xs;
-    color: $gold-dark;
+    color: rgba($ink, 0.62);
+    line-height: $line-height-normal;
   }
 
-  &__section-caption {
+  &__progress-track {
+    height: $spacing-xs;
+    margin-bottom: $spacing-xs;
+    overflow: hidden;
+    border-radius: $radius-full;
+    background: $cream-300;
+  }
+
+  &__progress-fill {
+    width: 72%;
+    height: 100%;
+    border-radius: $radius-full;
+    background: linear-gradient(90deg, $mint 0%, $violet 100%);
+  }
+}
+
+.home-curated-card {
+  padding: $spacing-sm;
+
+  &__visual {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc($spacing-2xl * 3);
+    padding: $spacing-lg;
+    border-radius: $radius-xl;
+    background:
+      radial-gradient(circle at top left, rgba($white, 0.2) 0%, rgba($white, 0) 36%),
+      linear-gradient(135deg, rgba($gold-dark, 0.92) 0%, rgba($ink, 0.94) 100%);
+  }
+
+  &__caption,
+  &__meta,
+  &__eyebrow,
+  &__description,
+  &__action-text,
+  &__action-arrow {
     font-size: $font-size-xs;
-    color: $ink-soft;
+  }
+
+  &__caption,
+  &__meta {
+    color: rgba($white, 0.78);
+  }
+
+  &__caption,
+  &__eyebrow {
     letter-spacing: 2px;
   }
 
-  &__featured-card {
-    overflow: hidden;
-    border-radius: $radius-xl;
-    background: $white;
-    box-shadow: $shadow-soft;
+  &__monogram {
+    display: block;
+    font-size: $font-size-4xl;
+    font-weight: 300;
+    line-height: 1;
+    color: $white;
   }
 
-  &__featured-image-wrap {
-    position: relative;
-    height: 196px;
-    overflow: hidden;
+  &__body {
+    padding: $spacing-lg $spacing-md $spacing-md;
   }
 
-  &__featured-image {
-    width: 100%;
-    height: 100%;
+  &__eyebrow,
+  &__description {
+    color: $ink-soft;
   }
 
-  &__featured-image-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 32%, rgba($ink, 0.35) 100%);
+  &__eyebrow {
+    display: block;
+    margin-bottom: $spacing-sm;
   }
 
-  &__featured-image-meta {
-    position: absolute;
-    left: $spacing-lg;
-    bottom: $spacing-md;
-    font-size: $font-size-xs;
-    color: rgba($white, 0.76);
-    letter-spacing: 1.5px;
-  }
-
-  &__featured-body {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: $spacing-md;
-    padding: $spacing-lg;
-  }
-
-  &__featured-copy {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__featured-title {
+  &__title {
     display: block;
     margin-bottom: $spacing-xs;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+    color: $ink;
+  }
+
+  &__description {
+    display: block;
+    margin-bottom: $spacing-md;
+    line-height: $line-height-relaxed;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: calc($spacing-xs / 2);
+  }
+
+  &__action-text,
+  &__action-arrow {
+    color: $gold-dark;
+  }
+}
+
+.home-upcoming-list {
+  &__header,
+  &__more,
+  &__title-row,
+  &__item {
+    display: flex;
+    align-items: center;
+  }
+
+  &__header,
+  &__title-row,
+  &__item {
+    justify-content: space-between;
+  }
+
+  &__header {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    color: $ink;
+  }
+
+  &__more {
+    gap: calc($spacing-xs / 2);
+  }
+
+  &__more-text,
+  &__more-arrow,
+  &__weekday,
+  &__item-label,
+  &__item-description,
+  &__item-meta,
+  &__item-arrow {
+    font-size: $font-size-xs;
+    color: $ink-soft;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__item {
+    gap: $spacing-md;
+    align-items: flex-start;
+  }
+
+  &__date {
+    width: calc($spacing-2xl * 1.5);
+    padding: $spacing-sm 0;
+    border-radius: $radius-lg;
+    background: rgba($gray-100, 0.86);
+    text-align: center;
+  }
+
+  &__day {
+    display: block;
+    font-size: $font-size-xl;
+    font-weight: 300;
+    line-height: $line-height-tight;
+    color: $ink;
+  }
+
+  &__weekday {
+    display: block;
+    margin-top: calc($spacing-xs / 2);
+  }
+
+  &__body {
+    flex: 1;
+    padding-top: calc($spacing-xs / 2);
+  }
+
+  &__title-row {
+    gap: $spacing-sm;
+    margin-bottom: calc($spacing-xs / 2);
+  }
+
+  &__item-title {
+    flex: 1;
     font-size: $font-size-md;
     font-weight: $font-weight-medium;
     color: $ink;
+    line-height: $line-height-tight;
   }
 
-  &__featured-desc {
-    display: block;
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-sm;
-    color: $ink-soft;
-  }
-
-  &__featured-note {
-    display: block;
-    font-size: $font-size-xs;
-    color: $gold-dark;
-  }
-
-  &__featured-action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 88px;
-    height: 56px;
-    border-radius: $radius-lg;
-    background: $ink;
-  }
-
-  &__featured-action-text {
-    font-size: $font-size-sm;
-    color: $white;
-  }
-
-  &__schedule-card {
-    padding: 0;
-    overflow: hidden;
-  }
-
-  &__schedule-item {
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
-    padding: 20px $spacing-lg;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid $cream-300;
-    }
-  }
-
-  &__schedule-date {
-    min-width: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  &__schedule-day {
-    font-size: $font-size-2xl;
-    font-weight: 300;
-    line-height: 1;
-    color: $ink;
-  }
-
-  &__schedule-weekday {
-    font-size: $font-size-xs;
-    color: $ink-soft;
-    letter-spacing: 1.5px;
-  }
-
-  &__schedule-line {
-    width: 1px;
-    height: 48px;
-    background: $cream-300;
-  }
-
-  &__schedule-item:first-child &__schedule-line {
-    background: rgba($gold, 0.5);
-  }
-
-  &__schedule-meta {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__schedule-title-row {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    margin-bottom: 4px;
-  }
-
-  &__schedule-title {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__schedule-tag {
-    padding: 2px 8px;
+  &__item-label {
+    padding: calc($spacing-xs / 2) $spacing-sm;
     border-radius: $radius-full;
-    border: 1px solid rgba($gold, 0.28);
-    font-size: 9px;
+    background: $gold-light;
     color: $gold-dark;
   }
 
-  &__schedule-desc {
+  &__item-description,
+  &__item-meta {
     display: block;
-    font-size: $font-size-xs;
-    color: $ink-soft;
+    line-height: $line-height-normal;
   }
 
-  &__schedule-arrow {
-    font-size: 14px;
-    color: #e5e5e5;
+  &__item-description {
+    margin-bottom: calc($spacing-xs / 2);
   }
 
-  &__empty-state-compact {
-    padding: $spacing-xl;
+  &__item-arrow {
+    padding-top: $spacing-md;
+    color: $gold-dark;
   }
+}
 
-  &__section--studio {
-    margin-bottom: 0;
-  }
+.home-studio-card {
+  padding: $spacing-xl;
+  overflow: hidden;
+  border-radius: $radius-xl;
+  background:
+    radial-gradient(circle at top right, rgba($gold, 0.22) 0%, rgba($gold, 0) 36%),
+    linear-gradient(135deg, rgba($ink, 0.98) 0%, rgba($gray-900, 0.96) 100%);
+  box-shadow: $shadow-soft;
 
-  &__studio-card {
-    padding: $spacing-xl;
-    border-radius: $radius-xl;
-    background: $ink;
-    color: $white;
-  }
-
-  &__studio-top {
+  &__top,
+  &__pin,
+  &__pin-ring,
+  &__action {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+  }
+
+  &__top {
     justify-content: space-between;
+    gap: $spacing-md;
     margin-bottom: $spacing-lg;
   }
 
-  &__studio-label {
-    display: block;
-    margin-bottom: $spacing-sm;
+  &__label,
+  &__hours,
+  &__note,
+  &__action-text,
+  &__action-arrow {
     font-size: $font-size-xs;
-    color: rgba($white, 0.35);
+  }
+
+  &__label,
+  &__hours,
+  &__note {
+    color: rgba($white, 0.64);
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: calc($spacing-xs / 2);
     letter-spacing: 2px;
   }
 
-  &__studio-name {
+  &__name {
     display: block;
-    font-size: $font-size-lg;
+    font-size: $font-size-2xl;
+    font-weight: 300;
+    line-height: $line-height-tight;
     color: $white;
   }
 
-  &__studio-pin {
-    width: 36px;
-    height: 36px;
+  &__pin {
+    justify-content: center;
+  }
+
+  &__pin-ring {
+    width: $spacing-2xl;
+    min-height: $spacing-2xl;
+    justify-content: center;
+    border: 1px solid rgba($white, 0.18);
     border-radius: $radius-full;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba($white, 0.08);
-    color: rgba($white, 0.56);
+    background: rgba($white, 0.06);
   }
 
-  &__studio-address {
-    display: block;
-    margin-bottom: 4px;
-    font-size: $font-size-sm;
-    color: rgba($white, 0.72);
+  &__pin-core {
+    width: $spacing-sm;
+    height: $spacing-sm;
+    border-radius: $radius-full;
+    background: $gold;
+    box-shadow: 0 0 0 calc($spacing-xs / 2) rgba($gold, 0.18);
   }
 
-  &__studio-hours {
+  &__address {
     display: block;
+    margin-bottom: calc($spacing-xs / 2);
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+    color: $white;
+  }
+
+  &__hours,
+  &__note {
+    display: block;
+    line-height: $line-height-relaxed;
+  }
+
+  &__note {
     margin-bottom: $spacing-lg;
-    font-size: $font-size-xs;
-    color: rgba($white, 0.36);
   }
 
-  &__studio-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
+  &__action {
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid rgba($white, 0.14);
     border-radius: $radius-lg;
-    border: 1px solid rgba($white, 0.12);
-    background: rgba($white, 0.05);
+    background: rgba($white, 0.06);
   }
 
-  &__studio-button-text {
-    font-size: 20px;
-    color: rgba($white, 0.72);
+  &__action-text,
+  &__action-arrow {
+    color: $white;
   }
 }
