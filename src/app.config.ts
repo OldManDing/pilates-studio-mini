@@ -12,9 +12,9 @@ export default defineAppConfig({
   ],
   tabBar: {
     custom: false,
-    color: '#6f8198',
-    selectedColor: '#43c7ab',
-    backgroundColor: '#ffffff',
+    color: '#8c8378',
+    selectedColor: '#C4A574',
+    backgroundColor: '#FFFDF9',
     borderStyle: 'white',
     list: [
       {
@@ -25,15 +25,9 @@ export default defineAppConfig({
       },
       {
         pagePath: 'pages/courses/index',
-        text: '课程',
+        text: '预约',
         iconPath: 'assets/tabbar/course.png',
         selectedIconPath: 'assets/tabbar/course-active.png'
-      },
-      {
-        pagePath: 'pages/coaches/index',
-        text: '教练',
-        iconPath: 'assets/tabbar/coach.png',
-        selectedIconPath: 'assets/tabbar/coach-active.png'
       },
       {
         pagePath: 'pages/profile/index',
@@ -45,7 +39,7 @@ export default defineAppConfig({
   },
   window: {
     backgroundTextStyle: 'dark',
-    navigationBarBackgroundColor: '#ffffff',
+    navigationBarBackgroundColor: '#FFFDF9',
     navigationBarTitleText: 'Pilates Studio',
     navigationBarTextStyle: 'black',
     navigationStyle: 'default'

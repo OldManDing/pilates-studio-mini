@@ -5,12 +5,25 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 28px;
   color: $text-primary;
-  background-color: $bg-gray;
+  background-color: $cream-100;
   line-height: 1.5;
 }
 
 /* Reset styles */
-* {
+view,
+text,
+button,
+image,
+input,
+textarea,
+scroll-view,
+swiper,
+swiper-item,
+navigator,
+form,
+label,
+picker,
+picker-view {
   box-sizing: border-box;
 }
 
@@ -45,10 +58,10 @@ button {
 .text-primary { color: $text-primary; }
 .text-secondary { color: $text-secondary; }
 .text-muted { color: $text-muted; }
-.text-mint { color: $mint; }
-.text-violet { color: $violet; }
-.text-orange { color: $orange; }
-.text-pink { color: $pink; }
+.text-mint { color: $gold; }
+.text-violet { color: $gold-dark; }
+.text-orange { color: $gold-dark; }
+.text-pink { color: $ink-soft; }
 
 .text-center { text-align: center; }
 .text-left { text-align: left; }
@@ -105,8 +118,8 @@ button {
 /* Card styles */
 .card {
   background: $white;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-soft;
 }
 
 .card-hover {
