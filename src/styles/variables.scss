@@ -20,6 +20,17 @@ $pink: #ff8da8;
 $pink-light: #ffeef2;
 $pink-dark: #e0708f;
 
+$gold: #c4a574;
+$gold-light: #f4ece0;
+$gold-dark: #a78959;
+
+$cream-100: #fbf8f4;
+$cream-200: #f5efe7;
+$cream-300: #ebe3d7;
+
+$ink: #1a1a1a;
+$ink-soft: #8c8378;
+
 // Functional colors
 $success: $mint;
 $warning: $orange;
@@ -77,6 +88,7 @@ $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
 $radius-xl: 24px;
+$radius-2xl: 32px;
 $radius-full: 9999px;
 
 /* ========================================
@@ -88,6 +100,8 @@ $shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
 $shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 $shadow-mint: 0 4px 16px rgba(67, 199, 171, 0.24);
 $shadow-violet: 0 4px 16px rgba(139, 124, 255, 0.24);
+$shadow-gold: 0 8px 24px rgba(196, 165, 116, 0.2);
+$shadow-soft: 0 12px 36px rgba(26, 26, 26, 0.06);
 
 /* ========================================
    Typography
@@ -100,6 +114,8 @@ $font-size-md: 32px;   // 16pt
 $font-size-lg: 36px;   // 18pt
 $font-size-xl: 40px;   // 20pt
 $font-size-2xl: 48px;  // 24pt
+$font-size-3xl: 56px;  // 28pt
+$font-size-4xl: 64px;  // 32pt
 
 $font-weight-normal: 400;
 $font-weight-medium: 500;
