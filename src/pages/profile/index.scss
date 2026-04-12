@@ -1,7 +1,7 @@
 @import '../../styles/variables.scss';
 
 $profile-avatar-size: $spacing-unit * 14;
-$profile-icon-size: $spacing-unit * 10;
+$profile-icon-size: calc($spacing-xl + $spacing-unit);
 $profile-glyph-size: $spacing-unit * 4;
 $profile-menu-indent: $spacing-xl + $spacing-lg;
 $profile-stat-divider-height: $spacing-unit * 9;
@@ -13,7 +13,7 @@ $profile-stat-divider-height: $spacing-unit * 9;
   &__content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: calc($spacing-lg - $spacing-unit);
     padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
   }
 
@@ -32,13 +32,13 @@ $profile-stat-divider-height: $spacing-unit * 9;
 
 .profile-shell-card {
   background: $white;
-  border: 1px solid rgba($cream-300, 0.72);
+  border: 1px solid $border-subtle;
   border-radius: $radius-xl;
-  box-shadow: $shadow-soft;
+  box-shadow: $shadow-card;
 }
 
 .profile-account-card {
-  padding: $spacing-xl;
+  padding: calc($spacing-xl - $spacing-unit);
 
   &__top,
   &__identity-row,
@@ -51,7 +51,7 @@ $profile-stat-divider-height: $spacing-unit * 9;
 
   &__top {
     gap: ($spacing-lg - $spacing-unit);
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
   }
 
   &__avatar-wrap {
@@ -106,10 +106,10 @@ $profile-stat-divider-height: $spacing-unit * 9;
 
   &__badge {
     gap: calc($spacing-xs / 2);
-    padding: calc($spacing-xs / 2) $spacing-sm;
-    border: 1px solid rgba($gold, 0.28);
+    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
+    border: 1px solid rgba($gold, 0.18);
     border-radius: $radius-full;
-    background: rgba($white, 0.96);
+    background: rgba($white, 0.88);
   }
 
   &__badge-dot {
@@ -122,7 +122,7 @@ $profile-stat-divider-height: $spacing-unit * 9;
   &__badge-text {
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
-    letter-spacing: 2px;
+    letter-spacing: 1.6px;
     color: $gold-dark;
   }
 
@@ -134,14 +134,14 @@ $profile-stat-divider-height: $spacing-unit * 9;
 
   &__phone {
     display: block;
-    color: rgba($ink-soft, 0.56);
+    color: rgba($ink-soft, 0.46);
   }
 
   &__stats {
     align-items: stretch;
-    padding: ($spacing-lg - $spacing-unit) 0;
+    padding: $spacing-md 0;
     border-radius: $radius-lg;
-    background: rgba($gray-100, 0.72);
+    background: rgba($gray-100, 0.56);
   }
 
   &__stat {
@@ -160,18 +160,18 @@ $profile-stat-divider-height: $spacing-unit * 9;
   }
 
   &__stat-value {
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: 300;
     line-height: 1;
     color: $ink;
   }
 
   &__stat-unit {
-    color: rgba($ink-soft, 0.44);
+    color: rgba($ink-soft, 0.36);
   }
 
   &__stat-label {
-    color: rgba($ink-soft, 0.56);
+    color: rgba($ink-soft, 0.46);
   }
 
   &__stat-divider {
@@ -188,15 +188,15 @@ $profile-stat-divider-height: $spacing-unit * 9;
 .profile-menu-section {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  gap: calc($spacing-xs + $spacing-unit / 2);
 
   &__label {
     display: block;
     padding-left: calc($spacing-xs / 2);
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    letter-spacing: 2px;
-    color: rgba($ink-soft, 0.58);
+    letter-spacing: 1.6px;
+    color: rgba($ink-soft, 0.5);
   }
 
   &__card {
@@ -210,46 +210,41 @@ $profile-stat-divider-height: $spacing-unit * 9;
   }
 
   &__item {
-    gap: $spacing-md;
-    padding: $spacing-md ($spacing-xl - $spacing-unit);
+    gap: calc($spacing-sm + $spacing-unit / 2);
+    padding: calc($spacing-sm + $spacing-unit / 2) ($spacing-xl - $spacing-unit);
   }
 
   &__icon {
     width: $profile-icon-size;
     height: $profile-icon-size;
     justify-content: center;
-    border: 1px solid rgba($cream-300, 0.72);
-    border-radius: $radius-md;
-    background: rgba($gray-100, 0.84);
+    border: 1px solid rgba($cream-300, 0.58);
+    border-radius: calc($radius-md - 2px);
+    background: rgba($gray-100, 0.54);
 
     &--bookings {
-      background: rgba($gold-light, 0.96);
-      color: $gold-dark;
+      color: rgba($gold-dark, 0.76);
     }
 
     &--records {
-      background: rgba($mint-light, 0.96);
-      color: $mint-dark;
+      color: rgba($ink-soft, 0.66);
     }
 
     &--membership {
-      background: rgba($violet-light, 0.96);
-      color: $violet-dark;
+      color: rgba($gold-dark, 0.76);
     }
 
     &--notifications {
-      background: rgba($orange-light, 0.96);
-      color: $orange-dark;
+      color: rgba($ink-soft, 0.66);
     }
 
     &--support {
-      background: rgba($pink-light, 0.96);
-      color: $pink-dark;
+      color: rgba($ink-soft, 0.66);
     }
 
     &--settings {
-      background: rgba($gray-200, 0.96);
-      color: $gray-700;
+      background: rgba($gray-100, 0.64);
+      color: rgba($ink-soft, 0.66);
     }
   }
 
@@ -379,7 +374,7 @@ $profile-stat-divider-height: $spacing-unit * 9;
   &__title {
     display: block;
     margin-bottom: calc($spacing-xs / 4);
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     color: $ink;
@@ -389,19 +384,19 @@ $profile-stat-divider-height: $spacing-unit * 9;
     display: block;
     font-size: $font-size-xs;
     line-height: $line-height-normal;
-    color: rgba($ink-soft, 0.62);
+    color: rgba($ink-soft, 0.48);
   }
 
   &__arrow {
     flex-shrink: 0;
-    font-size: $font-size-sm;
-    color: rgba($ink-soft, 0.36);
+    font-size: $font-size-xs;
+    color: rgba($ink-soft, 0.28);
   }
 
   &__divider {
     height: 1px;
     margin-left: $profile-menu-indent;
-    background: rgba($cream-300, 0.72);
+    background: rgba($cream-300, 0.54);
   }
 }
 
@@ -410,10 +405,10 @@ $profile-stat-divider-height: $spacing-unit * 9;
   align-items: center;
   justify-content: center;
   gap: $spacing-xs;
-  min-height: $spacing-2xl;
-  border: 1px solid rgba($cream-300, 0.72);
+  min-height: calc($spacing-xl + $spacing-sm);
+  border: 1px solid rgba($cream-300, 0.62);
   border-radius: $radius-lg;
-  background: rgba($white, 0.94);
+  background: rgba($white, 0.86);
 
   &__icon {
     display: flex;
@@ -425,7 +420,7 @@ $profile-stat-divider-height: $spacing-unit * 9;
     position: relative;
     width: $profile-glyph-size;
     height: $profile-glyph-size;
-    color: rgba($ink-soft, 0.56);
+    color: rgba($ink-soft, 0.42);
 
     &::before,
     &::after {
@@ -456,6 +451,6 @@ $profile-stat-divider-height: $spacing-unit * 9;
     font-size: $font-size-xs;
     font-weight: $font-weight-normal;
     letter-spacing: 1px;
-    color: rgba($ink-soft, 0.7);
+    color: rgba($ink-soft, 0.56);
   }
 }
