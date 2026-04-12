@@ -24,11 +24,10 @@ export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
 
       <Text className='home-studio-card__address'>{data.address}</Text>
       <Text className='home-studio-card__hours'>{data.hours}</Text>
-      <Text className='home-studio-card__note'>{data.note}</Text>
 
       <View className='home-studio-card__action'>
         <Text className='home-studio-card__action-text'>{data.actionLabel}</Text>
-        <Text className='home-studio-card__action-arrow'>↗</Text>
+        <View className='home-studio-card__action-arrow' />
       </View>
     </View>
   );

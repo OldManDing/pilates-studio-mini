@@ -13,7 +13,7 @@ export default function HomeUpcomingList({ data, onMoreClick }: HomeUpcomingList
         <Text className='home-upcoming-list__title'>近期安排</Text>
         <View className='home-upcoming-list__more' onClick={onMoreClick}>
           <Text className='home-upcoming-list__more-text'>全部</Text>
-          <Text className='home-upcoming-list__more-arrow'>›</Text>
+          <View className='home-upcoming-list__more-arrow' />
         </View>
       </View>
 
@@ -25,17 +25,17 @@ export default function HomeUpcomingList({ data, onMoreClick }: HomeUpcomingList
               <Text className='home-upcoming-list__weekday'>{item.weekday}</Text>
             </View>
 
-            <View className='home-upcoming-list__body'>
-              <View className='home-upcoming-list__title-row'>
-                <Text className='home-upcoming-list__item-title'>{item.title}</Text>
-                <Text className='home-upcoming-list__item-label'>{item.label}</Text>
+              <View className='home-upcoming-list__body'>
+                <View className='home-upcoming-list__title-row'>
+                  <Text className='home-upcoming-list__item-title'>{item.title}</Text>
+                  <Text className='home-upcoming-list__item-label'>{item.label}</Text>
+                </View>
+                <Text className='home-upcoming-list__item-description'>{item.description}</Text>
+                <Text className='home-upcoming-list__item-meta'>{item.meta}</Text>
               </View>
-              <Text className='home-upcoming-list__item-description'>{item.description}</Text>
-              <Text className='home-upcoming-list__item-meta'>{item.meta}</Text>
-            </View>
 
-            <Text className='home-upcoming-list__item-arrow'>›</Text>
-          </View>
+              <View className='home-upcoming-list__item-arrow' />
+            </View>
         ))}
       </View>
     </View>

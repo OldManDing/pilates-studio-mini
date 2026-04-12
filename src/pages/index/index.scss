@@ -7,7 +7,7 @@
   &__content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: calc($spacing-lg - $spacing-unit);
     padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
   }
 }
@@ -16,16 +16,9 @@
   position: relative;
   overflow: hidden;
   background: $white;
-  border: 1px solid rgba($cream-300, 0.72);
+  border: 1px solid $border-subtle;
   border-radius: $radius-xl;
-  box-shadow: $shadow-soft;
-
-  &--hero {
-    background:
-      radial-gradient(circle at top right, rgba($gold, 0.18) 0%, rgba($gold, 0) 56%),
-      radial-gradient(circle at bottom left, rgba($mint, 0.16) 0%, rgba($mint, 0) 58%),
-      linear-gradient(180deg, rgba($white, 0.98) 0%, rgba($cream-100, 0.96) 100%);
-  }
+  box-shadow: $shadow-card;
 }
 
 .home-shell-button {
@@ -33,138 +26,104 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: $spacing-2xl;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-lg;
+  min-height: calc($spacing-xl + $spacing-sm);
+  padding: calc($spacing-xs + $spacing-unit / 2) $spacing-md;
+  border: 1px solid transparent;
+  border-radius: calc($radius-lg - 2px);
 
   &--primary {
-    background: linear-gradient(135deg, $gold 0%, $gold-dark 100%);
-    box-shadow: $shadow-gold;
+    border-color: rgba($gold, 0.24);
+    background: rgba($gold-light, 0.94);
   }
 
   &--secondary {
-    border: 1px solid rgba($gold, 0.2);
-    background: rgba($white, 0.92);
+    border-color: rgba($cream-300, 0.88);
+    background: rgba($white, 0.82);
   }
 
   &__text {
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: $font-weight-medium;
+    letter-spacing: 0.8px;
 
     &--primary {
-      color: $white;
+      color: $gold-dark;
     }
 
     &--secondary {
-      color: $gold-dark;
+      color: rgba($ink-soft, 0.82);
     }
   }
 }
 
 .home-hero {
-  padding: $spacing-xl;
+  padding: 56px $spacing-lg 24px;
 
   &__top,
-  &__footer,
-  &__link,
   &__badge {
     display: flex;
     align-items: center;
   }
 
-  &__top,
-  &__footer {
+  &__top {
     justify-content: space-between;
     gap: $spacing-md;
+    margin-bottom: 24px;
   }
 
-  &__top {
-    margin-bottom: $spacing-xl;
-  }
-
-  &__meta {
-    display: flex;
-    flex-direction: column;
-    gap: calc($spacing-xs / 2);
-  }
-
-  &__eyebrow,
   &__date,
   &__badge-text,
-  &__footer-copy,
-  &__link-text,
-  &__link-arrow {
+  &__subtitle {
     color: $ink-soft;
   }
 
-  &__eyebrow,
   &__badge-text {
     font-size: $font-size-xs;
-    letter-spacing: 2px;
+    letter-spacing: 2.2px;
   }
 
-  &__date,
-  &__footer-copy,
-  &__link-text,
-  &__link-arrow {
-    font-size: $font-size-sm;
+  &__date {
+    font-size: $font-size-xs;
+    line-height: $line-height-normal;
+    letter-spacing: 1.8px;
+    color: rgba($ink-soft, 0.58);
   }
 
   &__badge {
-    gap: calc($spacing-xs / 2);
-    padding: calc($spacing-xs / 2) $spacing-sm;
-    border: 1px solid rgba($gold, 0.24);
+    gap: 5px;
+    padding: 3px 10px;
+    border: 1px solid rgba($gold, 0.3);
     border-radius: $radius-full;
-    background: rgba($white, 0.74);
+    background: transparent;
   }
 
   &__badge-dot {
-    width: calc($spacing-xs / 2);
-    height: calc($spacing-xs / 2);
+    width: 3.5px;
+    height: 3.5px;
     border-radius: $radius-full;
     background: $gold;
   }
 
   &__badge-text {
+    font-size: 9px;
     color: $gold-dark;
     font-weight: $font-weight-semibold;
   }
 
   &__title {
     display: block;
-    margin-bottom: $spacing-sm;
-    font-size: $font-size-4xl;
+    margin-bottom: 10px;
+    font-size: 52px;
     font-weight: 300;
-    line-height: $line-height-tight;
+    line-height: 1.15;
     color: $ink;
   }
 
   &__subtitle {
     display: block;
-    margin-bottom: $spacing-xl;
-    font-size: $font-size-base;
-    line-height: $line-height-relaxed;
-    color: rgba($ink, 0.72);
-  }
-
-  &__footer {
-    padding-top: $spacing-lg;
-    border-top: 1px solid rgba($cream-300, 0.72);
-  }
-
-  &__footer-copy {
-    flex: 1;
+    font-size: 24px;
     line-height: $line-height-normal;
-  }
-
-  &__link {
-    flex-shrink: 0;
-    gap: calc($spacing-xs / 2);
-  }
-
-  &__link-text,
-  &__link-arrow {
-    color: $gold-dark;
+    color: rgba($ink-soft, 0.42);
   }
 }
 
@@ -172,12 +131,11 @@
 .home-today-course-card,
 .home-monthly-summary,
 .home-upcoming-list {
-  padding: $spacing-xl;
+  padding: calc($spacing-xl - $spacing-unit);
 }
 
 .home-membership-card {
   &__top,
-  &__status,
   &__metrics,
   &__progress,
   &__actions {
@@ -197,7 +155,7 @@
   }
 
   &__top {
-    margin-bottom: $spacing-md;
+    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
   }
 
   &__label,
@@ -213,41 +171,36 @@
     letter-spacing: 2px;
   }
 
-  &__status {
+  &__detail-link {
     gap: calc($spacing-xs / 2);
+    display: flex;
+    align-items: center;
   }
 
-  &__status-dot {
-    width: calc($spacing-xs / 2);
-    height: calc($spacing-xs / 2);
-    border-radius: $radius-full;
-    background: $mint;
-  }
-
-  &__status-text,
+  &__detail-text,
   &__metric-label {
     color: $ink-soft;
   }
 
+  &__detail-arrow {
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid rgba($ink-soft, 0.38);
+    border-right: 1px solid rgba($ink-soft, 0.38);
+    transform: rotate(45deg);
+  }
+
   &__title {
     display: block;
-    margin-bottom: $spacing-sm;
-    font-size: $font-size-2xl;
+    margin-bottom: calc($spacing-xs + $spacing-unit / 2);
+    font-size: $font-size-xl;
     font-weight: 300;
     line-height: $line-height-tight;
     color: $ink;
   }
 
-  &__description {
-    display: block;
-    margin-bottom: $spacing-lg;
-    font-size: $font-size-sm;
-    line-height: $line-height-relaxed;
-    color: $ink-soft;
-  }
-
   &__metrics {
-    margin-bottom: $spacing-md;
+    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
     align-items: flex-end;
   }
 
@@ -266,14 +219,20 @@
 
   &__metric-value {
     display: block;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-medium;
+    font-size: $font-size-lg;
+    font-weight: 300;
     line-height: $line-height-tight;
     color: $ink;
   }
 
+  &__metric--right &__metric-value {
+    font-size: $font-size-base;
+    font-weight: $font-weight-normal;
+    color: rgba($ink, 0.76);
+  }
+
   &__progress {
-    margin-bottom: $spacing-sm;
+    margin-bottom: calc($spacing-xs + $spacing-unit / 2);
   }
 
   &__progress-label,
@@ -282,8 +241,8 @@
   }
 
   &__progress-bar {
-    height: $spacing-xs;
-    margin-bottom: $spacing-lg;
+    height: calc($spacing-xs / 2);
+    margin-bottom: $spacing-md;
     overflow: hidden;
     border-radius: $radius-full;
     background: $gold-light;
@@ -297,13 +256,15 @@
   }
 
   &__actions {
-    gap: $spacing-sm;
+    gap: 0;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($cream-300, 0.56);
   }
 }
 
 .home-today-course-card {
   background:
-    radial-gradient(circle at top right, rgba($gold, 0.16) 0%, rgba($gold, 0) 40%),
+    radial-gradient(circle at top right, rgba($gold, 0.12) 0%, rgba($gold, 0) 42%),
     linear-gradient(180deg, rgba($white, 1) 0%, rgba($cream-100, 0.94) 100%);
 
   &__header,
@@ -321,7 +282,7 @@
   }
 
   &__header {
-    margin-bottom: $spacing-md;
+    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
   }
 
   &__label,
@@ -339,24 +300,25 @@
   }
 
   &__status {
-    color: $ink-soft;
+    color: rgba($gold-dark, 0.76);
   }
 
   &__meta-row {
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
   }
 
   &__time-chip {
     gap: calc($spacing-xs / 2);
-    padding: calc($spacing-xs / 2) $spacing-sm;
+    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
+    border: 1px solid rgba($gold, 0.16);
     border-radius: $radius-full;
-    background: $gold-light;
+    background: rgba($gold-light, 0.7);
   }
 
   &__clock {
-    width: $spacing-sm;
-    height: $spacing-sm;
-    border: 1px solid rgba($gold-dark, 0.52);
+    width: calc($spacing-xs + $spacing-unit);
+    height: calc($spacing-xs + $spacing-unit);
+    border: 1px solid rgba($gold-dark, 0.42);
     border-radius: $radius-full;
   }
 
@@ -366,100 +328,75 @@
   }
 
   &__duration {
-    padding: calc($spacing-xs / 2) $spacing-sm;
+    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
+    border: 1px solid rgba($cream-300, 0.82);
     border-radius: $radius-full;
-    background: rgba($white, 0.9);
+    background: rgba($white, 0.84);
   }
 
   &__title {
     display: block;
     margin-bottom: $spacing-xs;
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     color: $ink;
   }
 
-  &__meta,
-  &__note {
+  &__meta {
     display: block;
     line-height: $line-height-normal;
-    color: $ink-soft;
+    color: rgba($ink-soft, 0.74);
   }
 
   &__meta {
-    margin-bottom: calc($spacing-xs / 2);
-  }
-
-  &__note {
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
   }
 
   &__actions {
-    gap: $spacing-sm;
+    gap: $spacing-xs;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($cream-300, 0.56);
   }
 }
 
 .home-service-band {
   display: flex;
   align-items: stretch;
-  padding: $spacing-sm;
+  padding: calc($spacing-xs - $spacing-unit / 2);
 
   &__item {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: calc($spacing-xs / 2);
-    padding: $spacing-md calc($spacing-xs / 2);
-  }
+    padding: calc($spacing-sm + $spacing-unit / 2) calc($spacing-xs / 2);
 
-  &__icon {
-    width: calc($spacing-2xl + $spacing-xs);
-    min-height: calc($spacing-2xl + $spacing-xs);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $radius-lg;
-    border: 1px solid rgba($white, 0.7);
-
-    &--mint {
-      background: $mint-light;
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: calc($spacing-xl + $spacing-unit);
+      background: rgba($cream-300, 0.82);
+      transform: translateY(-50%);
     }
-
-    &--violet {
-      background: $violet-light;
-    }
-
-    &--orange {
-      background: $orange-light;
-    }
-
-    &--pink {
-      background: $pink-light;
-    }
-  }
-
-  &__icon-text,
-  &__description {
-    font-size: $font-size-xs;
-  }
-
-  &__icon-text {
-    color: $ink-soft;
-    letter-spacing: 1px;
   }
 
   &__label {
-    font-size: $font-size-sm;
+    font-size: 13px;
     font-weight: $font-weight-medium;
     color: $ink;
+    margin-bottom: 3px;
   }
 
-  &__description {
-    text-align: center;
-    line-height: $line-height-normal;
-    color: $ink-soft;
+  &__subtitle {
+    font-size: 8px;
+    color: #cdcdcd;
+    letter-spacing: 1.9px;
   }
 }
 
@@ -472,15 +409,16 @@
   }
 
   &__layout {
-    gap: $spacing-sm;
-    margin-bottom: $spacing-lg;
+    gap: calc($spacing-xs + $spacing-unit / 2);
+    margin-bottom: $spacing-md;
   }
 
   &__hero {
     flex: 1.2;
-    padding: $spacing-lg;
+    padding: calc($spacing-md + $spacing-unit / 2);
+    border: 1px solid rgba($gold, 0.12);
     border-radius: $radius-lg;
-    background: linear-gradient(180deg, rgba($gold-light, 0.92) 0%, rgba($white, 1) 100%);
+    background: linear-gradient(180deg, rgba($gold-light, 0.64) 0%, rgba($white, 1) 100%);
   }
 
   &__label,
@@ -494,13 +432,13 @@
   &__label,
   &__side-label,
   &__progress-text {
-    color: $ink-soft;
+    color: #bcbcbc;
   }
 
   &__label {
     display: block;
-    margin-bottom: $spacing-md;
-    letter-spacing: 2px;
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
   }
 
   &__value-row,
@@ -514,89 +452,147 @@
   }
 
   &__value {
-    font-size: $font-size-4xl;
-    font-weight: 300;
+    font-size: 40px;
+    font-weight: 200;
     line-height: 1;
     color: $ink;
   }
 
   &__unit,
   &__side-unit {
-    font-size: $font-size-sm;
-    color: $ink-soft;
-  }
-
-  &__description {
-    display: block;
-    line-height: $line-height-relaxed;
-    color: rgba($ink, 0.68);
+    font-size: 10px;
+    color: #c0c0c0;
   }
 
   &__side {
-    flex: 0.9;
     display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
+    gap: 28px;
+    margin-left: 28px;
+    margin-bottom: 4px;
   }
 
-  &__side-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: $spacing-lg $spacing-md;
-    border-radius: $radius-lg;
-    background: rgba($gray-100, 0.86);
+  &__separator {
+    width: 1px;
+    height: 48px;
+    margin: 0 28px 4px;
+    background: #f0f0f0;
   }
 
   &__side-label {
     display: block;
-    margin-bottom: $spacing-xs;
+    margin-bottom: 6px;
+    letter-spacing: 0.06em;
   }
 
   &__side-value {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-medium;
+    font-size: 22px;
+    font-weight: 300;
     line-height: 1;
     color: $ink;
   }
 
-  &__side-detail {
-    display: block;
-    margin-top: $spacing-xs;
-    color: rgba($ink, 0.62);
-    line-height: $line-height-normal;
-  }
-
   &__progress-track {
-    height: $spacing-xs;
+    height: calc($spacing-xs / 2);
+    margin-top: 24px;
     margin-bottom: $spacing-xs;
     overflow: hidden;
     border-radius: $radius-full;
-    background: $cream-300;
+    background: rgba($cream-300, 0.84);
   }
 
   &__progress-fill {
     width: 72%;
     height: 100%;
     border-radius: $radius-full;
-    background: linear-gradient(90deg, $mint 0%, $violet 100%);
+    background: linear-gradient(90deg, $gold 0%, rgba($gold-dark, 0.82) 100%);
   }
 }
 
 .home-curated-card {
-  padding: $spacing-sm;
+  padding: calc($spacing-xs - $spacing-unit / 2);
 
   &__visual {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: calc($spacing-2xl * 3);
+    min-height: calc($spacing-2xl * 2 + $spacing-xl);
     padding: $spacing-lg;
+    overflow: hidden;
     border-radius: $radius-xl;
     background:
-      radial-gradient(circle at top left, rgba($white, 0.2) 0%, rgba($white, 0) 36%),
-      linear-gradient(135deg, rgba($gold-dark, 0.92) 0%, rgba($ink, 0.94) 100%);
+      linear-gradient(180deg, rgba(27, 24, 21, 0.1) 0%, rgba(27, 24, 21, 0.36) 100%),
+      linear-gradient(135deg, #d9cfc1 0%, #f3ebe2 32%, #d8c6ad 100%);
+  }
+
+  &__visual-glow,
+  &__visual-frame,
+  &__visual-window,
+  &__visual-bench,
+  &__visual-floor {
+    position: absolute;
+  }
+
+  &__visual-glow {
+    left: -6%;
+    bottom: -10%;
+    width: 72%;
+    height: 72%;
+    border-radius: $radius-full;
+    background: radial-gradient(circle, rgba($white, 0.38) 0%, rgba($white, 0) 68%);
+    filter: blur(6px);
+  }
+
+  &__visual-frame {
+    top: $spacing-md;
+    right: $spacing-md;
+    bottom: calc($spacing-md + $spacing-unit / 2);
+    width: 48%;
+    border-radius: calc($radius-xl - 4px);
+    background:
+      linear-gradient(180deg, rgba($white, 0.54) 0%, rgba($white, 0.1) 100%),
+      linear-gradient(135deg, rgba($ink, 0.1) 0%, rgba($ink, 0.02) 100%);
+    box-shadow: inset 0 0 0 1px rgba($white, 0.3);
+  }
+
+  &__visual-window {
+    top: $spacing-sm;
+    left: $spacing-sm;
+    right: $spacing-sm;
+    height: 36%;
+    border-radius: calc($radius-lg - 2px);
+    background: linear-gradient(180deg, rgba($white, 0.7) 0%, rgba($white, 0.16) 100%);
+  }
+
+  &__visual-bench {
+    left: 16%;
+    right: 12%;
+    bottom: 22%;
+    height: 18%;
+    border-radius: $radius-lg;
+    background:
+      linear-gradient(135deg, rgba($ink, 0.48) 0%, rgba($ink, 0.68) 100%),
+      linear-gradient(180deg, rgba($white, 0.22) 0%, rgba($white, 0) 100%);
+    box-shadow: 0 10px 24px rgba($ink, 0.12);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      top: 30%;
+      height: 3px;
+      border-radius: $radius-full;
+      background: rgba($white, 0.24);
+    }
+  }
+
+  &__visual-floor {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 32%;
+    background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($white, 0.34) 100%);
   }
 
   &__caption,
@@ -610,6 +606,8 @@
 
   &__caption,
   &__meta {
+    position: relative;
+    z-index: 1;
     color: rgba($white, 0.78);
   }
 
@@ -620,14 +618,18 @@
 
   &__monogram {
     display: block;
-    font-size: $font-size-4xl;
+    position: relative;
+    z-index: 1;
+    align-self: flex-end;
+    margin-top: $spacing-sm;
+    font-size: $font-size-3xl;
     font-weight: 300;
     line-height: 1;
-    color: $white;
+    color: rgba($white, 0.34);
   }
 
   &__body {
-    padding: $spacing-lg $spacing-md $spacing-md;
+    padding: $spacing-md $spacing-md $spacing-sm;
   }
 
   &__eyebrow,
@@ -643,7 +645,7 @@
   &__title {
     display: block;
     margin-bottom: $spacing-xs;
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     color: $ink;
@@ -652,18 +654,31 @@
   &__description {
     display: block;
     margin-bottom: $spacing-md;
-    line-height: $line-height-relaxed;
+    line-height: $line-height-normal;
+    color: rgba($ink-soft, 0.66);
+  }
+
+  &__recommendation {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 10px;
+    color: $gold-dark;
+    letter-spacing: 0.3px;
   }
 
   &__action {
     display: flex;
     align-items: center;
-    gap: calc($spacing-xs / 2);
+    justify-content: center;
+    min-width: 78px;
+    min-height: 48px;
+    border-radius: 14px;
+    background: $ink;
   }
 
   &__action-text,
   &__action-arrow {
-    color: $gold-dark;
+    color: $white;
   }
 }
 
@@ -683,11 +698,11 @@
   }
 
   &__header {
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
   }
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
     color: $ink;
   }
@@ -710,25 +725,42 @@
   &__items {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    gap: 0;
   }
 
   &__item {
+    position: relative;
     gap: $spacing-md;
     align-items: flex-start;
+
+    & + & {
+      margin-top: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid rgba($cream-300, 0.52);
+    }
   }
 
   &__date {
-    width: calc($spacing-2xl * 1.5);
-    padding: $spacing-sm 0;
-    border-radius: $radius-lg;
-    background: rgba($gray-100, 0.86);
+    position: relative;
+    width: calc($spacing-xl + $spacing-xs);
+    padding: calc($spacing-xs + $spacing-unit / 2) 0;
     text-align: center;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: calc(-1 * $spacing-sm / 2);
+      width: 1px;
+      height: calc($spacing-xl + $spacing-xs);
+      background: rgba($cream-300, 0.8);
+      transform: translateY(-50%);
+    }
   }
 
   &__day {
     display: block;
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: 300;
     line-height: $line-height-tight;
     color: $ink;
@@ -741,7 +773,7 @@
 
   &__body {
     flex: 1;
-    padding-top: calc($spacing-xs / 2);
+    padding-top: 0;
   }
 
   &__title-row {
@@ -751,7 +783,7 @@
 
   &__item-title {
     flex: 1;
-    font-size: $font-size-md;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
     color: $ink;
     line-height: $line-height-tight;
@@ -760,7 +792,8 @@
   &__item-label {
     padding: calc($spacing-xs / 2) $spacing-sm;
     border-radius: $radius-full;
-    background: $gold-light;
+    border: 1px solid rgba($gold, 0.16);
+    background: rgba($gold-light, 0.62);
     color: $gold-dark;
   }
 
@@ -771,12 +804,12 @@
   }
 
   &__item-description {
-    margin-bottom: calc($spacing-xs / 2);
+    margin-bottom: 2px;
   }
 
   &__item-arrow {
-    padding-top: $spacing-md;
-    color: $gold-dark;
+    padding-top: calc($spacing-xs + $spacing-unit / 2);
+    color: rgba($ink-soft, 0.28);
   }
 }
 
@@ -785,9 +818,9 @@
   overflow: hidden;
   border-radius: $radius-xl;
   background:
-    radial-gradient(circle at top right, rgba($gold, 0.22) 0%, rgba($gold, 0) 36%),
+    radial-gradient(circle at top right, rgba($gold, 0.16) 0%, rgba($gold, 0) 38%),
     linear-gradient(135deg, rgba($ink, 0.98) 0%, rgba($gray-900, 0.96) 100%);
-  box-shadow: $shadow-soft;
+  box-shadow: $shadow-card;
 
   &__top,
   &__pin,
@@ -805,16 +838,14 @@
 
   &__label,
   &__hours,
-  &__note,
   &__action-text,
   &__action-arrow {
     font-size: $font-size-xs;
   }
 
   &__label,
-  &__hours,
-  &__note {
-    color: rgba($white, 0.64);
+  &__hours {
+    color: rgba($white, 0.56);
   }
 
   &__label {
@@ -825,7 +856,7 @@
 
   &__name {
     display: block;
-    font-size: $font-size-2xl;
+    font-size: $font-size-xl;
     font-weight: 300;
     line-height: $line-height-tight;
     color: $white;
@@ -839,9 +870,9 @@
     width: $spacing-2xl;
     min-height: $spacing-2xl;
     justify-content: center;
-    border: 1px solid rgba($white, 0.18);
+    border: 1px solid rgba($white, 0.12);
     border-radius: $radius-full;
-    background: rgba($white, 0.06);
+    background: rgba($white, 0.04);
   }
 
   &__pin-core {
@@ -855,7 +886,7 @@
   &__address {
     display: block;
     margin-bottom: calc($spacing-xs / 2);
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     color: $white;
@@ -873,14 +904,14 @@
 
   &__action {
     justify-content: space-between;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid rgba($white, 0.14);
+    padding: 12px 16px;
+    border: 1px solid rgba($white, 0.08);
     border-radius: $radius-lg;
-    background: rgba($white, 0.06);
+    background: rgba($white, 0.04);
   }
 
   &__action-text,
   &__action-arrow {
-    color: $white;
+    color: rgba($white, 0.62);
   }
 }
