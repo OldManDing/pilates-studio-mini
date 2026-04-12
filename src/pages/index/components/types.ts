@@ -2,12 +2,10 @@ export type HomeAccent = 'mint' | 'violet' | 'orange' | 'pink';
 
 /** Future mapping: membersApi.getProfile() */
 export interface HomeHeroData {
-  eyebrow: string;
   dateLabel: string;
   badgeLabel: string;
   title: string;
   subtitle: string;
-  profileCta: string;
 }
 
 /** Future mapping: membersApi.getMyMemberships() */
