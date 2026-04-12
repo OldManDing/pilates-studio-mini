@@ -25,15 +25,14 @@ export default function HomeTodayCourseCard({ data, onPrimaryClick, onSecondaryC
 
       <Text className='home-today-course-card__title'>{data.title}</Text>
       <Text className='home-today-course-card__meta'>{data.meta}</Text>
-      <Text className='home-today-course-card__note'>{data.note}</Text>
 
       <View className='home-today-course-card__actions'>
         <View className='home-shell-button home-shell-button--primary' onClick={onPrimaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--primary'>{data.primaryAction}</Text>
+          <Text className='home-shell-button__text home-shell-button__text--primary'>查看详情</Text>
         </View>
 
         <View className='home-shell-button home-shell-button--secondary' onClick={onSecondaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--secondary'>{data.secondaryAction}</Text>
+          <Text className='home-shell-button__text home-shell-button__text--secondary'>改约</Text>
         </View>
       </View>
     </View>

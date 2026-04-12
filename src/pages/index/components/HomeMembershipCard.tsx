@@ -12,14 +12,13 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onSecondaryCl
     <View className='home-membership-card home-shell-card'>
       <View className='home-membership-card__top'>
         <Text className='home-membership-card__label'>{data.label}</Text>
-        <View className='home-membership-card__status'>
-          <View className='home-membership-card__status-dot' />
-          <Text className='home-membership-card__status-text'>{data.status}</Text>
+        <View className='home-membership-card__detail-link' onClick={onSecondaryClick}>
+          <Text className='home-membership-card__detail-text'>详情</Text>
+          <View className='home-membership-card__detail-arrow' />
         </View>
       </View>
 
       <Text className='home-membership-card__title'>{data.planName}</Text>
-      <Text className='home-membership-card__description'>{data.description}</Text>
 
       <View className='home-membership-card__metrics'>
         <View className='home-membership-card__metric'>
@@ -44,11 +43,7 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onSecondaryCl
 
       <View className='home-membership-card__actions'>
         <View className='home-shell-button home-shell-button--primary' onClick={onPrimaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--primary'>{data.primaryAction}</Text>
-        </View>
-
-        <View className='home-shell-button home-shell-button--secondary' onClick={onSecondaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--secondary'>{data.secondaryAction}</Text>
+          <Text className='home-shell-button__text home-shell-button__text--primary'>立即预约课程</Text>
         </View>
       </View>
     </View>
