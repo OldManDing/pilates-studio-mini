@@ -59,9 +59,9 @@ button {
 .text-secondary { color: $text-secondary; }
 .text-muted { color: $text-muted; }
 .text-mint { color: $gold; }
-.text-violet { color: $gold-dark; }
-.text-orange { color: $gold-dark; }
-.text-pink { color: $ink-soft; }
+.text-violet { color: $ink-soft; }
+.text-orange { color: $ink-soft; }
+.text-pink { color: rgba($ink-soft, 0.72); }
 
 .text-center { text-align: center; }
 .text-left { text-align: left; }
@@ -120,6 +120,7 @@ button {
   background: $white;
   border-radius: $radius-xl;
   box-shadow: $shadow-soft;
+  border: 1px solid rgba($cream-300, 0.72);
 }
 
 .card-hover {
