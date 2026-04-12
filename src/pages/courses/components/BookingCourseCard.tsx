@@ -1,4 +1,4 @@
-import { Text, View } from '@tarojs/components';
+import { Image, Text, View } from '@tarojs/components';
 import type { BookingCourseCardData } from './types';
 
 interface BookingCourseCardProps {
@@ -7,9 +7,25 @@ interface BookingCourseCardProps {
 }
 
 export default function BookingCourseCard({ data, onClick }: BookingCourseCardProps) {
+  const thumbLabelMap: Record<string, string> = {
+    yoga: 'YOGA',
+    pilates: 'PILATES',
+    meditation: 'ZEN',
+    dark: 'FLOW',
+  };
+
+  const thumbImageMap: Record<string, string> = {
+    yoga: '/assets/ui/booking-yoga.svg',
+    pilates: '/assets/ui/booking-pilates.svg',
+    meditation: '/assets/ui/booking-meditation.svg',
+    dark: '/assets/ui/booking-dark.svg',
+  };
+
   return (
     <View className='booking-course-card' onClick={onClick}>
       <View className={`booking-course-card__thumb booking-course-card__thumb--${data.imageKind}`}>
+        <Image className='booking-course-card__thumb-image' src={thumbImageMap[data.imageKind] || thumbImageMap.yoga} mode='aspectFill' />
+        <Text className='booking-course-card__thumb-label'>{thumbLabelMap[data.imageKind] || 'STUDIO'}</Text>
         {data.full ? <View className='booking-course-card__full-badge'>已满</View> : null}
       </View>
 

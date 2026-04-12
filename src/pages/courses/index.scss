@@ -2,7 +2,7 @@
 
 .booking-shell {
   min-height: 100vh;
-  background: #fafafa;
+  background: linear-gradient(180deg, $cream-100 0%, rgba($gray-100, 0.84) 100%);
 
   &__content {
     padding: ($spacing-2xl + 8px) $spacing-lg ($spacing-2xl + $tabbar-height);
@@ -12,11 +12,11 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   &__section-title {
-    font-size: 34px;
+    font-size: 32px;
     font-weight: 500;
     color: $ink;
     letter-spacing: 0.3px;
@@ -24,30 +24,30 @@
 
   &__section-count {
     font-size: 20px;
-    color: #cdcdcd;
+    color: rgba($ink-soft, 0.34);
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 }
 
 .booking-hero {
-  padding: 56px 0 8px;
+  padding: 56px 0 6px;
 
   &__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   &__eyebrow {
     font-size: 10px;
-    color: #c8c8c8;
-    letter-spacing: 2px;
+    color: rgba($ink-soft, 0.48);
+    letter-spacing: 1.8px;
   }
 
   &__action {
@@ -58,18 +58,21 @@
 
   &__action-text {
     font-size: 11px;
-    color: #bcbcbc;
+    color: rgba($ink-soft, 0.58);
   }
 
   &__action-arrow {
-    font-size: 12px;
-    color: #d0d0d0;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid rgba($ink-soft, 0.38);
+    border-right: 1px solid rgba($ink-soft, 0.38);
+    transform: rotate(45deg);
   }
 
   &__title {
     display: block;
     margin: 8px 0;
-    font-size: 48px;
+    font-size: 44px;
     font-weight: 300;
     color: $ink;
     line-height: 1.2;
@@ -77,30 +80,30 @@
 
   &__subtitle {
     display: block;
-    font-size: 24px;
-    color: #cdcdcd;
+    font-size: 22px;
+    color: rgba($ink-soft, 0.38);
   }
 }
 
 .booking-date-strip {
-  padding: 24px 0 24px;
+  padding: 20px 0 22px;
 
   &__row {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     white-space: nowrap;
   }
 
   &__pill {
-    min-width: 48px;
-    padding: 10px 12px;
+    min-width: 46px;
+    padding: 8px 12px;
     border-radius: 14px;
-    border: 0.5px solid #f0f0f0;
+    border: 1px solid rgba($cream-300, 0.58);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    background: transparent;
+    gap: 3px;
+    background: rgba($white, 0.9);
 
     &--active {
       background: $ink;
@@ -120,7 +123,7 @@
   &__weekday,
   &__label {
     font-size: 8px;
-    color: #cdcdcd;
+    color: rgba($ink-soft, 0.34);
     letter-spacing: 1.4px;
   }
 
@@ -135,17 +138,17 @@
 .booking-category-pills {
   display: flex;
   gap: 8px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 
   &__pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 34px;
-    padding: 0 16px;
+    height: 32px;
+    padding: 0 14px;
     border-radius: 9999px;
-    border: 0.5px solid #ebebeb;
-    background: transparent;
+    border: 1px solid rgba($cream-300, 0.66);
+    background: rgba($white, 0.9);
 
     &--active {
       background: $ink;
@@ -159,51 +162,156 @@
 
   &__text {
     font-size: 12px;
-    color: #8a8a8a;
+    color: rgba($ink-soft, 0.58);
   }
 }
 
 .booking-course-card {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
-  border-radius: 24px;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba($cream-300, 0.58);
+  border-radius: 22px;
   background: $white;
   box-shadow: $shadow-soft;
 
   &__thumb {
     position: relative;
-    width: 72px;
-    height: 72px;
+    width: 76px;
+    height: 76px;
     flex-shrink: 0;
     border-radius: 18px;
     overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba($white, 0.22);
 
     &--yoga {
-      background: linear-gradient(135deg, #f0eadf 0%, #efe7d9 100%);
+      background: linear-gradient(135deg, #efe7da 0%, #d8c8b0 100%);
     }
 
     &--pilates {
-      background: linear-gradient(135deg, #efede8 0%, #e7e2d6 100%);
+      background: linear-gradient(135deg, #ede7df 0%, #cbbca7 100%);
     }
 
     &--meditation {
-      background: linear-gradient(135deg, #48443f 0%, #272422 100%);
+      background: linear-gradient(135deg, #59544f 0%, #2c2825 100%);
     }
 
     &--dark {
-      background: linear-gradient(135deg, #3b352f 0%, #161413 100%);
+      background: linear-gradient(135deg, #433d37 0%, #171514 100%);
     }
+  }
+
+  &__thumb-scene,
+  &__thumb-glow,
+  &__thumb-frame,
+  &__thumb-beam,
+  &__thumb-figure,
+  &__thumb-floor {
+    position: absolute;
+  }
+
+  &__thumb-scene {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  &__thumb-glow {
+    left: -12%;
+    bottom: -10%;
+    width: 86%;
+    height: 62%;
+    border-radius: $radius-full;
+    background: radial-gradient(circle, rgba($white, 0.36) 0%, rgba($white, 0) 70%);
+  }
+
+  &__thumb-frame {
+    top: 10px;
+    right: 10px;
+    bottom: 12px;
+    left: 10px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba($white, 0.5) 0%, rgba($white, 0.08) 100%);
+    overflow: hidden;
+  }
+
+  &__thumb-beam {
+    top: 0;
+    left: 12%;
+    width: 44%;
+    height: 48%;
+    background: linear-gradient(180deg, rgba($white, 0.6) 0%, rgba($white, 0) 100%);
+    transform: skewX(-18deg);
+  }
+
+  &__thumb-figure {
+    left: 22%;
+    right: 18%;
+    bottom: 24%;
+    height: 24%;
+    border-radius: 999px;
+    background: rgba($ink, 0.48);
+    box-shadow: 0 4px 16px rgba($ink, 0.12);
+  }
+
+  &__thumb-floor {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 26%;
+    background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($white, 0.26) 100%);
+  }
+
+  &__thumb--yoga &__thumb-figure {
+    left: 16%;
+    right: 30%;
+    bottom: 22%;
+    transform: rotate(-14deg);
+  }
+
+  &__thumb--pilates &__thumb-figure {
+    left: 18%;
+    right: 18%;
+    bottom: 26%;
+    height: 18%;
+    border-radius: 12px;
+  }
+
+  &__thumb--meditation &__thumb-figure,
+  &__thumb--dark &__thumb-figure {
+    left: 26%;
+    right: 26%;
+    bottom: 24%;
+    height: 28%;
+    border-radius: 50% 50% 42% 42%;
+    background: rgba($white, 0.28);
+  }
+
+  &__thumb-label {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 1;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba($white, 0.68);
+    font-size: 8px;
+    letter-spacing: 1.2px;
+    color: rgba($ink, 0.5);
   }
 
   &__full-badge {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.3);
     color: $white;
     font-size: 9px;
     letter-spacing: 1px;
@@ -216,8 +324,8 @@
 
   &__title {
     display: block;
-    margin-bottom: 6px;
-    font-size: 15px;
+    margin-bottom: 4px;
+    font-size: 14px;
     font-weight: 500;
     color: $ink;
   }
@@ -225,14 +333,14 @@
   &__meta-line {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 6px;
+    gap: 5px;
+    margin-bottom: 5px;
   }
 
   &__clock {
     width: 12px;
     height: 12px;
-    border: 1px solid #cdcdcd;
+    border: 1px solid rgba($ink-soft, 0.34);
     border-radius: 50%;
     position: relative;
 
@@ -243,7 +351,7 @@
       top: 2px;
       width: 1px;
       height: 3px;
-      background: #cdcdcd;
+      background: rgba($ink-soft, 0.34);
       transform: translateX(-50%);
     }
 
@@ -254,7 +362,7 @@
       top: 50%;
       width: 3px;
       height: 1px;
-      background: #cdcdcd;
+      background: rgba($ink-soft, 0.34);
       transform: translateY(-50%);
     }
   }
@@ -262,23 +370,29 @@
   &__time,
   &__duration {
     font-size: 11px;
-    color: #ababab;
+    color: rgba($ink-soft, 0.56);
   }
 
   &__meta {
     display: block;
     font-size: 11px;
-    color: #cdcdcd;
+    color: rgba($ink-soft, 0.42);
   }
 
   &__spots {
-    align-self: flex-end;
+    align-self: center;
+    padding: 6px 10px;
+    border: 1px solid rgba($gold, 0.12);
+    border-radius: 999px;
+    background: rgba($gold-light, 0.58);
     font-size: 10px;
-    color: $gold-dark;
+    color: rgba($gold-dark, 0.72);
     letter-spacing: 0.3px;
 
     &--full {
-      color: #d0d0d0;
+      border-color: rgba($cream-300, 0.84);
+      background: rgba($gray-100, 0.92);
+      color: rgba($ink-soft, 0.42);
     }
   }
 }
