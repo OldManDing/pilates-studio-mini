@@ -1,0 +1,233 @@
+@import '../../styles/variables.scss';
+
+$support-gold: $accent;
+$support-gold-soft: rgba($accent, 0.08);
+$support-muted-1: $gray-600;
+$support-muted-2: $gray-500;
+$support-muted-3: #d8d8d8;
+$support-surface-1: $bg-gray;
+$support-surface-2: $surface-strong;
+$support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+
+.notifications-page {
+  .page-shell__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__header-action {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 35px;
+    padding: 14px 0;
+  }
+
+  &__header-action-icon,
+  &__header-action-text {
+    display: block;
+    color: $support-gold;
+  }
+
+  &__header-action-icon {
+    width: $figma-body-lg;
+    height: $figma-body-lg;
+  }
+
+  &__header-action-text {
+    font-size: $figma-small;
+    font-weight: $font-weight-normal;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $figma-section-title-gap;
+    margin-bottom: 56px;
+
+    &:last-child {
+      margin-bottom: 70px;
+    }
+  }
+
+  .section-title-block {
+    margin-bottom: 0;
+
+    &__title {
+      font-size: $figma-section-title;
+      font-weight: $font-weight-medium;
+      letter-spacing: 0.01em;
+    }
+
+    &__action {
+      padding-bottom: 0;
+      margin-left: 0;
+    }
+
+    &__action-text {
+      font-size: $figma-caption;
+      font-weight: $font-weight-normal;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.notifications-list {
+  overflow: hidden;
+  border: none;
+  border-radius: $figma-radius-card;
+  box-shadow: $support-card-shadow;
+
+  &__item,
+  &__icon,
+  &__heading-row,
+  &__title-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  &__item {
+    gap: 28px;
+    padding: 35px 49px;
+
+    &--read {
+      .notifications-list__title {
+        color: $support-muted-1;
+      }
+    }
+  }
+
+  &__icon {
+    width: 63px;
+    height: 63px;
+    justify-content: center;
+    border-radius: 21px;
+    flex-shrink: 0;
+
+    &--gold {
+      background: $support-gold-soft;
+      color: $support-gold;
+    }
+
+    &--system {
+      background: $support-surface-1;
+      color: $support-muted-1;
+    }
+
+    &--read {
+      background: $support-surface-2;
+      color: #d0d0d0;
+    }
+  }
+
+  &__icon-image {
+    width: 28px;
+    height: 28px;
+  }
+
+  &__icon-image--read {
+    opacity: 1;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__heading-row {
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  &__title-wrap {
+    flex: 1;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  &__title,
+  &__description,
+  &__time {
+    display: block;
+  }
+
+  &__title {
+    flex: 1;
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+
+  &__description {
+    color: $support-muted-1;
+    font-size: $figma-body;
+    line-height: 31px;
+    letter-spacing: 0;
+  }
+
+  &__time {
+    color: $support-muted-3;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    font-feature-settings: 'tnum';
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  &__time--unread {
+    color: #cdcdcd;
+  }
+
+  &__title--read {
+    color: $support-muted-1;
+  }
+
+  &__description--read {
+    color: #cdcdcd;
+  }
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: $radius-full;
+    background: $support-gold;
+    flex-shrink: 0;
+  }
+
+  &__divider {
+    margin-left: 140px;
+    margin-right: 49px;
+  }
+
+  &__empty {
+    padding: 112px 56px;
+    text-align: center;
+  }
+
+  &__empty-title,
+  &__empty-description {
+    display: block;
+  }
+
+  &__empty-title {
+    color: $text-primary;
+    font-size: 26px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 10px;
+  }
+
+  &__empty-description {
+    color: #cdcdcd;
+    font-size: $figma-body;
+    line-height: 1.5;
+  }
+}

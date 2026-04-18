@@ -1,0 +1,337 @@
+@import '../../styles/variables.scss';
+
+$support-dark: $primary;
+$support-muted-1: $gray-600;
+$support-muted-2: $gray-500;
+$support-muted-3: #cdcdcd;
+$support-muted-4: #e0d0d0;
+$support-muted-5: #e5e5e5;
+$support-surface-1: #f8f8f8;
+$support-surface-2: $surface;
+$support-border-1: #ebebeb;
+$support-border-2: #f0f0f0;
+$support-border-3: #e8e8e8;
+$support-danger: #c0706f;
+$support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+
+.settings-page {
+  .page-shell__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 21px;
+    margin-bottom: 56px;
+
+    &--danger {
+      gap: 0;
+      margin-bottom: 70px;
+    }
+  }
+
+  &__section-label {
+    display: block;
+    padding-left: 2px;
+    color: #cdcdcd;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+}
+
+.settings-group {
+  overflow: hidden;
+  border: none;
+  border-radius: $figma-radius-card;
+  background: $surface;
+  box-shadow: $support-card-shadow;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 31px 49px;
+
+  &--clickable {
+    transition: background $duration-fast $ease-in-out;
+
+    &:active {
+      background: #fdfdfd;
+    }
+  }
+
+  &__icon-wrap {
+    width: 63px;
+    height: 63px;
+    border-radius: 21px;
+    background: $support-surface-1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    opacity: 0.5;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title,
+  &__description,
+  &__value {
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__title {
+    margin-bottom: 2px;
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+  }
+
+  &__description {
+    color: $support-muted-3;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    line-height: 1.4;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__value {
+    color: $support-muted-1;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    flex-shrink: 0;
+  }
+
+  &__arrow {
+    color: $support-muted-5;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  &__divider {
+    margin: 0 49px;
+  }
+}
+
+.settings-about-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 21px;
+  padding: 28px 49px;
+
+  &--clickable {
+    transition: background $duration-fast $ease-in-out;
+
+    &:active {
+      background: #fdfdfd;
+    }
+  }
+
+  &__title,
+  &__value {
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__title {
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+  }
+
+  &__value {
+    color: #cdcdcd;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    line-height: 1.25;
+  }
+
+  &__arrow {
+    color: $support-muted-5;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  &__divider {
+    margin: 0 49px;
+  }
+}
+
+.settings-toggle {
+  position: relative;
+  width: 70px;
+  height: 38px;
+  border-radius: 19px;
+  background: $support-border-1;
+  transition: background $duration-normal $ease-out;
+  flex-shrink: 0;
+
+  &__dot {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 31px;
+    height: 31px;
+    border-radius: $radius-full;
+    background: $white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: left $duration-normal $ease-out;
+  }
+
+  &--on {
+    background: $support-dark;
+
+    .settings-toggle__dot {
+      left: 35px;
+    }
+  }
+}
+
+.danger-action {
+  width: 100%;
+  padding: 28px 0;
+  border: 1px solid $support-border-2;
+  border-radius: $figma-radius-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 21px;
+
+  &:active {
+    opacity: 0.92;
+  }
+
+  &__icon {
+    color: #d0d0d0;
+    width: 24px;
+    height: 24px;
+  }
+
+  &__text {
+    color: #cdcdcd;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+}
+
+.danger-link {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+
+  &:active {
+    opacity: 0.92;
+  }
+
+  &__text {
+    color: $support-muted-4;
+    font-size: $figma-small;
+    font-weight: $font-weight-normal;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+}
+
+.danger-confirm {
+  margin-bottom: 21px;
+  border: none;
+  border-radius: $figma-radius-card;
+  box-shadow: $support-card-shadow;
+  padding: 35px 49px;
+
+  &__title,
+  &__description,
+  &__button-text {
+    display: block;
+  }
+
+  &__title {
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    margin-bottom: 7px;
+    line-height: 1.25;
+  }
+
+  &__description {
+    color: $support-muted-1;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    line-height: 31px;
+    margin-bottom: 28px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 21px;
+  }
+
+  &__button {
+    flex: 1;
+    padding: 21px 0;
+    border-radius: $figma-radius-button;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $support-border-3;
+
+    &:active {
+      opacity: 0.92;
+    }
+
+    &--confirm {
+      background: $support-dark;
+      border-color: $support-dark;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &--danger {
+      background: $support-danger;
+      border-color: $support-danger;
+    }
+  }
+
+  &__button-text {
+    color: $white;
+    font-size: $figma-body;
+    font-weight: $font-weight-medium;
+    line-height: 1;
+    letter-spacing: 0.06em;
+  }
+
+  &__button-text--cancel {
+    color: $support-muted-1;
+    letter-spacing: 0.04em;
+  }
+}
