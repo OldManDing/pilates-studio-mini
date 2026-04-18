@@ -5,28 +5,38 @@ import './index.scss';
 interface CoachCardProps {
   coach: Coach;
   onClick?: () => void;
+  compact?: boolean;
 }
 
-export default function CoachCard({ coach, onClick }: CoachCardProps) {
+function joinClasses(classes: Array<string | false | undefined>) {
+  return classes.filter(Boolean).join(' ');
+}
+
+export default function CoachCard({ coach, onClick, compact = false }: CoachCardProps) {
+  const courseText = coach.courses?.map((course) => course.name).filter(Boolean).join('、');
+
   return (
-    <View className='coach-card' onClick={onClick}>
+    <View className={joinClasses(['coach-card', compact && 'coach-card--compact'])} onClick={onClick}>
       <Image className='coach-card__avatar' src={coach.avatar || '/assets/default-avatar.png'} />
       <View className='coach-card__info'>
-        <Text className='coach-card__name'>{coach.name}</Text>
+        <View className='coach-card__title-row'>
+          <Text className='coach-card__name'>{coach.name}</Text>
+          <Text className='coach-card__state'>{coach.isActive ? '在岗' : '休息中'}</Text>
+        </View>
+
         {coach.specialties && coach.specialties.length > 0 && (
           <View className='coach-card__tags'>
             {coach.specialties.slice(0, 3).map((specialty, index) => (
-              <Text key={index} className='coach-card__tag'>{specialty}</Text>
+              <Text key={`${specialty}-${index}`} className='coach-card__tag'>{specialty}</Text>
             ))}
           </View>
         )}
-        {coach.courses && coach.courses.length > 0 && (
-          <Text className='coach-card__courses'>
-            授课：{coach.courses.map(c => c.name).join('、')}
-          </Text>
-        )}
+
+        {courseText ? (
+          <Text className='coach-card__courses'>授课：{courseText}</Text>
+        ) : null}
       </View>
-      <View className='coach-card__arrow' />
+      <Text className='coach-card__arrow'>›</Text>
     </View>
   );
 }

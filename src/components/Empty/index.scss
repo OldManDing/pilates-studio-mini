@@ -5,39 +5,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: $spacing-2xl $spacing-lg;
+  padding: $spacing-xl $spacing-md;
 
   &__icon {
-    width: 200px;
-    height: 200px;
-    margin-bottom: $spacing-lg;
+    width: 168px;
+    height: 168px;
+    margin-bottom: $spacing-md;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   &__icon-box {
-    width: 120px;
-    height: 120px;
-    border: 4px dashed $gray-300;
+    width: 104px;
+    height: 104px;
+    border: 2px dashed $gray-400;
     border-radius: $radius-md;
   }
 
   &__image {
-    width: 240px;
-    height: 240px;
-    margin-bottom: $spacing-lg;
-    opacity: 0.5;
+    width: 208px;
+    height: 208px;
+    margin-bottom: $spacing-md;
+    opacity: 0.42;
   }
 
   &__title {
-    font-size: $font-size-md;
+    font-size: 15px;
     color: $text-secondary;
-    margin-bottom: $spacing-sm;
+    margin-bottom: $spacing-xs;
+    font-weight: $font-weight-medium;
   }
 
   &__desc {
-    font-size: $font-size-sm;
+    font-size: 11px;
     color: $text-muted;
+    line-height: $line-height-normal;
   }
 }

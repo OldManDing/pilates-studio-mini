@@ -8,8 +8,11 @@ interface LoadingProps {
 export default function Loading({ text = '加载中...' }: LoadingProps) {
   return (
     <View className='loading'>
-      <View className='loading__spinner' />
-      <Text className='loading__text'>{text}</Text>
+      <View className='loading__panel'>
+        <View className='loading__spinner' />
+        <Text className='loading__title'>正在准备页面</Text>
+        <Text className='loading__text'>{text}</Text>
+      </View>
     </View>
   );
 }

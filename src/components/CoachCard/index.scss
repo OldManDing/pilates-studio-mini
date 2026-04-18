@@ -3,23 +3,74 @@
 .coach-card {
   display: flex;
   align-items: center;
-  background: $white;
-  border-radius: $radius-lg;
-  padding: $spacing-md;
-  box-shadow: $shadow-sm;
-  transition: all $duration-fast $ease-in-out;
+  gap: $spacing-md;
+  width: 100%;
+  background: transparent;
+  padding: $spacing-lg $spacing-xl;
+  transition: transform $duration-fast $ease-in-out, background-color $duration-fast $ease-in-out;
 
   &:active {
     transform: translateY(2px);
-    box-shadow: $shadow-md;
+    background: rgba($accent-soft, 0.34);
+  }
+
+  &--compact {
+    padding: $spacing-sm $spacing-md;
+
+    .coach-card__avatar {
+      width: 84px;
+      height: 84px;
+      margin-right: 0;
+    }
+
+    .coach-card__title-row {
+      margin-bottom: $spacing-2xs;
+    }
+
+    .coach-card__name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-normal;
+      margin-bottom: 0;
+    }
+
+    .coach-card__state {
+      min-height: 24px;
+      padding: 0 $spacing-xs;
+      font-size: $font-size-3xs;
+      background: rgba($accent-soft, 0.58);
+    }
+
+    .coach-card__tags {
+      margin-bottom: $spacing-2xs;
+      gap: $spacing-2xs;
+    }
+
+    .coach-card__tag {
+      min-height: 28px;
+      padding: 0 $spacing-xs;
+      font-size: $font-size-3xs;
+    }
+
+    .coach-card__courses {
+      margin-top: 0;
+      font-size: $font-size-3xs;
+      color: $gray-600;
+      letter-spacing: 0.02em;
+    }
+
+    .coach-card__arrow {
+      color: rgba($gray-500, 0.72);
+      width: 14px;
+      height: 14px;
+    }
   }
 
   &__avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: $radius-full;
+    width: 112px;
+    height: 112px;
+    border-radius: $radius-lg;
+    border: 1px solid $border-faint;
     background: $gray-200;
-    margin-right: $spacing-md;
     flex-shrink: 0;
   }
 
@@ -28,12 +79,33 @@
     min-width: 0;
   }
 
-  &__name {
-    font-size: $font-size-md;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
+  &__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
     margin-bottom: $spacing-xs;
-    display: block;
+  }
+
+  &__name {
+    font-size: 24px;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    line-height: $line-height-tight;
+  }
+
+  &__state {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 $spacing-sm;
+    border-radius: $radius-full;
+    background: rgba($accent-soft, 0.72);
+    color: $accent-strong;
+    font-size: $font-size-2xs;
+    line-height: 1;
+    flex-shrink: 0;
   }
 
   &__tags {
@@ -44,15 +116,21 @@
   }
 
   &__tag {
-    font-size: $font-size-xs;
-    color: $violet;
-    background: $violet-light;
-    padding: 2px $spacing-xs;
-    border-radius: $radius-sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 $spacing-sm;
+    font-size: $font-size-2xs;
+    color: $violet-dark;
+    background: rgba($violet-light, 0.92);
+    border: 1px solid rgba($violet, 0.2);
+    border-radius: $radius-full;
   }
 
   &__courses {
-    font-size: $font-size-xs;
+    margin-top: $spacing-xs;
+    font-size: 12px;
     color: $text-muted;
     display: block;
     overflow: hidden;
@@ -61,12 +139,9 @@
   }
 
   &__arrow {
-    width: 16px;
-    height: 16px;
-    border-top: 2px solid $gray-400;
-    border-right: 2px solid $gray-400;
-    transform: rotate(45deg);
-    margin-left: $spacing-sm;
+    color: $gray-500;
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
   }
 }
