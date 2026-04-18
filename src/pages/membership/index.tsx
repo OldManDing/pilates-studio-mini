@@ -286,7 +286,7 @@ export default function Membership() {
   }
 
   return (
-    <PageShell className='membership-page' reserveTabBarSpace>
+    <PageShell className='membership-page' safeAreaBottom>
       <View className='membership-page__content'>
         <PageHeader title='会员中心' subtitle='管理你的会员权益与服务' />
 

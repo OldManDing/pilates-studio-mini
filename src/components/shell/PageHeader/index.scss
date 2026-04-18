@@ -4,14 +4,30 @@
   margin-bottom: $spacing-md;
 
   &__row {
+    display: grid;
+    grid-template-columns: minmax(#{$spacing-3xl}, 1fr) minmax(0, 2fr) minmax(#{$spacing-3xl}, 1fr);
+    align-items: flex-start;
+    column-gap: $spacing-xs;
+  }
+
+  &__side {
+    min-width: 0;
+    min-height: $spacing-3xl;
     display: flex;
     align-items: flex-start;
+
+    &--left {
+      justify-content: flex-start;
+    }
+
+    &--right {
+      justify-content: flex-end;
+    }
   }
 
   &__back {
     width: $spacing-3xl;
     height: $spacing-3xl;
-    margin-right: $spacing-xs;
     border: 1px solid $border-light;
     border-radius: $radius-full;
     background: rgba($surface, 0.96);
@@ -22,6 +38,7 @@
 
     &--placeholder {
       visibility: hidden;
+      pointer-events: none;
     }
   }
 
@@ -32,13 +49,9 @@
   }
 
   &__content {
-    flex: 1;
     min-width: 0;
     padding-top: $spacing-2xs;
-
-    &--full {
-      margin-left: 0;
-    }
+    text-align: center;
   }
 
   &__eyebrow {
@@ -67,9 +80,9 @@
   }
 
   &__right {
-    margin-left: $spacing-sm;
-    min-width: $spacing-3xl;
-    display: flex;
+    display: inline-flex;
+    align-items: center;
     justify-content: flex-end;
+    min-height: $spacing-3xl;
   }
 }
