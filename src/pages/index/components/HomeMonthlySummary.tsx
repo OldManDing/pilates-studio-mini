@@ -1,4 +1,5 @@
 import { Text, View } from '@tarojs/components';
+import { AppCard } from '../../../components';
 import type { HomeMonthlySummaryData } from './types';
 
 interface HomeMonthlySummaryProps {
@@ -6,9 +7,14 @@ interface HomeMonthlySummaryProps {
 }
 
 export default function HomeMonthlySummary({ data }: HomeMonthlySummaryProps) {
+  const progressValueMatch = data.progressText.match(/(\d+)/);
+  const progressValue = progressValueMatch ? Number.parseInt(progressValueMatch[1], 10) : Number.NaN;
+  const progressWidth = Number.isFinite(progressValue) ? `${Math.max(10, Math.min(100, progressValue))}%` : '40%';
+  const [leftItem, rightItem] = data.sideItems;
+
   return (
-    <View className='home-monthly-summary home-shell-card'>
-      <View className='home-monthly-summary__layout'>
+    <AppCard className='home-monthly-summary' padding='none'>
+      <View className='home-monthly-summary__top'>
         <View className='home-monthly-summary__hero'>
           <Text className='home-monthly-summary__label'>{data.label}</Text>
           <View className='home-monthly-summary__value-row'>
@@ -17,25 +23,35 @@ export default function HomeMonthlySummary({ data }: HomeMonthlySummaryProps) {
           </View>
         </View>
 
-        <View className='home-monthly-summary__separator' />
+        <View className='home-monthly-summary__splitter' />
 
         <View className='home-monthly-summary__side'>
-          {data.sideItems.map((item) => (
-            <View key={item.key} className='home-monthly-summary__side-item'>
-              <Text className='home-monthly-summary__side-label'>{item.label}</Text>
+          {leftItem ? (
+            <View className='home-monthly-summary__side-item'>
+              <Text className='home-monthly-summary__side-label'>{leftItem.label}</Text>
               <View className='home-monthly-summary__side-value-row'>
-                <Text className='home-monthly-summary__side-value'>{item.value}</Text>
-                <Text className='home-monthly-summary__side-unit'>{item.unit}</Text>
+                <Text className='home-monthly-summary__side-value'>{leftItem.value}</Text>
+                <Text className='home-monthly-summary__side-unit'>{leftItem.unit}</Text>
               </View>
             </View>
-          ))}
+          ) : null}
+
+          {rightItem ? (
+            <View className='home-monthly-summary__side-item'>
+              <Text className='home-monthly-summary__side-label'>{rightItem.label}</Text>
+              <View className='home-monthly-summary__side-value-row'>
+                <Text className='home-monthly-summary__side-value'>{rightItem.value}</Text>
+                <Text className='home-monthly-summary__side-unit'>{rightItem.unit}</Text>
+              </View>
+            </View>
+          ) : null}
         </View>
       </View>
 
       <View className='home-monthly-summary__progress-track'>
-        <View className='home-monthly-summary__progress-fill' />
+        <View className='home-monthly-summary__progress-fill' style={{ width: progressWidth }} />
       </View>
       <Text className='home-monthly-summary__progress-text'>{data.progressText}</Text>
-    </View>
+    </AppCard>
   );
 }

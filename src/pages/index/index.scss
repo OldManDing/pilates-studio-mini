@@ -1,726 +1,721 @@
 @import '../../styles/variables.scss';
 
-.home-shell {
-  min-height: 100vh;
-  background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
-
+.home-page {
   &__content {
     display: flex;
     flex-direction: column;
-    gap: calc($spacing-lg - $spacing-unit);
-    padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
-  }
-}
-
-.home-shell-card {
-  position: relative;
-  overflow: hidden;
-  background: $white;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-card;
-}
-
-.home-shell-button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc($spacing-xl + $spacing-sm);
-  padding: calc($spacing-xs + $spacing-unit / 2) $spacing-md;
-  border: 1px solid transparent;
-  border-radius: calc($radius-lg - 2px);
-
-  &--primary {
-    border-color: rgba($gold, 0.24);
-    background: rgba($gold-light, 0.94);
+    gap: $figma-section-gap;
   }
 
-  &--secondary {
-    border-color: rgba($cream-300, 0.88);
-    background: rgba($white, 0.82);
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
   }
 
-  &__text {
-    font-size: $font-size-xs;
+  &__today-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: $figma-section-title-gap;
+  }
+
+  &__today-title {
+    color: $text-primary;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.01em;
+  }
 
-    &--primary {
-      color: $gold-dark;
-    }
+  &__today-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-    &--secondary {
-      color: rgba($ink-soft, 0.82);
-    }
+  &__today-status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: $radius-full;
+    background: $accent;
+  }
+
+  &__today-status-text {
+    color: $accent;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.06em;
   }
 }
 
 .home-hero {
-  padding: 56px $spacing-lg 24px;
-
-  &__top,
-  &__badge {
-    display: flex;
-    align-items: center;
-  }
+  padding-top: 14px;
+  padding-bottom: 14px;
 
   &__top {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: $spacing-md;
-    margin-bottom: 24px;
-  }
-
-  &__date,
-  &__badge-text,
-  &__subtitle {
-    color: $ink-soft;
-  }
-
-  &__badge-text {
-    font-size: $font-size-xs;
-    letter-spacing: 2.2px;
+    margin-bottom: 20px;
   }
 
   &__date {
-    font-size: $font-size-xs;
+    flex: 1;
+    color: rgba($text-muted, 0.86);
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    letter-spacing: $letter-spacing-wide;
     line-height: $line-height-normal;
-    letter-spacing: 1.8px;
-    color: rgba($ink-soft, 0.58);
   }
 
   &__badge {
+    display: inline-flex;
+    align-items: center;
     gap: 5px;
     padding: 3px 10px;
-    border: 1px solid rgba($gold, 0.3);
+    border: 0.5px solid rgba($accent, 0.3);
     border-radius: $radius-full;
     background: transparent;
+
+    &--muted {
+      border-color: rgba($gray-500, 0.24);
+
+      .home-hero__badge-dot {
+        background: $gray-500;
+      }
+
+      .home-hero__badge-text {
+        color: rgba($text-muted, 0.92);
+      }
+    }
   }
 
   &__badge-dot {
     width: 3.5px;
     height: 3.5px;
     border-radius: $radius-full;
-    background: $gold;
+    background: $accent;
   }
 
   &__badge-text {
-    font-size: 9px;
-    color: $gold-dark;
-    font-weight: $font-weight-semibold;
+    color: rgba($accent-strong, 0.86);
+    font-size: $figma-caption;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  &__title,
+  &__subtitle {
+    position: relative;
+    z-index: 1;
+    display: block;
   }
 
   &__title {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 52px;
-    font-weight: 300;
+    margin-bottom: 8px;
+    color: $text-primary;
+    font-size: 46px;
+    font-weight: $font-weight-normal;
     line-height: 1.15;
-    color: $ink;
   }
 
   &__subtitle {
-    display: block;
-    font-size: 24px;
-    line-height: $line-height-normal;
-    color: rgba($ink-soft, 0.42);
+    max-width: 82%;
+    color: rgba($text-muted, 0.62);
+    font-size: $figma-caption;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
   }
-}
-
-.home-membership-card,
-.home-today-course-card,
-.home-monthly-summary,
-.home-upcoming-list {
-  padding: calc($spacing-xl - $spacing-unit);
 }
 
 .home-membership-card {
-  &__top,
+  background: $white;
+  box-shadow: $shadow-xs;
+  border-radius: $figma-radius-card;
+  padding: 32px 40px 24px;
+
+  &__header,
   &__metrics,
-  &__progress,
-  &__actions {
+  &__actions,
+  &__progress-row {
     display: flex;
     align-items: center;
   }
 
-  &__top,
-  &__progress {
+  &__header,
+  &__progress-row {
     justify-content: space-between;
   }
 
-  &__top,
-  &__metrics,
-  &__progress {
+  &__header {
+    align-items: flex-start;
     gap: $spacing-md;
+    margin-bottom: 20px;
   }
 
-  &__top {
-    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
+  &__heading {
+    flex: 1;
+    min-width: 0;
   }
 
   &__label,
-  &__status-text,
-  &__metric-label,
   &__progress-label,
-  &__progress-value {
-    font-size: $font-size-xs;
+  &__progress-value,
+  &__metric-label {
+    display: block;
+    font-size: $figma-caption;
   }
 
   &__label {
-    color: $gold-dark;
-    letter-spacing: 2px;
-  }
-
-  &__detail-link {
-    gap: calc($spacing-xs / 2);
-    display: flex;
-    align-items: center;
-  }
-
-  &__detail-text,
-  &__metric-label {
-    color: $ink-soft;
-  }
-
-  &__detail-arrow {
-    width: 8px;
-    height: 8px;
-    border-top: 1px solid rgba($ink-soft, 0.38);
-    border-right: 1px solid rgba($ink-soft, 0.38);
-    transform: rotate(45deg);
+    margin-bottom: $spacing-xs;
+    color: $accent;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wider;
   }
 
   &__title {
-    display: block;
-    margin-bottom: calc($spacing-xs + $spacing-unit / 2);
-    font-size: $font-size-xl;
-    font-weight: 300;
-    line-height: $line-height-tight;
-    color: $ink;
+    display: none;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 24px;
+    color: #bcbcbc;
+  }
+
+  &__status-text {
+    color: #bcbcbc;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+  }
+
+  &__status-icon {
+    width: 10px;
+    height: 10px;
+    color: #d0d0d0;
+  }
+
+  &__description {
+    display: none;
   }
 
   &__metrics {
-    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
-    align-items: flex-end;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 0;
   }
 
   &__metric {
     flex: 1;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
 
-    &--right {
-      text-align: right;
-    }
+  &__metric--right {
+    flex: 0 0 38%;
+    min-width: 0;
+  }
+
+  &__metric--right {
+    text-align: right;
   }
 
   &__metric-label {
-    display: block;
-    margin-bottom: calc($spacing-xs / 2);
+    margin-bottom: 10px;
+    color: $text-muted;
   }
 
   &__metric-value {
     display: block;
-    font-size: $font-size-lg;
-    font-weight: 300;
-    line-height: $line-height-tight;
-    color: $ink;
-  }
-
-  &__metric--right &__metric-value {
-    font-size: $font-size-base;
+    color: $text-primary;
+    font-size: 38px;
     font-weight: $font-weight-normal;
-    color: rgba($ink, 0.76);
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  &__progress {
-    margin-bottom: calc($spacing-xs + $spacing-unit / 2);
+  &__progress-row {
+    gap: 14px;
+    margin-top: 22px;
+    margin-bottom: 0;
   }
 
-  &__progress-label,
+  &__progress-label {
+    display: none;
+  }
+
   &__progress-value {
-    color: $gold-dark;
+    color: rgba($accent-strong, 0.72);
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.02em;
+    min-width: 26px;
+    text-align: right;
   }
 
   &__progress-bar {
-    height: calc($spacing-xs / 2);
-    margin-bottom: $spacing-md;
+    flex: 1;
+    height: 1px;
     overflow: hidden;
     border-radius: $radius-full;
-    background: $gold-light;
+    background: rgba($gray-300, 0.72);
   }
 
   &__progress-fill {
-    width: 68%;
     height: 100%;
     border-radius: $radius-full;
-    background: linear-gradient(90deg, $gold 0%, $gold-dark 100%);
+    background: rgba($accent, 0.88);
+    box-shadow: none;
   }
 
   &__actions {
     gap: 0;
-    padding-top: $spacing-md;
-    border-top: 1px solid rgba($cream-300, 0.56);
+  }
+
+  &__divider {
+    height: 1px;
+    margin-top: 16px;
+    margin-bottom: 0;
+    background: #f3f3f3;
+  }
+
+  &__button {
+    flex: 1;
+    height: 60px;
+    font-size: $figma-body;
+    font-weight: $font-weight-medium;
+    border-radius: $figma-radius-button;
+    box-shadow: none;
+    max-width: 100%;
+    background: rgba($primary, 0.96);
   }
 }
 
 .home-today-course-card {
-  background:
-    radial-gradient(circle at top right, rgba($gold, 0.12) 0%, rgba($gold, 0) 42%),
-    linear-gradient(180deg, rgba($white, 1) 0%, rgba($cream-100, 0.94) 100%);
+  background: rgba($surface, 0.98);
+  box-shadow: $shadow-xs;
+  border-radius: $figma-radius-card;
+  padding: 30px 36px 24px;
 
   &__header,
-  &__meta-row,
-  &__time-chip,
+  &__pills,
+  &__pill,
   &__actions {
     display: flex;
     align-items: center;
   }
 
   &__header,
-  &__meta-row {
+  &__actions {
     justify-content: space-between;
-    gap: $spacing-md;
   }
 
   &__header {
-    margin-bottom: calc($spacing-sm + $spacing-unit / 2);
+    align-items: flex-start;
+    gap: $spacing-md;
+    margin-bottom: 10px;
+  }
+
+  &__time-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
   &__label,
-  &__status,
-  &__time,
-  &__duration,
   &__meta,
-  &__note {
+  &__note,
+  &__time,
+  &__duration {
+    display: block;
     font-size: $font-size-xs;
   }
 
   &__label {
-    color: $gold-dark;
-    letter-spacing: 2px;
-  }
-
-  &__status {
-    color: rgba($gold-dark, 0.76);
-  }
-
-  &__meta-row {
-    margin-bottom: $spacing-md;
-  }
-
-  &__time-chip {
-    gap: calc($spacing-xs / 2);
-    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
-    border: 1px solid rgba($gold, 0.16);
-    border-radius: $radius-full;
-    background: rgba($gold-light, 0.7);
-  }
-
-  &__clock {
-    width: calc($spacing-xs + $spacing-unit);
-    height: calc($spacing-xs + $spacing-unit);
-    border: 1px solid rgba($gold-dark, 0.42);
-    border-radius: $radius-full;
-  }
-
-  &__time,
-  &__duration {
-    color: $gold-dark;
-  }
-
-  &__duration {
-    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
-    border: 1px solid rgba($cream-300, 0.82);
-    border-radius: $radius-full;
-    background: rgba($white, 0.84);
+    margin-bottom: $spacing-xs;
+    color: $pink-dark;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wider;
   }
 
   &__title {
     display: block;
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-lg;
+    color: $text-primary;
+    font-size: 28px;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
-    color: $ink;
   }
 
-  &__meta {
+  &__subtitle {
     display: block;
-    line-height: $line-height-normal;
-    color: rgba($ink-soft, 0.74);
+    margin-top: $spacing-xs;
+    color: #cdcdcd;
+    font-size: $font-size-3xs;
+    line-height: 1.35;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 16px;
+    border-radius: $radius-full;
+    background: transparent;
+    color: #c4a574;
+    font-size: $figma-body;
+    font-weight: $font-weight-medium;
+    border: 0.5px solid #e8e8e8;
+  }
+
+  &__pills {
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__pill {
+    gap: $spacing-xs;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: $radius-full;
+    border: 0.5px solid $border-faint;
+    background: transparent;
+
+    &--primary {
+      border-color: transparent;
+      background: transparent;
+    }
+  }
+
+  &__clock {
+    width: 14px;
+    height: 14px;
+    color: $accent;
+  }
+
+  &__time,
+  &__duration {
+    color: $text-secondary;
+    font-weight: $font-weight-normal;
+  }
+
+  &__time {
+    font-size: $figma-body-lg;
+  }
+
+  &__duration {
+    color: #c0c0c0;
+    font-size: $figma-caption;
   }
 
   &__meta {
-    margin-bottom: $spacing-md;
+    margin-bottom: 12px;
+    color: #ababab;
+    font-size: $figma-body;
+    line-height: 1.35;
+  }
+
+  &__note {
+    margin-bottom: 12px;
+    color: $text-muted;
+    font-size: $figma-caption;
+    line-height: 1.4;
   }
 
   &__actions {
-    gap: $spacing-xs;
-    padding-top: $spacing-md;
-    border-top: 1px solid rgba($cream-300, 0.56);
+    gap: 14px;
+  }
+
+  &__button {
+    flex: 1;
+    height: 54px;
+    font-size: $figma-body;
+    box-shadow: none;
+
+    &:last-child {
+      flex: 0 0 88px;
+    }
   }
 }
 
 .home-service-band {
   display: flex;
   align-items: stretch;
-  padding: calc($spacing-xs - $spacing-unit / 2);
+  overflow: hidden;
+  background: rgba($white, 0.94);
+  border-radius: $figma-radius-card;
+  padding: 0 28px;
+
+  &__item-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+    position: relative;
+  }
 
   &__item {
-    position: relative;
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc($spacing-xs / 2);
-    padding: calc($spacing-sm + $spacing-unit / 2) calc($spacing-xs / 2);
-
-    &:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 0;
-      width: 1px;
-      height: calc($spacing-xl + $spacing-unit);
-      background: rgba($cream-300, 0.82);
-      transform: translateY(-50%);
-    }
-  }
-
-  &__label {
-    font-size: 13px;
-    font-weight: $font-weight-medium;
-    color: $ink;
-    margin-bottom: 3px;
+    justify-content: center;
+    width: 100%;
+    gap: 3px;
+    padding: 22px 0;
   }
 
   &__subtitle {
-    font-size: 8px;
-    color: #cdcdcd;
-    letter-spacing: 1.9px;
+    display: block;
+    font-size: $figma-micro;
+    color: rgba($text-muted, 0.58);
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.12em;
+  }
+
+  &__label {
+    display: block;
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.01em;
+    line-height: $line-height-tight;
+  }
+
+  &__divider {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 1px;
+    height: 32px;
+    background: rgba($gray-300, 0.5);
+    transform: translateY(-50%);
   }
 }
 
 .home-monthly-summary {
-  &__layout,
-  &__value-row,
-  &__side-value-row {
-    display: flex;
-    align-items: stretch;
-  }
+  background: rgba($surface, 0.94);
+  border-color: rgba($gray-300, 0.42);
+  box-shadow: $shadow-xs;
+  border-radius: $figma-radius-card;
+  padding: 22px 30px;
 
-  &__layout {
-    gap: calc($spacing-xs + $spacing-unit / 2);
-    margin-bottom: $spacing-md;
+  &__top {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 14px;
   }
 
   &__hero {
-    flex: 1.2;
-    padding: calc($spacing-md + $spacing-unit / 2);
-    border: 1px solid rgba($gold, 0.12);
-    border-radius: $radius-lg;
-    background: linear-gradient(180deg, rgba($gold-light, 0.64) 0%, rgba($white, 1) 100%);
-  }
-
-  &__label,
-  &__description,
-  &__side-label,
-  &__side-detail,
-  &__progress-text {
-    font-size: $font-size-xs;
+    margin-bottom: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    flex: 1;
+    min-width: 0;
   }
 
   &__label,
   &__side-label,
   &__progress-text {
-    color: #bcbcbc;
+    display: block;
+    font-size: $figma-caption;
   }
 
   &__label {
-    display: block;
-    margin-bottom: 8px;
-    letter-spacing: 0.08em;
+    margin-bottom: $spacing-2xs;
+    color: rgba($text-muted, 0.82);
+    font-weight: $font-weight-normal;
+    letter-spacing: $letter-spacing-wider;
   }
 
   &__value-row,
   &__side-value-row {
+    display: flex;
     align-items: flex-end;
-    gap: calc($spacing-xs / 2);
+    gap: 7px;
   }
 
   &__value-row {
-    margin-bottom: $spacing-sm;
+    margin-bottom: 0;
   }
 
   &__value {
-    font-size: 40px;
-    font-weight: 200;
+    color: rgba($text-primary, 0.88);
+    font-size: 34px;
+    font-weight: $font-weight-normal;
     line-height: 1;
-    color: $ink;
+    letter-spacing: -0.03em;
   }
 
   &__unit,
   &__side-unit {
-    font-size: 10px;
-    color: #c0c0c0;
+    color: rgba($text-muted, 0.78);
+    font-size: $figma-caption;
+  }
+
+  &__splitter {
+    width: 1px;
+    height: 30px;
+    margin: 0 16px 2px;
+    background: #f0f0f0;
   }
 
   &__side {
     display: flex;
-    gap: 28px;
-    margin-left: 28px;
-    margin-bottom: 4px;
+    gap: 18px;
+    margin-bottom: 2px;
   }
 
-  &__separator {
-    width: 1px;
-    height: 48px;
-    margin: 0 28px 4px;
-    background: #f0f0f0;
+  &__side-item {
+    padding: 0;
+    border: none;
+    background: transparent;
   }
 
   &__side-label {
-    display: block;
     margin-bottom: 6px;
-    letter-spacing: 0.06em;
+    color: rgba($text-muted, 0.84);
   }
 
   &__side-value {
-    font-size: 22px;
-    font-weight: 300;
+    color: rgba($text-primary, 0.86);
+    font-size: 18px;
+    font-weight: $font-weight-normal;
     line-height: 1;
-    color: $ink;
   }
 
   &__progress-track {
-    height: calc($spacing-xs / 2);
-    margin-top: 24px;
-    margin-bottom: $spacing-xs;
+    height: 1px;
+    margin-bottom: 6px;
     overflow: hidden;
     border-radius: $radius-full;
-    background: rgba($cream-300, 0.84);
+    background: rgba($gray-300, 0.72);
   }
 
   &__progress-fill {
-    width: 72%;
     height: 100%;
     border-radius: $radius-full;
-    background: linear-gradient(90deg, $gold 0%, rgba($gold-dark, 0.82) 100%);
+    background: rgba($accent, 0.88);
+  }
+
+  &__progress-text {
+    color: rgba($accent-strong, 0.88);
+    font-weight: $font-weight-normal;
   }
 }
 
 .home-curated-card {
-  padding: calc($spacing-xs - $spacing-unit / 2);
+  background: rgba($surface, 0.96);
+  box-shadow: $shadow-xs;
+  border-radius: $figma-radius-card;
 
   &__visual {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: calc($spacing-2xl * 2 + $spacing-xl);
-    padding: $spacing-lg;
+    min-height: 300px;
+    padding: 0;
     overflow: hidden;
-    border-radius: $radius-xl;
-    background:
-      linear-gradient(180deg, rgba(27, 24, 21, 0.1) 0%, rgba(27, 24, 21, 0.36) 100%),
-      linear-gradient(135deg, #d9cfc1 0%, #f3ebe2 32%, #d8c6ad 100%);
+    border-radius: $figma-radius-card $figma-radius-card 0 0;
+    background: linear-gradient(180deg, rgba($ink, 0.08) 0%, rgba($ink, 0.22) 100%);
   }
 
-  &__visual-glow,
-  &__visual-frame,
-  &__visual-window,
-  &__visual-bench,
-  &__visual-floor {
+  &__visual-image {
     position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    filter: brightness(0.95) contrast(1.02);
   }
 
-  &__visual-glow {
-    left: -6%;
-    bottom: -10%;
-    width: 72%;
-    height: 72%;
-    border-radius: $radius-full;
-    background: radial-gradient(circle, rgba($white, 0.38) 0%, rgba($white, 0) 68%);
-    filter: blur(6px);
+  &__visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba($ink, 0.35) 100%);
   }
 
-  &__visual-frame {
-    top: $spacing-md;
-    right: $spacing-md;
-    bottom: calc($spacing-md + $spacing-unit / 2);
-    width: 48%;
-    border-radius: calc($radius-xl - 4px);
-    background:
-      linear-gradient(180deg, rgba($white, 0.54) 0%, rgba($white, 0.1) 100%),
-      linear-gradient(135deg, rgba($ink, 0.1) 0%, rgba($ink, 0.02) 100%);
-    box-shadow: inset 0 0 0 1px rgba($white, 0.3);
-  }
-
-  &__visual-window {
-    top: $spacing-sm;
-    left: $spacing-sm;
-    right: $spacing-sm;
-    height: 36%;
-    border-radius: calc($radius-lg - 2px);
-    background: linear-gradient(180deg, rgba($white, 0.7) 0%, rgba($white, 0.16) 100%);
-  }
-
-  &__visual-bench {
-    left: 16%;
-    right: 12%;
-    bottom: 22%;
-    height: 18%;
-    border-radius: $radius-lg;
-    background:
-      linear-gradient(135deg, rgba($ink, 0.48) 0%, rgba($ink, 0.68) 100%),
-      linear-gradient(180deg, rgba($white, 0.22) 0%, rgba($white, 0) 100%);
-    box-shadow: 0 10px 24px rgba($ink, 0.12);
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 14%;
-      right: 14%;
-      top: 30%;
-      height: 3px;
-      border-radius: $radius-full;
-      background: rgba($white, 0.24);
-    }
-  }
-
-  &__visual-floor {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 32%;
-    background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($white, 0.34) 100%);
+  &__caption {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: rgba($white, 0.68);
   }
 
   &__caption,
-  &__meta,
-  &__eyebrow,
-  &__description,
+  &__meta-line,
+  &__recommendation,
   &__action-text,
   &__action-arrow {
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
   }
 
-  &__caption,
-  &__meta {
-    position: relative;
-    z-index: 1;
-    color: rgba($white, 0.78);
-  }
-
-  &__caption,
-  &__eyebrow {
-    letter-spacing: 2px;
-  }
-
-  &__monogram {
-    display: block;
-    position: relative;
-    z-index: 1;
-    align-self: flex-end;
-    margin-top: $spacing-sm;
-    font-size: $font-size-3xl;
-    font-weight: 300;
-    line-height: 1;
-    color: rgba($white, 0.34);
+  &__caption {
+    position: absolute;
+    left: 48px;
+    bottom: 36px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
   }
 
   &__body {
-    padding: $spacing-md $spacing-md $spacing-sm;
-  }
-
-  &__eyebrow,
-  &__description {
-    color: $ink-soft;
-  }
-
-  &__eyebrow {
-    display: block;
-    margin-bottom: $spacing-sm;
+    padding: 26px 34px 28px;
   }
 
   &__title {
     display: block;
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-lg;
+    margin-bottom: 10px;
+    color: $text-primary;
+    font-size: 26px;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
-    color: $ink;
   }
 
-  &__description {
+  &__meta-line,
+  &__recommendation {
     display: block;
-    margin-bottom: $spacing-md;
-    line-height: $line-height-normal;
-    color: rgba($ink-soft, 0.66);
+  }
+
+  &__meta-line {
+    margin-bottom: 10px;
+    color: rgba($text-muted, 0.92);
+    font-size: $figma-body;
+    line-height: 1.4;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   &__recommendation {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 10px;
-    color: $gold-dark;
-    letter-spacing: 0.3px;
+    flex: 1;
+    min-width: 0;
+    color: rgba($accent-strong, 0.9);
+    font-weight: $font-weight-normal;
+    font-size: $figma-caption;
+    line-height: 1.4;
   }
 
   &__action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 78px;
-    min-height: 48px;
-    border-radius: 14px;
-    background: $ink;
-  }
-
-  &__action-text,
-  &__action-arrow {
-    color: $white;
+    width: 104px;
+    min-width: 104px;
+    flex: 0 0 104px;
   }
 }
 
 .home-upcoming-list {
-  &__header,
-  &__more,
-  &__title-row,
-  &__item {
-    display: flex;
-    align-items: center;
-  }
-
-  &__header,
-  &__title-row,
-  &__item {
-    justify-content: space-between;
-  }
-
-  &__header {
-    margin-bottom: $spacing-md;
-  }
-
-  &__title {
-    font-size: $font-size-base;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__more {
-    gap: calc($spacing-xs / 2);
-  }
-
-  &__more-text,
-  &__more-arrow,
-  &__weekday,
-  &__item-label,
-  &__item-description,
-  &__item-meta,
-  &__item-arrow {
-    font-size: $font-size-xs;
-    color: $ink-soft;
-  }
+  background: rgba($surface, 0.96);
+  box-shadow: $shadow-card;
+  border-radius: $figma-radius-card;
 
   &__items {
     display: flex;
@@ -730,97 +725,143 @@
 
   &__item {
     position: relative;
-    gap: $spacing-md;
-    align-items: flex-start;
-
-    & + & {
-      margin-top: $spacing-md;
-      padding-top: $spacing-md;
-      border-top: 1px solid rgba($cream-300, 0.52);
-    }
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 14px 22px;
   }
 
   &__date {
-    position: relative;
-    width: calc($spacing-xl + $spacing-xs);
-    padding: calc($spacing-xs + $spacing-unit / 2) 0;
+    width: 40px;
+    margin-right: 14px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
     text-align: center;
+  }
 
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: calc(-1 * $spacing-sm / 2);
-      width: 1px;
-      height: calc($spacing-xl + $spacing-xs);
-      background: rgba($cream-300, 0.8);
-      transform: translateY(-50%);
-    }
+  &__day,
+  &__weekday,
+  &__item-title,
+  &__item-description,
+  &__item-meta,
+  &__empty-title,
+  &__empty-text {
+    display: block;
   }
 
   &__day {
-    display: block;
-    font-size: $font-size-lg;
-    font-weight: 300;
+    color: $text-primary;
+    font-size: 22px;
+    font-weight: $font-weight-normal;
     line-height: $line-height-tight;
-    color: $ink;
+    letter-spacing: -0.02em;
   }
 
   &__weekday {
-    display: block;
-    margin-top: calc($spacing-xs / 2);
+    margin-top: 2px;
+    color: $text-muted;
+    font-size: $figma-micro;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wider;
+  }
+
+  &__mid-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba($gray-300, 0.74);
+    border-radius: 1px;
+    margin-right: 14px;
+
+    &--accent {
+      background: rgba($accent, 0.5);
+    }
   }
 
   &__body {
     flex: 1;
-    padding-top: 0;
+    min-width: 0;
   }
 
   &__title-row {
-    gap: $spacing-sm;
-    margin-bottom: calc($spacing-xs / 2);
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-bottom: 2px;
   }
 
   &__item-title {
     flex: 1;
-    font-size: $font-size-base;
+    color: $text-primary;
+    font-size: 20px;
     font-weight: $font-weight-medium;
-    color: $ink;
     line-height: $line-height-tight;
+    min-width: 0;
   }
 
   &__item-label {
-    padding: calc($spacing-xs / 2) $spacing-sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    padding: 0 8px;
     border-radius: $radius-full;
-    border: 1px solid rgba($gold, 0.16);
-    background: rgba($gold-light, 0.62);
-    color: $gold-dark;
+    background: rgba($accent-soft, 0.62);
+    color: rgba($accent-strong, 0.78);
+    font-size: $figma-micro;
+    font-weight: $font-weight-normal;
   }
 
   &__item-description,
-  &__item-meta {
-    display: block;
+  &__item-meta,
+  &__empty-text {
+    color: rgba($text-muted, 0.9);
+    font-size: $figma-caption;
     line-height: $line-height-normal;
   }
 
-  &__item-description {
-    margin-bottom: 2px;
+  &__item-meta {
+    margin-top: 2px;
+    letter-spacing: 0.01em;
   }
 
   &__item-arrow {
-    padding-top: calc($spacing-xs + $spacing-unit / 2);
-    color: rgba($ink-soft, 0.28);
+    color: rgba($gray-400, 0.9);
+    width: 12px;
+    height: 12px;
+  }
+
+  &__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.5px;
+    background: rgba($gray-300, 0.48);
+  }
+
+  &__empty {
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    background: rgba($white, 0.72);
+    border: 1px dashed $border-subtle;
+  }
+
+  &__empty-title {
+    margin-bottom: $spacing-xs;
+    color: $text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
   }
 }
 
 .home-studio-card {
-  padding: $spacing-xl;
-  overflow: hidden;
-  border-radius: $radius-xl;
-  background:
-    radial-gradient(circle at top right, rgba($gold, 0.16) 0%, rgba($gold, 0) 38%),
-    linear-gradient(135deg, rgba($ink, 0.98) 0%, rgba($gray-900, 0.96) 100%);
-  box-shadow: $shadow-card;
+  border: none;
+  background: #202020;
+  box-shadow: none;
+  border-radius: $figma-radius-card;
+  padding: 24px;
 
   &__top,
   &__pin,
@@ -833,85 +874,359 @@
   &__top {
     justify-content: space-between;
     gap: $spacing-md;
-    margin-bottom: $spacing-lg;
+    margin-bottom: 14px;
   }
 
   &__label,
   &__hours,
   &__action-text,
   &__action-arrow {
-    font-size: $font-size-xs;
-  }
-
-  &__label,
-  &__hours {
+    display: block;
     color: rgba($white, 0.56);
+    font-size: $figma-caption;
   }
 
   &__label {
-    display: block;
-    margin-bottom: calc($spacing-xs / 2);
-    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.16em;
   }
 
   &__name {
     display: block;
-    font-size: $font-size-xl;
-    font-weight: 300;
+    color: $text-inverse;
+    font-size: 28px;
+    font-weight: $font-weight-medium;
     line-height: $line-height-tight;
-    color: $white;
-  }
-
-  &__pin {
-    justify-content: center;
   }
 
   &__pin-ring {
-    width: $spacing-2xl;
-    min-height: $spacing-2xl;
     justify-content: center;
-    border: 1px solid rgba($white, 0.12);
+    width: 34px;
+    height: 34px;
     border-radius: $radius-full;
-    background: rgba($white, 0.04);
+    background: rgba($white, 0.06);
+    border: 1px solid rgba($white, 0.09);
   }
 
-  &__pin-core {
-    width: $spacing-sm;
-    height: $spacing-sm;
-    border-radius: $radius-full;
-    background: $gold;
-    box-shadow: 0 0 0 calc($spacing-xs / 2) rgba($gold, 0.18);
+  &__pin-icon {
+    width: 20px;
+    height: 20px;
+    color: rgba($white, 0.5);
   }
 
   &__address {
     display: block;
-    margin-bottom: calc($spacing-xs / 2);
-    font-size: $font-size-base;
-    font-weight: $font-weight-medium;
-    line-height: $line-height-tight;
-    color: $white;
+    margin-bottom: 4px;
+    color: rgba($white, 0.62);
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    line-height: $line-height-snug;
   }
 
-  &__hours,
-  &__note {
-    display: block;
-    line-height: $line-height-relaxed;
-  }
-
-  &__note {
-    margin-bottom: $spacing-lg;
+  &__hours {
+    margin-bottom: 10px;
+    line-height: $line-height-normal;
   }
 
   &__action {
-    justify-content: space-between;
-    padding: 12px 16px;
-    border: 1px solid rgba($white, 0.08);
-    border-radius: $radius-lg;
-    background: rgba($white, 0.04);
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: $figma-radius-button;
+    background: rgba($white, 0.03);
+    border: 0.5px solid rgba($white, 0.08);
   }
 
   &__action-text,
   &__action-arrow {
-    color: rgba($white, 0.62);
+    font-size: $figma-caption;
+    letter-spacing: 0.08em;
+    font-weight: $font-weight-medium;
+  }
+
+  &__action-arrow {
+    display: none;
+  }
+}
+
+/* Homepage fidelity refinement pass (Figma HomePage parity) */
+.home-page {
+  &__section {
+    gap: $figma-section-title-gap;
+  }
+
+  &__section .section-title-block {
+    margin-bottom: 0;
+  }
+
+  &__today-header {
+    margin-bottom: 0;
+  }
+}
+
+.home-membership-card,
+.home-today-course-card,
+.home-service-band,
+.home-monthly-summary,
+.home-curated-card,
+.home-upcoming-list,
+.home-studio-card {
+  border-radius: $figma-radius-card;
+  box-shadow: $shadow-xs;
+}
+
+.home-membership-card {
+  padding: $figma-card-x $figma-card-x 0;
+
+  &__header {
+    margin-bottom: $figma-card-y;
+  }
+
+  &__metric-label {
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+  }
+
+  &__metrics {
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  &__metric {
+    flex: 1;
+  }
+
+  &__metric--right {
+    flex: 0 0 auto;
+  }
+
+  &__progress-row {
+    margin-top: 49px;
+    gap: 21px;
+  }
+
+  &__progress-bar {
+    height: 3px;
+    background: #f0f0f0;
+  }
+
+  &__progress-fill {
+    background: linear-gradient(90deg, $accent 0%, #d4b88a 100%);
+  }
+
+  &__divider {
+    margin-top: 49px;
+  }
+
+  &__actions {
+    padding: 42px 0;
+  }
+}
+
+.home-today-course-card {
+  padding: $figma-card-y $figma-card-x;
+
+  &__time-row {
+    margin-bottom: 35px;
+    gap: 14px;
+  }
+
+  &__header {
+    margin-bottom: 14px;
+  }
+
+  &__title {
+    margin-bottom: 14px;
+  }
+
+  &__meta {
+    margin-bottom: 42px;
+  }
+
+  &__actions {
+    gap: 21px;
+  }
+
+  &__button:first-child,
+  &__button:last-child {
+    height: auto;
+    border-radius: $figma-radius-button;
+  }
+
+  &__button:first-child {
+    flex: 1;
+    min-width: 0;
+    padding: 23px 0;
+  }
+
+  &__button:last-child {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: auto;
+    padding: 23px 49px;
+    border: 0.5px solid #e8e8e8;
+    background: transparent;
+    box-shadow: none;
+    color: #ababab;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.06em;
+  }
+}
+
+.home-service-band {
+  padding: 0 42px;
+
+  &__item {
+    padding: 35px 0;
+  }
+
+  &__divider {
+    height: 42px;
+  }
+}
+
+.home-monthly-summary {
+  padding: $figma-card-y $figma-card-x;
+
+  &__top {
+    margin-bottom: 42px;
+  }
+
+  &__value {
+    font-size: $figma-number-lg;
+  }
+
+  &__unit {
+    font-size: $figma-body;
+  }
+
+  &__splitter {
+    height: 84px;
+    margin: 0 49px 7px;
+  }
+
+  &__side {
+    gap: 49px;
+    margin-bottom: 7px;
+  }
+
+  &__side-value-row {
+    gap: 4px;
+  }
+
+  &__side-value {
+    font-size: 38px;
+  }
+
+  &__progress-track {
+    height: 4px;
+    margin-bottom: 14px;
+    background: #f0f0f0;
+  }
+
+  &__progress-fill {
+    background: linear-gradient(90deg, $accent 0%, #d4b88a 100%);
+  }
+}
+
+.home-curated-card {
+  &__caption {
+    left: 42px;
+    bottom: 28px;
+  }
+
+  &__body {
+    padding: 42px $figma-card-x $figma-card-y;
+  }
+
+  &__meta-line {
+    margin-bottom: 14px;
+  }
+
+  &__footer {
+    align-items: flex-end;
+  }
+}
+
+.home-upcoming-list {
+  &__item {
+    padding: 35px 56px;
+  }
+
+  &__date {
+    width: 66px;
+    margin-right: 35px;
+  }
+
+  &__mid-divider {
+    height: 56px;
+    margin-right: 35px;
+  }
+
+  &__title-row {
+    margin-bottom: 5px;
+  }
+
+  &__item-label {
+    min-height: auto;
+    padding: 3px 12px;
+    background: transparent;
+    border: 0.5px solid rgba($accent, 0.25);
+    color: $accent;
+    font-size: $figma-micro;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.06em;
+  }
+
+  &__line {
+    left: 56px;
+    right: 56px;
+    background: #f3f3f3;
+  }
+
+  &__item-arrow {
+    width: 24px;
+    height: 24px;
+    color: #e5e5e5;
+  }
+}
+
+.home-studio-card {
+  background: #1a1a1a;
+  padding: 56px;
+
+  &__top {
+    margin-bottom: 49px;
+  }
+
+  &__pin-ring {
+    width: 63px;
+    height: 63px;
+  }
+
+  &__pin-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  &__name {
+    font-size: 31px;
+  }
+
+  &__address {
+    margin-bottom: 9px;
+  }
+
+  &__hours {
+    margin-bottom: 38px;
+  }
+
+  &__action {
+    padding: 21px 16px;
+    border-radius: 24px;
+    background: rgba($white, 0.05);
+    border: 0.5px solid rgba($white, 0.1);
   }
 }

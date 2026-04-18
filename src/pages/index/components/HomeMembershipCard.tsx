@@ -1,24 +1,28 @@
 import { Text, View } from '@tarojs/components';
+import { AppButton, AppCard, Icon } from '../../../components';
 import type { HomeMembershipData } from './types';
 
 interface HomeMembershipCardProps {
   data: HomeMembershipData;
   onPrimaryClick?: () => void;
-  onSecondaryClick?: () => void;
+  onDetailClick?: () => void;
 }
 
-export default function HomeMembershipCard({ data, onPrimaryClick, onSecondaryClick }: HomeMembershipCardProps) {
+export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick }: HomeMembershipCardProps) {
+  const progressWidth = `${Math.max(10, Math.min(100, data.progressPercent))}%`;
+
   return (
-    <View className='home-membership-card home-shell-card'>
-      <View className='home-membership-card__top'>
-        <Text className='home-membership-card__label'>{data.label}</Text>
-        <View className='home-membership-card__detail-link' onClick={onSecondaryClick}>
-          <Text className='home-membership-card__detail-text'>详情</Text>
-          <View className='home-membership-card__detail-arrow' />
+    <AppCard className='home-membership-card' padding='none'>
+      <View className='home-membership-card__header'>
+        <View className='home-membership-card__heading'>
+          <Text className='home-membership-card__label'>{data.label}</Text>
+          {data.planName ? <Text className='home-membership-card__title'>{data.planName}</Text> : null}
+        </View>
+        <View className='home-membership-card__status' onClick={onDetailClick}>
+          <Text className='home-membership-card__status-text'>{data.status}</Text>
+          <Icon name='chevron-right' className='home-membership-card__status-icon' />
         </View>
       </View>
-
-      <Text className='home-membership-card__title'>{data.planName}</Text>
 
       <View className='home-membership-card__metrics'>
         <View className='home-membership-card__metric'>
@@ -32,20 +36,20 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onSecondaryCl
         </View>
       </View>
 
-      <View className='home-membership-card__progress'>
-        <Text className='home-membership-card__progress-label'>{data.progressLabel}</Text>
+      <View className='home-membership-card__progress-row'>
+        <View className='home-membership-card__progress-bar'>
+          <View className='home-membership-card__progress-fill' style={{ width: progressWidth }} />
+        </View>
         <Text className='home-membership-card__progress-value'>{data.progressValue}</Text>
       </View>
 
-      <View className='home-membership-card__progress-bar'>
-        <View className='home-membership-card__progress-fill' />
-      </View>
+      <View className='home-membership-card__divider' />
 
       <View className='home-membership-card__actions'>
-        <View className='home-shell-button home-shell-button--primary' onClick={onPrimaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--primary'>立即预约课程</Text>
-        </View>
+        <AppButton className='home-membership-card__button' variant='primary' size='large' onClick={onPrimaryClick}>
+          {data.primaryAction}
+        </AppButton>
       </View>
-    </View>
+    </AppCard>
   );
 }

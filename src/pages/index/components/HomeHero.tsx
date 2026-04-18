@@ -11,7 +11,7 @@ export default function HomeHero({ data }: HomeHeroProps) {
       <View className='home-hero__top'>
         <Text className='home-hero__date'>{data.dateLabel}</Text>
 
-        <View className='home-hero__badge'>
+        <View className={`home-hero__badge ${data.badgeTone === 'muted' ? 'home-hero__badge--muted' : ''}`}>
           <View className='home-hero__badge-dot' />
           <Text className='home-hero__badge-text'>{data.badgeLabel}</Text>
         </View>

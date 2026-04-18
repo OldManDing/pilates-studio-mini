@@ -1,4 +1,5 @@
 import { Text, View } from '@tarojs/components';
+import { AppCard, Icon } from '../../../components';
 import type { HomeStudioData } from './types';
 
 interface HomeStudioCardProps {
@@ -8,7 +9,7 @@ interface HomeStudioCardProps {
 
 export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
   return (
-    <View className='home-studio-card' onClick={onClick}>
+    <AppCard className='home-studio-card' padding='none'>
       <View className='home-studio-card__top'>
         <View>
           <Text className='home-studio-card__label'>{data.label}</Text>
@@ -17,7 +18,7 @@ export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
 
         <View className='home-studio-card__pin'>
           <View className='home-studio-card__pin-ring'>
-            <View className='home-studio-card__pin-core' />
+            <Icon name='pin' className='home-studio-card__pin-icon' />
           </View>
         </View>
       </View>
@@ -25,10 +26,9 @@ export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
       <Text className='home-studio-card__address'>{data.address}</Text>
       <Text className='home-studio-card__hours'>{data.hours}</Text>
 
-      <View className='home-studio-card__action'>
+      <View className='home-studio-card__action' onClick={onClick}>
         <Text className='home-studio-card__action-text'>{data.actionLabel}</Text>
-        <View className='home-studio-card__action-arrow' />
       </View>
-    </View>
+    </AppCard>
   );
 }

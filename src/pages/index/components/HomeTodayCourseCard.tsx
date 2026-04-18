@@ -1,4 +1,5 @@
 import { Text, View } from '@tarojs/components';
+import { AppButton, AppCard, Icon } from '../../../components';
 import type { HomeTodayCourseData } from './types';
 
 interface HomeTodayCourseCardProps {
@@ -9,32 +10,33 @@ interface HomeTodayCourseCardProps {
 
 export default function HomeTodayCourseCard({ data, onPrimaryClick, onSecondaryClick }: HomeTodayCourseCardProps) {
   return (
-    <View className='home-today-course-card home-shell-card'>
-      <View className='home-today-course-card__header'>
-        <Text className='home-today-course-card__label'>{data.label}</Text>
-        <Text className='home-today-course-card__status'>{data.status}</Text>
-      </View>
-
-      <View className='home-today-course-card__meta-row'>
-        <View className='home-today-course-card__time-chip'>
-          <View className='home-today-course-card__clock' />
-          <Text className='home-today-course-card__time'>{data.timeRange}</Text>
-        </View>
+    <AppCard className='home-today-course-card' padding='none'>
+      <View className='home-today-course-card__time-row'>
+        <Icon name='clock' className='home-today-course-card__clock' />
+        <Text className='home-today-course-card__time'>{data.timeRange}</Text>
         <Text className='home-today-course-card__duration'>{data.duration}</Text>
       </View>
 
-      <Text className='home-today-course-card__title'>{data.title}</Text>
+      <View className='home-today-course-card__header'>
+        <View>
+          {data.label ? <Text className='home-today-course-card__label'>{data.label}</Text> : null}
+          <Text className='home-today-course-card__title'>{data.title}</Text>
+          {data.subtitle ? <Text className='home-today-course-card__subtitle'>{data.subtitle}</Text> : null}
+        </View>
+        {data.status ? <Text className='home-today-course-card__status'>{data.status}</Text> : null}
+      </View>
+
       <Text className='home-today-course-card__meta'>{data.meta}</Text>
+      {data.note ? <Text className='home-today-course-card__note'>{data.note}</Text> : null}
 
       <View className='home-today-course-card__actions'>
-        <View className='home-shell-button home-shell-button--primary' onClick={onPrimaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--primary'>查看详情</Text>
-        </View>
-
-        <View className='home-shell-button home-shell-button--secondary' onClick={onSecondaryClick}>
-          <Text className='home-shell-button__text home-shell-button__text--secondary'>改约</Text>
-        </View>
+        <AppButton className='home-today-course-card__button' variant='primary' size='small' onClick={onPrimaryClick}>
+          {data.primaryAction}
+        </AppButton>
+        <AppButton className='home-today-course-card__button' variant='outline' size='small' onClick={onSecondaryClick}>
+          {data.secondaryAction}
+        </AppButton>
       </View>
-    </View>
+    </AppCard>
   );
 }

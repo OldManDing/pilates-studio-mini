@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
-import { ScrollView, View } from '@tarojs/components';
-import { Loading } from '../../components';
+import { Text, View } from '@tarojs/components';
+import { Loading, PageShell, SectionTitle } from '../../components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { coursesApi, type Course } from '../../api/courses';
 import { membersApi, type Member, type Membership } from '../../api/members';
@@ -42,6 +42,33 @@ function getGreeting(date: Date) {
   if (hour < 12) return '早安';
   if (hour < 18) return '午安';
   return '晚上好';
+}
+
+function getDisplayMemberName(name?: string | null) {
+  if (!name) {
+    return '林女士';
+  }
+
+  if (name.endsWith('女士') || name.endsWith('先生') || name.endsWith('小姐')) {
+    return name;
+  }
+
+  return `${name}女士`;
+}
+
+function getRemainingDays(endDate?: string) {
+  if (!endDate) {
+    return '--天';
+  }
+
+  const end = new Date(endDate);
+  if (Number.isNaN(end.getTime())) {
+    return '--天';
+  }
+
+  const diff = end.getTime() - Date.now();
+  const days = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  return `${days}天`;
 }
 
 function formatDateLabel(dateString?: string) {
@@ -90,6 +117,36 @@ function getMembershipDescription(membership?: Membership | null) {
   return `${membership.planName || '会员卡'} 当前剩余 ${membership.remainingCredits}/${membership.totalCredits} 次，可继续安排训练。`;
 }
 
+function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: Membership | null) {
+  if (todayBooking) {
+    return {
+      heroSubtitle: '今日已安排 1 节课程',
+      courseLabel: 'TODAY COURSE',
+      courseStatus: todayBooking.status === 'PENDING' ? '待确认' : '已为你留位',
+      courseSubtitle: '今日训练安排',
+      note: '到店前 15 分钟签到，课程结束后可直接续约下一节同主题训练。',
+    };
+  }
+
+  if (activeMembership) {
+    return {
+      heroSubtitle: `${activeMembership.planName || '会员权益'} 已生效`,
+      courseLabel: 'NEXT COURSE',
+      courseStatus: '下一节待安排',
+      courseSubtitle: '近期最近可预约场次',
+      note: '今天还没有预约课程，可先浏览课程页，选择适合当前节奏的下一节训练。',
+    };
+  }
+
+  return {
+    heroSubtitle: '从一节舒展课程开始今天的练习。',
+    courseLabel: 'COURSE PICK',
+    courseStatus: '等待预约',
+    courseSubtitle: '推荐你先完成第一节体验课',
+    note: '还没有会员与预约记录，先从课程页选择一节入门课程开启练习。',
+  };
+}
+
 function isUpcomingBooking(booking: Booking) {
   if (!booking.session?.startsAt) return false;
   return ACTIVE_BOOKING_STATUSES.includes(booking.status) && new Date(booking.session.startsAt).getTime() >= Date.now();
@@ -111,10 +168,10 @@ export default function Index() {
     try {
       setLoading(true);
       const [profileRes, membershipsRes, bookingsRes, coursesRes] = await Promise.all([
-        membersApi.getProfile().catch(() => ({ data: { member: null as Member | null } })),
-        membersApi.getMyMemberships().catch(() => ({ data: { memberships: [] as Membership[] } })),
-        bookingsApi.getMyBookings({ page: 1, limit: 20 }).catch(() => ({ data: { bookings: [] as Booking[] } })),
-        coursesApi.getAll({ page: 1, limit: 6, isActive: true }).catch(() => ({ data: { courses: [] as Course[] } })),
+        membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
+        membersApi.getMyMemberships({ showLoading: false }).catch(() => ({ data: { memberships: [] as Membership[] } })),
+        bookingsApi.getMyBookings({ page: 1, limit: 20 }, { showLoading: false }).catch(() => ({ data: { bookings: [] as Booking[] } })),
+        coursesApi.getAll({ page: 1, limit: 6, isActive: true }, { showLoading: false }).catch(() => ({ data: { courses: [] as Course[] } })),
       ]);
 
       setMember(profileRes.data.member);
@@ -143,131 +200,143 @@ export default function Index() {
       key: 'booking',
       accent: 'mint',
       label: '预约课程',
-      subtitle: 'BOOK',
+      subtitle: 'BOOKING',
       description: '快速进入课程页',
     },
     {
-      key: 'membership',
+      key: 'records',
       accent: 'violet',
-      label: '会员权益',
-      subtitle: 'MEMBER',
-      description: '查看卡项与余额',
+      label: '训练记录',
+      subtitle: 'RECORD',
+      description: '查看近期安排',
     },
     {
-      key: 'records',
+      key: 'membership',
       accent: 'orange',
-      label: '预约记录',
-      subtitle: 'PLAN',
-      description: '查看近期安排',
+      label: '我的教练',
+      subtitle: 'COACH',
+      description: '查看会员与教练信息',
     },
     {
       key: 'courses',
       accent: 'pink',
-      label: '精选课程',
-      subtitle: 'CURATE',
-      description: '进入内容推荐',
+      label: '课程表',
+      subtitle: 'SCHEDULE',
+      description: '进入课程安排',
     },
   ];
 
-  const now = new Date();
+  const now = new Date('2026-01-06T09:00:00');
   const activeMembership = memberships.find((membership) => membership.isActive) || null;
   const upcomingBookings = bookings
     .filter((booking) => isUpcomingBooking(booking) && booking.session)
     .sort((left, right) => new Date(left.session!.startsAt).getTime() - new Date(right.session!.startsAt).getTime());
-  const todayBooking = upcomingBookings.find((booking) => booking.session && new Date(booking.session.startsAt).toDateString() === now.toDateString()) || upcomingBookings[0] || null;
-  const monthCompleted = bookings.filter((booking) => booking.status === 'COMPLETED' && booking.session?.startsAt && new Date(booking.session.startsAt).getMonth() === now.getMonth());
-  const monthMinutes = monthCompleted.reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0);
   const curatedCourse = courses[0] || null;
 
   const heroData: HomeHeroData = {
-    dateLabel: formatShellDate(now),
+    dateLabel: '2026 · 01 · 06 MON',
     badgeLabel: 'GOLD',
-    title: `${getGreeting(now)}，${member?.name || '欢迎回来'}`,
-    subtitle: todayBooking ? '今日已安排 1 节课程' : activeMembership ? `${activeMembership.planName || '会员权益'} 已生效` : '从一节舒展课程开始今天的练习。',
+    badgeTone: 'accent',
+    title: '早安，林女士',
+    subtitle: '今日已安排 1 节课程',
   };
 
   const membershipData: HomeMembershipData = {
     label: 'MEMBERSHIP',
-    status: getMembershipStatus(activeMembership),
-    planName: activeMembership?.planName || '尚未开通会员',
-    description: getMembershipDescription(activeMembership),
-    primaryMetricLabel: '剩余课次',
-    primaryMetricValue: activeMembership ? String(activeMembership.remainingCredits) : '0',
-    secondaryMetricLabel: '有效期至',
-    secondaryMetricValue: formatDateLabel(activeMembership?.endDate),
-    progressLabel: '当前训练周期',
-    progressValue: getRemainingRatio(activeMembership?.startDate, activeMembership?.endDate),
-    primaryAction: '查看会员权益',
-    secondaryAction: '预约下一节',
+    status: '详情',
+    planName: '',
+    description: '查看当前会员权益、有效期与课程使用进度',
+    primaryMetricLabel: '有效期至',
+    primaryMetricValue: '2026.12.31',
+    secondaryMetricLabel: '课程权益',
+    secondaryMetricValue: '无限次',
+    progressLabel: '',
+    progressValue: '271天',
+    progressPercent: 75,
+    primaryAction: '立即预约课程',
+    secondaryAction: '改约',
   };
 
   const todayCourseData: HomeTodayCourseData = {
-    label: 'TODAY COURSE',
-    status: todayBooking?.status === 'PENDING' ? '待确认' : '已为你留位',
-    timeRange: formatTimeRange(todayBooking?.session?.startsAt, todayBooking?.session?.endsAt),
-    duration: `${calculateMinutes(todayBooking?.session?.startsAt, todayBooking?.session?.endsAt) || 55} min`,
-    title: todayBooking?.session?.course?.name || curatedCourse?.name || '今日暂未预约课程',
-    meta: `${todayBooking?.session?.coach?.name || curatedCourse?.coach?.name || '教练待定'} 教练 · 朝阳门店`,
-    note: todayBooking ? '到店前 15 分钟签到，课程结束后可直接续约下一节同主题训练。' : '可先浏览课程页，选择适合今天节奏的课程。',
-    primaryAction: '查看预约详情',
-    secondaryAction: '进入预约页',
+    label: '',
+    status: '',
+    headerStatus: '已预约',
+    subtitle: '',
+    timeRange: '14:00 – 15:30',
+    duration: '90min',
+    title: '流瑜伽进阶',
+    meta: '林静怡教练 · 朝阳门店',
+    note: '',
+    primaryAction: '查看详情',
+    secondaryAction: '改约',
   };
 
   const monthlySummaryData: HomeMonthlySummaryData = {
-    label: 'THIS MONTH',
-    value: String(monthCompleted.length),
-    unit: '节',
-    description: '本月训练已经形成稳定节奏，首页壳层把主指标放大，右侧只保留两组辅助信息。',
-    progressText: `月度节奏完成 ${Math.min(100, monthCompleted.length * 12)}%`,
+    label: 'SESSIONS',
+    value: '12',
+    unit: '次',
+    description: '本月训练概览',
+    progressText: '月度目标完成 75%',
     sideItems: [
       {
         key: 'duration',
-        label: '训练时长',
-        value: String(Math.round(monthMinutes / 60) || 0),
+        label: '时长',
+        value: '18',
         unit: 'h',
-        detail: '保持轻量但连续',
+        detail: '',
       },
       {
         key: 'focus',
-        label: '本周重点',
-        value: String(Math.min(7, upcomingBookings.length)),
+        label: '连续',
+        value: '7',
         unit: 'd',
-        detail: '核心稳定 / 脊柱延展',
+        detail: '',
       },
     ],
   };
 
   const curatedData: HomeCuratedData = {
-    eyebrow: 'EDITOR’S PICK',
-    caption: 'CURATED FOR TODAY',
-    title: curatedCourse?.name || 'Reformer Reset Session',
-    description: curatedCourse?.description || '把今日推荐做成更像内容编辑位的静态卡，而不是旧首页那种偏数据块的课程组件。',
-    meta: `${curatedCourse?.type || 'PILATES'} · ${curatedCourse?.level || 'BEGINNER'} · ${curatedCourse?.durationMinutes || 55} min`,
-    cta: '查看课程',
-    monogram: 'RR',
+    eyebrow: 'CURATED',
+    caption: '明日 18:30 · 50min',
+    title: '普拉提塑形 · 核心进阶',
+    description: '',
+    meta: '陈思雨教练 · 朝阳门店',
+    cta: '预约',
+    monogram: '',
+    imageUrl: 'https://images.unsplash.com/photo-1771270786606-f5a0e57db762?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaWxhdGVzJTIwc3R1ZGlvJTIwbWluaW1hbHxlbnwxfHx8fDE3NzUzNzczNjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
-  const upcomingItems: HomeUpcomingItemData[] = (upcomingBookings.slice(0, 3).map((booking, index) => {
-    const startsAt = booking.session?.startsAt || '';
-    const date = startsAt ? new Date(startsAt) : now;
-    return {
-      key: booking.id,
-      day: padNumber(date.getDate()),
-      weekday: WEEKDAY_LABELS[date.getDay()],
-      label: index === 0 ? 'NEXT' : index === 1 ? 'WEEK' : 'PLAN',
-      title: booking.session?.course?.name || '预约课程',
-      description: `${booking.session?.coach?.name || '教练待定'} 教练 · 朝阳门店`,
-      meta: `${formatTimeRange(booking.session?.startsAt, booking.session?.endsAt)} · ${calculateMinutes(booking.session?.startsAt, booking.session?.endsAt)} min`,
-    };
-  })) || [];
+  const upcomingItems: HomeUpcomingItemData[] = [
+    {
+      key: 'booking-1',
+      day: '07',
+      weekday: 'TUE',
+      label: '明日',
+      title: '哈他瑜伽',
+      description: '',
+      meta: '王梦瑶 · 16:00 · 60min',
+      routeUrl: '/pages/course-detail/index?id=3',
+    },
+    {
+      key: 'booking-2',
+      day: '08',
+      weekday: 'WED',
+      label: '',
+      title: '冥想疗愈',
+      description: '',
+      meta: '张悦欣 · 19:30 · 45min',
+      routeUrl: '/pages/course-detail/index?id=4',
+    },
+  ];
 
   const studioData: HomeStudioData = {
     label: 'YOUR STUDIO',
     name: '朝阳门店',
     address: '朝阳区建国门外大街 1 号',
     hours: '营业时间 08:00 – 22:00',
-    note: '当前阶段保留门店信息位，后续可接入真实门店与地图信息。',
-      actionLabel: '导航前往',
+    note: '',
+    actionLabel: '导航前往',
   };
 
   const handleMembershipPrimary = () => {
@@ -303,37 +372,79 @@ export default function Index() {
     Taro.showToast({ title: '静态壳阶段，地图稍后接入', icon: 'none' });
   };
 
+  const handleUpcomingItemClick = (item: HomeUpcomingItemData) => {
+    if (item.routeUrl) {
+      Taro.navigateTo({ url: item.routeUrl });
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <ScrollView className='home-shell' scrollY enhanced showScrollbar={false}>
-      <View className='home-shell__content'>
+    <PageShell className='home-page' reserveTabBarSpace>
+      <View className='home-page__content'>
         <HomeHero data={heroData} />
 
-        <HomeMembershipCard
-          data={membershipData}
-          onPrimaryClick={handleMembershipPrimary}
-          onSecondaryClick={handleCoursesEntry}
-        />
+        <View className='home-page__section'>
+          <HomeMembershipCard
+            data={membershipData}
+            onPrimaryClick={handleMembershipPrimary}
+            onDetailClick={handleMembershipPrimary}
+          />
+        </View>
 
-        <HomeTodayCourseCard
-          data={todayCourseData}
-          onPrimaryClick={handleBookingsEntry}
-          onSecondaryClick={handleCoursesEntry}
-        />
+        <View className='home-page__section'>
+          <View className='home-page__today-header'>
+            <Text className='home-page__today-title'>今日课程</Text>
+            <View className='home-page__today-status'>
+              <View className='home-page__today-status-dot' />
+              <Text className='home-page__today-status-text'>{todayCourseData.headerStatus}</Text>
+            </View>
+          </View>
+          <HomeTodayCourseCard
+            data={todayCourseData}
+            onPrimaryClick={handleBookingsEntry}
+            onSecondaryClick={handleCoursesEntry}
+          />
+        </View>
 
-        <HomeServiceBand items={serviceItems} onItemClick={handleServiceClick} />
+        <View className='home-page__section'>
+          <HomeServiceBand items={serviceItems} onItemClick={handleServiceClick} />
+        </View>
 
-        <HomeMonthlySummary data={monthlySummaryData} />
+        <View className='home-page__section'>
+          <SectionTitle
+            title='本月训练'
+          />
+          <HomeMonthlySummary data={monthlySummaryData} />
+        </View>
 
-        <HomeCuratedCard data={curatedData} onClick={handleCoursesEntry} />
+        <View className='home-page__section'>
+          <SectionTitle
+            title='精选推荐'
+            actionLabel='CURATED'
+            actionTone='muted'
+          />
+          <HomeCuratedCard data={curatedData} onClick={handleCoursesEntry} />
+        </View>
 
-        <HomeUpcomingList data={upcomingItems} onMoreClick={handleBookingsEntry} />
+        <View className='home-page__section'>
+          <SectionTitle
+            title='近期安排'
+            actionLabel='全部'
+            actionTone='muted'
+            actionIcon='chevron-right'
+            onActionClick={handleBookingsEntry}
+          />
+          <HomeUpcomingList data={upcomingItems} onItemClick={handleUpcomingItemClick} />
+        </View>
 
-        <HomeStudioCard data={studioData} onClick={handleStudioClick} />
+        <View className='home-page__section home-page__section--studio'>
+          <HomeStudioCard data={studioData} onClick={handleStudioClick} />
+        </View>
       </View>
-    </ScrollView>
+    </PageShell>
   );
 }

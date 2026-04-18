@@ -4,6 +4,7 @@ export type HomeAccent = 'mint' | 'violet' | 'orange' | 'pink';
 export interface HomeHeroData {
   dateLabel: string;
   badgeLabel: string;
+  badgeTone?: 'accent' | 'muted';
   title: string;
   subtitle: string;
 }
@@ -20,6 +21,7 @@ export interface HomeMembershipData {
   secondaryMetricValue: string;
   progressLabel: string;
   progressValue: string;
+  progressPercent: number;
   primaryAction: string;
   secondaryAction: string;
 }
@@ -28,6 +30,8 @@ export interface HomeMembershipData {
 export interface HomeTodayCourseData {
   label: string;
   status: string;
+  subtitle?: string;
+  headerStatus?: string;
   timeRange: string;
   duration: string;
   title: string;
@@ -70,6 +74,8 @@ export interface HomeCuratedData {
   meta: string;
   cta: string;
   monogram: string;
+  imageUrl: string;
+  fallbackImageUrl: string;
 }
 
 /** Future mapping: bookingsApi.getMyBookings() upcoming items */
@@ -81,6 +87,7 @@ export interface HomeUpcomingItemData {
   title: string;
   description: string;
   meta: string;
+  routeUrl?: string;
 }
 
 /** Future mapping: profile or studio settings payload */
