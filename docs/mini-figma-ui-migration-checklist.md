@@ -10,6 +10,36 @@
 > - 不建议直接搬运 Figma 导出的 React/Vite 代码。
 > - 正确做法是：把 Figma 作为 UI/交互参考，在当前 Taro 小程序项目里原生重建展示层。
 
+## 当前完成状态（更新）
+
+截至当前版本，以下页面已完成 Figma 对齐并通过本地构建验证：
+
+- 首页
+- 预约页
+- 课程详情
+- 教练列表 / 教练详情
+- 会员中心
+- 我的预约
+- 我的页
+- 通知
+- 帮助
+- 设置
+- 交易记录
+
+已完成的基础层包括：
+
+- `src/components/shell/*`
+- `src/custom-tab-bar/*`
+- `src/constants/navigation.ts`
+- `src/styles/variables.scss`
+- `src/styles/common.scss`
+
+当前后续工作重心：
+
+- 首页剩余细节验收与微调
+- 真机 / 微信开发者工具逐页人工 QA
+- 导航与页面壳层的持续小范围收口
+
 ---
 
 ## 复刻目标说明

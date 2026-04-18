@@ -28,8 +28,14 @@ cp .env.example .env
 # Install dependencies
 npm install
 
+# Type check
+npm run typecheck
+
 # Production build
 npm run build:weapp
+
+# Recommended verification
+npm run verify
 
 # Output directory: dist/
 ```
@@ -45,15 +51,18 @@ npm run build:h5
 
 ### 1. Pre-Release Checklist
 
+- [ ] 已执行 `npm run typecheck`
+- [ ] 已执行 `npm run verify`
 - [ ] `.env` 中 `API_BASE_URL` 已指向生产环境
 - [ ] 后端域名已在微信公众平台「request 合法域名」中配置
 - [ ] `project.config.json` 中 `appid` 已更新为正式 AppID
-- [ ] 所有页面测试通过
-- [ ] 无 console.log 残留（建议使用 Terser 自动清理）
+- [ ] 主要页面已按当前 Figma 对齐结果完成人工验收
+- [ ] 已检查关键页面无多余调试输出
 
 ### 2. Build
 
 ```bash
+npm run verify
 npm run build:weapp
 ```
 
