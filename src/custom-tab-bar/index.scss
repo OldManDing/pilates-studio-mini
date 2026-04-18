@@ -18,40 +18,41 @@
   &__inner {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     min-height: $tabbar-height;
-    gap: $spacing-xs;
-    padding: $tabbar-vertical-padding $figma-page-x calc(#{$tabbar-vertical-padding} + constant(safe-area-inset-bottom));
-    padding: $tabbar-vertical-padding $figma-page-x calc(#{$tabbar-vertical-padding} + env(safe-area-inset-bottom));
+    max-width: $page-max-width;
+    margin: 0 auto;
+    gap: 64px;
+    padding: 12px 0 calc(#{$tabbar-vertical-padding} + constant(safe-area-inset-bottom));
+    padding: 12px 0 calc(#{$tabbar-vertical-padding} + env(safe-area-inset-bottom));
   }
 
   &__item {
     position: relative;
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 140px;
+    flex: 0 0 auto;
+    min-width: 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: $spacing-xs;
-    padding: $spacing-xs 0;
+    gap: 5px;
+    padding: 0;
   }
 
   &__active-line {
     position: absolute;
-    top: -$spacing-sm;
+    top: -12px;
     left: 50%;
-    width: 26px;
-    height: 2px;
+    width: 16px;
+    height: 1.5px;
     border-radius: 1px;
     background: $primary;
     transform: translateX(-50%);
   }
 
   &__icon {
-    width: $figma-body-lg;
-    height: $figma-body-lg;
-    color: rgba($gray-500, 0.92);
+    width: 18px;
+    height: 18px;
+    color: #d8d8d8;
     opacity: 1;
     transition: color $duration-fast $ease-in-out;
 
@@ -61,8 +62,8 @@
   }
 
   &__label {
-    color: rgba($gray-500, 0.98);
-    font-size: $font-size-xs;
+    color: #d8d8d8;
+    font-size: 9px;
     font-weight: $font-weight-normal;
     line-height: 1.1;
     letter-spacing: $letter-spacing-wider;

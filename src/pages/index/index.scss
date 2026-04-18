@@ -233,7 +233,7 @@
   &__metric-value {
     display: block;
     color: $text-primary;
-    font-size: 38px;
+    font-size: $figma-title;
     font-weight: $font-weight-normal;
     line-height: 1;
     white-space: nowrap;
@@ -548,7 +548,7 @@
 
   &__value {
     color: rgba($text-primary, 0.88);
-    font-size: 34px;
+    font-size: $figma-number-lg;
     font-weight: $font-weight-normal;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -586,7 +586,7 @@
 
   &__side-value {
     color: rgba($text-primary, 0.86);
-    font-size: 18px;
+    font-size: 38px;
     font-weight: $font-weight-normal;
     line-height: 1;
   }
@@ -672,7 +672,7 @@
     display: block;
     margin-bottom: 10px;
     color: $text-primary;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -1033,15 +1033,26 @@
     gap: 14px;
   }
 
+  &__clock {
+    width: $figma-body-lg;
+    height: $figma-body-lg;
+  }
+
+  &__time {
+    font-size: $figma-body;
+  }
+
   &__header {
     margin-bottom: 14px;
   }
 
   &__title {
+    font-size: $figma-title-sm;
     margin-bottom: 14px;
   }
 
   &__meta {
+    font-size: $figma-body;
     margin-bottom: 42px;
   }
 
@@ -1059,6 +1070,7 @@
     flex: 1;
     min-width: 0;
     padding: 23px 0;
+    font-size: $figma-body;
   }
 
   &__button:last-child {
@@ -1066,6 +1078,7 @@
     width: auto;
     min-width: auto;
     padding: 23px 49px;
+    font-size: $figma-body;
     border: 0.5px solid #e8e8e8;
     background: transparent;
     box-shadow: none;
@@ -1197,6 +1210,10 @@
   background: #1a1a1a;
   padding: 56px;
 
+  &__label {
+    font-size: 16px;
+  }
+
   &__top {
     margin-bottom: 49px;
   }
@@ -1216,10 +1233,12 @@
   }
 
   &__address {
+    font-size: 21px;
     margin-bottom: 9px;
   }
 
   &__hours {
+    font-size: 19px;
     margin-bottom: 38px;
   }
 
@@ -1228,5 +1247,9 @@
     border-radius: 24px;
     background: rgba($white, 0.05);
     border: 0.5px solid rgba($white, 0.1);
+  }
+
+  &__action-text {
+    font-size: 19px;
   }
 }
