@@ -1,0 +1,74 @@
+@import '../styles/variables.scss';
+
+.custom-tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: rgba($surface, 0.98);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+
+  &__hairline {
+    height: 0.5px;
+    background: linear-gradient(90deg, transparent 10%, rgba($ink, 0.04) 40%, rgba($ink, 0.04) 60%, transparent 90%);
+  }
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(#{$tabbar-height} + #{$spacing-xs});
+    gap: 96px;
+    padding: 12px $figma-page-x calc(#{$spacing-sm} + constant(safe-area-inset-bottom));
+    padding: 12px $figma-page-x calc(#{$spacing-sm} + env(safe-area-inset-bottom));
+  }
+
+  &__item {
+    position: relative;
+    min-width: 84px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs 0 4px;
+  }
+
+  &__active-line {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 26px;
+    height: 2px;
+    border-radius: 1px;
+    background: $primary;
+    transform: translateX(-50%);
+  }
+
+  &__icon {
+    width: 30px;
+    height: 30px;
+    color: rgba($gray-500, 0.92);
+    opacity: 1;
+    transition: color $duration-fast $ease-in-out;
+
+    &--active {
+      color: rgba($primary, 0.94);
+    }
+  }
+
+  &__label {
+    color: rgba($gray-500, 0.98);
+    font-size: 15px;
+    font-weight: $font-weight-normal;
+    line-height: 1.1;
+    letter-spacing: 0.12em;
+    transition: color $duration-fast $ease-in-out;
+
+    &--active {
+      color: rgba($primary, 0.94);
+      font-weight: $font-weight-semibold;
+    }
+  }
+}

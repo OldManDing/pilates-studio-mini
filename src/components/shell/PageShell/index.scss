@@ -1,0 +1,32 @@
+@import '../../../styles/variables.scss';
+
+.page-shell {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $background 0%, $background-muted 100%);
+
+  &__inner {
+    width: 100%;
+    padding: calc(#{$spacing-xl} + #{$spacing-2xs}) $figma-page-x 0;
+  }
+
+  &--compact {
+    .page-shell__inner {
+      padding-top: $spacing-md;
+      padding-bottom: $spacing-md;
+    }
+  }
+
+  &--safe-bottom {
+    .page-shell__inner {
+      padding-bottom: calc(#{$spacing-xl} + constant(safe-area-inset-bottom));
+      padding-bottom: calc(#{$spacing-xl} + env(safe-area-inset-bottom));
+    }
+  }
+
+  &--with-tab-bar {
+    .page-shell__inner {
+      padding-bottom: calc(#{$spacing-md} + #{$tabbar-height} + constant(safe-area-inset-bottom));
+      padding-bottom: calc(#{$spacing-md} + #{$tabbar-height} + env(safe-area-inset-bottom));
+    }
+  }
+}

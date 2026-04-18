@@ -1,0 +1,33 @@
+@import '../../../styles/common.scss';
+
+.app-shell-card {
+  @extend .app-card;
+
+  &--default {
+    @extend .app-card;
+  }
+
+  &--elevated {
+    @extend .app-card--elevated;
+  }
+
+  &--flat {
+    @extend .app-card--flat;
+  }
+
+  &--padding-none {
+    padding: 0;
+  }
+
+  &--padding-small {
+    padding: $spacing-sm;
+  }
+
+  &--padding-medium {
+    padding: $spacing-md;
+  }
+
+  &--padding-large {
+    padding: $spacing-lg;
+  }
+}

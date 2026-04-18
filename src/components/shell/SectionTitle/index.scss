@@ -1,0 +1,65 @@
+@import '../../../styles/variables.scss';
+
+.section-title-block {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__eyebrow {
+    display: block;
+    margin-bottom: $spacing-xs;
+    color: $accent;
+    font-size: $font-size-3xs;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wide;
+  }
+
+  &__title {
+    display: block;
+    color: $text-primary;
+    font-size: $figma-section-title;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-snug;
+  }
+
+  &__subtitle {
+    display: block;
+    margin-top: $spacing-xs;
+    color: $text-secondary;
+    font-size: $font-size-2xs;
+    line-height: $line-height-normal;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: $spacing-md;
+    padding-bottom: $spacing-2xs;
+
+    &--muted {
+      .section-title-block__action-text,
+      .section-title-block__action-icon {
+        color: $gray-500;
+      }
+    }
+  }
+
+  &__action-text {
+    color: $accent;
+    font-size: $font-size-2xs;
+    font-weight: $font-weight-medium;
+  }
+
+  &__action-icon {
+    width: $font-size-xs;
+    height: $font-size-xs;
+    color: $accent;
+  }
+}

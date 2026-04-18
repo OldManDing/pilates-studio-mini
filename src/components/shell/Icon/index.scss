@@ -1,0 +1,359 @@
+@import '../../../styles/variables.scss';
+
+.app-icon {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+
+  &__line {
+    position: absolute;
+    background: currentColor;
+    border-radius: 999px;
+  }
+
+  &__mark {
+    position: absolute;
+    background: currentColor;
+    border-radius: 999px;
+  }
+
+  &__shape {
+    position: absolute;
+    border-radius: 2px;
+  }
+
+  &--chevron-left,
+  &--chevron-right,
+  &--check,
+  &--mail,
+  &--logout,
+  &--send,
+  &--star,
+  &--bolt,
+  &--spark {
+    .app-icon__line--one,
+    .app-icon__line--two,
+    .app-icon__line--three {
+      width: 7px;
+      height: 1.5px;
+      left: 50%;
+      top: 50%;
+    }
+  }
+
+  &--chevron-left {
+    .app-icon__line--one { transform: translate(-45%, -140%) rotate(-45deg); }
+    .app-icon__line--two { transform: translate(-45%, 40%) rotate(45deg); }
+  }
+
+  &--chevron-right {
+    .app-icon__line--one { transform: translate(-55%, -140%) rotate(45deg); }
+    .app-icon__line--two { transform: translate(-55%, 40%) rotate(-45deg); }
+  }
+
+  &--check {
+    .app-icon__line--one {
+      width: 4px;
+      transform: translate(-80%, 80%) rotate(45deg);
+    }
+
+    .app-icon__line--two {
+      width: 8px;
+      transform: translate(-20%, -20%) rotate(-45deg);
+    }
+  }
+
+  &--mail {
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+
+    .app-icon__line--one {
+      width: 6px;
+      transform: translate(-82%, -20%) rotate(35deg);
+    }
+
+    .app-icon__line--two {
+      width: 6px;
+      transform: translate(-18%, -20%) rotate(-35deg);
+    }
+
+    .app-icon__line--three {
+      width: 8px;
+      transform: translate(-50%, 180%);
+    }
+  }
+
+  &--logout {
+    .app-icon__line--one {
+      width: 7px;
+      left: 6px;
+      transform: translateY(-50%);
+    }
+
+    .app-icon__line--two {
+      width: 5px;
+      height: 5px;
+      right: 1px;
+      left: auto;
+      border-top: 1.5px solid currentColor;
+      border-right: 1.5px solid currentColor;
+      background: transparent;
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 2px;
+      width: 7px;
+      height: 10px;
+      border: 1.5px solid currentColor;
+      border-right: none;
+      border-radius: 3px 0 0 3px;
+    }
+  }
+
+  &--send {
+    .app-icon__line--one {
+      width: 10px;
+      transform: translate(-50%, -50%) rotate(-18deg);
+    }
+
+    .app-icon__line--two {
+      width: 5px;
+      transform: translate(-10%, -140%) rotate(35deg);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 7px;
+      width: 5px;
+      height: 1.5px;
+      background: currentColor;
+      border-radius: 999px;
+      transform: rotate(50deg);
+    }
+  }
+
+  &--star,
+  &--spark {
+    .app-icon__line--one {
+      width: 10px;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .app-icon__line--two {
+      width: 10px;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+  }
+
+  &--bolt {
+    .app-icon__line--one {
+      width: 8px;
+      transform: translate(-65%, -120%) rotate(65deg);
+    }
+
+    .app-icon__line--two {
+      width: 8px;
+      transform: translate(-35%, 40%) rotate(65deg);
+    }
+  }
+
+  &--clock {
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+
+    .app-icon__line--one,
+    .app-icon__line--two {
+      left: 50%;
+      top: 50%;
+      width: 1.5px;
+      transform-origin: bottom center;
+    }
+
+    .app-icon__line--one {
+      height: 4px;
+      transform: translate(-50%, -100%);
+    }
+
+    .app-icon__line--two {
+      height: 3px;
+      transform: translate(-50%, -100%) rotate(55deg);
+    }
+  }
+
+  &--info,
+  &--alert-circle {
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+
+    .app-icon__mark--one {
+      left: 50%;
+      top: 3px;
+      width: 1.5px;
+      height: 5px;
+      transform: translateX(-50%);
+    }
+
+    .app-icon__mark--two {
+      left: 50%;
+      bottom: 3px;
+      width: 2px;
+      height: 2px;
+      transform: translateX(-50%);
+    }
+  }
+
+  &--alert-circle {
+    .app-icon__mark--one {
+      height: 4px;
+      top: 4px;
+    }
+  }
+
+  &--pin {
+    width: 14px;
+    height: 16px;
+  }
+
+  &--home {
+    .app-icon__shape--one {
+      left: 50%;
+      top: 1px;
+      width: 10px;
+      height: 10px;
+      border-left: 1.5px solid currentColor;
+      border-top: 1.5px solid currentColor;
+      transform: translateX(-50%) rotate(45deg);
+      background: transparent;
+      border-radius: 0;
+    }
+
+    .app-icon__shape--two {
+      left: 50%;
+      bottom: 1px;
+      width: 10px;
+      height: 7px;
+      border: 1.5px solid currentColor;
+      border-top: none;
+      transform: translateX(-50%);
+      background: transparent;
+      border-radius: 0 0 2px 2px;
+    }
+
+    .app-icon__shape--three {
+      left: 50%;
+      bottom: 1px;
+      width: 3px;
+      height: 4px;
+      border: 1.5px solid currentColor;
+      border-bottom: none;
+      transform: translateX(-50%);
+      background: transparent;
+      border-radius: 2px 2px 0 0;
+    }
+  }
+
+  &--calendar {
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+
+    .app-icon__shape--one,
+    .app-icon__shape--two {
+      top: -1px;
+      width: 1.5px;
+      height: 4px;
+      background: currentColor;
+    }
+
+    .app-icon__shape--one { left: 4px; }
+    .app-icon__shape--two { right: 4px; }
+
+    .app-icon__shape--three {
+      left: 2px;
+      right: 2px;
+      top: 4px;
+      height: 1.5px;
+      background: currentColor;
+    }
+  }
+
+  &--user {
+    .app-icon__shape--one {
+      left: 50%;
+      top: 0;
+      width: 5px;
+      height: 5px;
+      border: 1.5px solid currentColor;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      background: transparent;
+    }
+
+    .app-icon__shape--two {
+      left: 50%;
+      bottom: 1px;
+      width: 10px;
+      height: 5px;
+      border: 1.5px solid currentColor;
+      border-top-left-radius: 999px;
+      border-top-right-radius: 999px;
+      border-bottom: none;
+      transform: translateX(-50%);
+      background: transparent;
+    }
+
+    .app-icon__shape--three {
+      display: none;
+    }
+  }
+
+  &__pin-head,
+  &__pin-tail {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__pin-head {
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__pin-core {
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  &__pin-tail {
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 5px solid currentColor;
+  }
+
+  &--dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+}

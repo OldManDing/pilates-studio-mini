@@ -1,74 +1,80 @@
 /* ========================================
-   Brand Colors - Pilates Studio
+   Figma-aligned Design Tokens
    ======================================== */
 
-// Primary brand colors
+$primary: #1a1a1a;
+$primary-strong: #101010;
+$primary-foreground: #ffffff;
 
-$mint: #d9c8ad;
-$mint-light: #f7f3ed;
-$mint-dark: #9f8f78;
+$accent: #c4a574;
+$accent-soft: #f4ede3;
+$accent-strong: #ab8c5e;
 
-$violet: #d7cec2;
-$violet-light: #f8f5f1;
-$violet-dark: #978e83;
+$background: #fafafa;
+$background-muted: #f4f4f4;
+$surface: #ffffff;
+$surface-strong: #f7f7f7;
 
-// Accent colors
-$orange: #dbc9b0;
-$orange-light: #f8f4ed;
-$orange-dark: #a19179;
+$mint: $accent;
+$mint-light: #f8f3eb;
+$mint-dark: $accent-strong;
 
-$pink: #d9d0c5;
-$pink-light: #f8f5f2;
-$pink-dark: #9b9288;
+$violet: #a69db1;
+$violet-light: #f3f1f7;
+$violet-dark: #81778d;
 
-$gold: #c4a574;
-$gold-light: #f4ece0;
-$gold-dark: #a78959;
+$orange: #cca06f;
+$orange-light: #f7efe4;
+$orange-dark: #a47e52;
 
-$cream-100: #fbf8f4;
-$cream-200: #f5efe7;
-$cream-300: #ebe3d7;
+$pink: #c39aa0;
+$pink-light: #f8f0f2;
+$pink-dark: #9d757b;
+
+$gold: $accent;
+$gold-light: $accent-soft;
+$gold-dark: $accent-strong;
+
+$cream-100: $background;
+$cream-200: #f5f5f5;
+$cream-300: #e9e9e9;
 
 $ink: #1a1a1a;
-$ink-soft: #8c8378;
+$ink-soft: #8a8a8a;
 
-// Functional colors
-$success: $mint;
+$success: #78a07f;
 $warning: $orange;
-$error: #ff4d4f;
-$info: $violet;
+$error: #c88383;
+$info: #8f8f8f;
 
-// Neutral colors
 $white: #ffffff;
 $black: #000000;
 
-$gray-100: #f8f8f8;
-$gray-200: #f0f0f0;
-$gray-300: #ebebeb;
-$gray-400: #dcd7d0;
-$gray-500: #cdc7bf;
-$gray-600: #a79f95;
-$gray-700: #7e756b;
-$gray-800: #3a332d;
-$gray-900: #1a1a1a;
+$gray-100: #fafafa;
+$gray-200: #f3f3f3;
+$gray-300: #e9e9e9;
+$gray-400: #dcdcdc;
+$gray-500: #cdcdcd;
+$gray-600: #ababab;
+$gray-700: #8a8a8a;
+$gray-800: #5f5f5f;
+$gray-900: $ink;
 
-// Text colors
 $text-primary: $ink;
 $text-secondary: $ink-soft;
-$text-muted: $gray-500;
-$text-inverse: $white;
+$text-muted: #ababab;
+$text-inverse: $primary-foreground;
 
-// Background colors
 $bg-white: $white;
-$bg-gray: #f8f8f8;
-$bg-dark: $ink;
+$bg-gray: #f5f5f5;
+$bg-dark: $primary;
 
-// Border colors
-$border-light: rgba($gray-300, 0.9);
-$border-default: rgba($gray-400, 0.9);
-$border-dark: rgba($ink-soft, 0.24);
-$border-subtle: rgba($cream-300, 0.58);
-$border-faint: rgba($gray-300, 0.66);
+$border-light: rgba(205, 205, 205, 0.5);
+$border-default: #e9e9e9;
+$border-dark: rgba(26, 26, 26, 0.14);
+$border-subtle: rgba(196, 165, 116, 0.34);
+$border-faint: rgba(205, 205, 205, 0.35);
+$border-strong: #d6c3a3;
 
 /* ========================================
    Spacing Scale
@@ -76,68 +82,77 @@ $border-faint: rgba($gray-300, 0.66);
 
 $spacing-unit: 4px;
 
-$spacing-xs: $spacing-unit * 2;   // 8px
-$spacing-sm: $spacing-unit * 3;   // 12px
-$spacing-md: $spacing-unit * 4;   // 16px
-$spacing-lg: $spacing-unit * 6;   // 24px
-$spacing-xl: $spacing-unit * 8;   // 32px
-$spacing-2xl: $spacing-unit * 12; // 48px
+$spacing-2xs: $spacing-unit;
+$spacing-xs: $spacing-unit * 2;
+$spacing-sm: $spacing-unit * 3;
+$spacing-md: $spacing-unit * 4;
+$spacing-lg: $spacing-unit * 6;
+$spacing-xl: $spacing-unit * 8;
+$spacing-2xl: $spacing-unit * 12;
+$spacing-3xl: $spacing-unit * 16;
 
 /* ========================================
    Border Radius
    ======================================== */
 
-$radius-sm: 8px;
+$radius-xs: 8px;
+$radius-sm: 10px;
 $radius-md: 12px;
-$radius-lg: 16px;
-$radius-xl: 24px;
-$radius-2xl: 32px;
+$radius-lg: 14px;
+$radius-xl: 18px;
+$radius-2xl: 24px;
 $radius-full: 9999px;
 
 /* ========================================
    Shadows
    ======================================== */
 
-$shadow-sm: 0 2px 8px rgba(26, 26, 26, 0.03);
-$shadow-md: 0 4px 16px rgba(26, 26, 26, 0.06);
-$shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.08);
-$shadow-xs: 0 2px 10px rgba(26, 26, 26, 0.022);
-$shadow-card: 0 10px 24px rgba(26, 26, 26, 0.035);
-$shadow-mint: 0 4px 16px rgba(196, 165, 116, 0.12);
-$shadow-violet: 0 4px 16px rgba(196, 165, 116, 0.1);
-$shadow-gold: 0 8px 24px rgba(196, 165, 116, 0.16);
-$shadow-soft: 0 12px 36px rgba(26, 26, 26, 0.045);
+$shadow-xs: 0 2px 8px rgba(26, 26, 26, 0.03);
+$shadow-sm: 0 6px 14px rgba(26, 26, 26, 0.045);
+$shadow-md: 0 10px 22px rgba(26, 26, 26, 0.06);
+$shadow-lg: 0 16px 32px rgba(26, 26, 26, 0.08);
+$shadow-card: 0 6px 16px rgba(26, 26, 26, 0.04);
+$shadow-mint: 0 8px 18px rgba(196, 165, 116, 0.14);
+$shadow-violet: 0 8px 18px rgba(166, 157, 177, 0.12);
+$shadow-gold: 0 10px 22px rgba(196, 165, 116, 0.16);
+$shadow-soft: 0 12px 28px rgba(26, 26, 26, 0.05);
 
 /* ========================================
    Typography
    ======================================== */
 
-$font-size-xs: 20px;   // 10pt
-$font-size-sm: 24px;   // 12pt
-$font-size-base: 28px; // 14pt
-$font-size-md: 32px;   // 16pt
-$font-size-lg: 36px;   // 18pt
-$font-size-xl: 40px;   // 20pt
-$font-size-2xl: 48px;  // 24pt
-$font-size-3xl: 56px;  // 28pt
-$font-size-4xl: 64px;  // 32pt
+$font-size-3xs: 10px;
+$font-size-2xs: 12px;
+$font-size-xs: 14px;
+$font-size-sm: 16px;
+$font-size-base: 18px;
+$font-size-md: 22px;
+$font-size-lg: 26px;
+$font-size-xl: 30px;
+$font-size-2xl: 34px;
+$font-size-3xl: 46px;
+$font-size-4xl: 56px;
 
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
-$line-height-tight: 1.25;
+$line-height-tight: 1.18;
+$line-height-snug: 1.3;
 $line-height-normal: 1.5;
-$line-height-relaxed: 1.75;
+$line-height-relaxed: 1.7;
+
+$letter-spacing-wide: 0.06em;
+$letter-spacing-wider: 0.12em;
 
 /* ========================================
    Animation
    ======================================== */
 
 $duration-fast: 0.15s;
-$duration-normal: 0.3s;
-$duration-slow: 0.5s;
+$duration-normal: 0.28s;
+$duration-slow: 0.45s;
 
 $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 $ease-out: cubic-bezier(0, 0, 0.2, 1);
@@ -147,6 +162,31 @@ $ease-in: cubic-bezier(0.4, 0, 1, 1);
    Layout
    ======================================== */
 
-$tabbar-height: 100px;
+$tabbar-height: 64px;
 $navbar-height: 88px;
-$safe-area-bottom: constant(safe-area-inset-bottom);
+$page-max-width: 430px;
+
+/* ========================================
+   Figma 430px canvas → Taro 750rpx scale
+   ======================================== */
+
+$figma-micro: 14px;          // 8px
+$figma-caption: 17px;        // 10px
+$figma-small: 19px;          // 11px
+$figma-body: 21px;           // 12px
+$figma-body-lg: 24px;        // 14px
+$figma-section-title: 30px;  // 17px
+$figma-title-sm: 35px;       // 20px
+$figma-title: 45px;          // 26px
+$figma-number-lg: 70px;      // 40px
+
+$figma-page-x: 49px;         // 28px
+$figma-card-x: 56px;         // 32px
+$figma-card-y: 49px;         // 28px
+$figma-section-gap: 70px;    // 40px
+$figma-section-title-gap: 28px; // 16px
+$figma-button-sm-y: 17px;    // 10px
+$figma-button-lg-y: 26px;    // 15px
+$figma-radius-card: 28px;    // 16px
+$figma-radius-button: 23px;  // 13px
+$figma-image-h: 307px;       // 176px

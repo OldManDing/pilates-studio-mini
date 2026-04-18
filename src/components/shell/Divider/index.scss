@@ -1,0 +1,25 @@
+@import '../../../styles/common.scss';
+
+.app-divider {
+  @extend .divider;
+
+  &--strong {
+    @extend .divider--strong;
+  }
+
+  &--spacing-none {
+    margin: 0;
+  }
+
+  &--spacing-small {
+    margin: $spacing-sm 0;
+  }
+
+  &--spacing-medium {
+    margin: $spacing-md 0;
+  }
+
+  &--spacing-large {
+    margin: $spacing-lg 0;
+  }
+}

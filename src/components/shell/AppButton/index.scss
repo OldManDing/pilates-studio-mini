@@ -1,0 +1,51 @@
+@import '../../../styles/common.scss';
+
+.app-button {
+  @extend .btn;
+  width: 100%;
+  margin: 0;
+  border: none;
+
+  &::after {
+    border: none;
+  }
+
+  &--small {
+    @extend .btn-small;
+  }
+
+  &--medium {
+    @extend .btn;
+  }
+
+  &--large {
+    @extend .btn-large;
+  }
+
+  &--primary {
+    @extend .btn-primary;
+  }
+
+  &--secondary {
+    @extend .btn-secondary;
+  }
+
+  &--outline {
+    @extend .btn-outline;
+  }
+
+  &--accent {
+    background: $accent;
+    color: $white;
+    box-shadow: $shadow-gold;
+  }
+
+  &--ghost {
+    @extend .btn-ghost;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+}

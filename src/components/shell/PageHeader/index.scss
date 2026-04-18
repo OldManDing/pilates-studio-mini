@@ -1,0 +1,75 @@
+@import '../../../styles/variables.scss';
+
+.page-header {
+  margin-bottom: $spacing-md;
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__back {
+    width: $spacing-3xl;
+    height: $spacing-3xl;
+    margin-right: $spacing-xs;
+    border: 1px solid $border-light;
+    border-radius: $radius-full;
+    background: rgba($surface, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+
+    &--placeholder {
+      visibility: hidden;
+    }
+  }
+
+  &__back-icon {
+    color: $text-primary;
+    width: $font-size-xs;
+    height: $font-size-xs;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    padding-top: $spacing-2xs;
+
+    &--full {
+      margin-left: 0;
+    }
+  }
+
+  &__eyebrow {
+    display: block;
+    margin-bottom: $spacing-xs;
+    color: $accent;
+    font-size: $font-size-3xs;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wide;
+  }
+
+  &__title {
+    display: block;
+    color: $text-primary;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  }
+
+  &__subtitle {
+    display: block;
+    margin-top: $spacing-xs;
+    color: $text-secondary;
+    font-size: $font-size-xs;
+    line-height: $line-height-normal;
+  }
+
+  &__right {
+    margin-left: $spacing-sm;
+    min-width: $spacing-3xl;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

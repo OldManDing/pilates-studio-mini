@@ -1,3 +1,8 @@
+const NAVIGATION_BAR_BACKGROUND_COLOR = '#FFFDF9';
+const TAB_BAR_TEXT_COLOR = '#D0CCC6';
+const TAB_BAR_SELECTED_COLOR = '#1A1A1A';
+const TAB_BAR_BACKGROUND_COLOR = '#FFFFFF';
+
 export default defineAppConfig({
   pages: [
     'pages/index/index',
@@ -8,13 +13,16 @@ export default defineAppConfig({
     'pages/membership/index',
     'pages/my-bookings/index',
     'pages/profile/index',
+    'pages/notifications/index',
+    'pages/help/index',
+    'pages/settings/index',
     'pages/transactions/index',
   ],
   tabBar: {
-    custom: false,
-    color: '#D0CCC6',
-    selectedColor: '#1A1A1A',
-    backgroundColor: '#FFFDF9',
+    custom: true,
+    color: TAB_BAR_TEXT_COLOR,
+    selectedColor: TAB_BAR_SELECTED_COLOR,
+    backgroundColor: TAB_BAR_BACKGROUND_COLOR,
     borderStyle: 'white',
     list: [
       {
@@ -39,7 +47,7 @@ export default defineAppConfig({
   },
   window: {
     backgroundTextStyle: 'dark',
-    navigationBarBackgroundColor: '#FFFDF9',
+    navigationBarBackgroundColor: NAVIGATION_BAR_BACKGROUND_COLOR,
     navigationBarTitleText: 'Pilates Studio',
     navigationBarTextStyle: 'black',
     navigationStyle: 'default'
