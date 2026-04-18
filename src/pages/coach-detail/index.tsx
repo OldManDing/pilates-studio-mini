@@ -1,11 +1,69 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
-import { View, Text, ScrollView, Image } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
-import { courseSessionsApi, CourseSession } from '../../api/courses';
-import { Loading, Empty } from '../../components';
+import { CourseSession } from '../../api/courses';
+import { AppCard, Divider, Empty, Icon, Loading, SectionTitle } from '../../components';
 import { getLabelByValue, CourseTypes, Weekdays } from '../../constants/enums';
 import './index.scss';
+
+function pad(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatDateLabel(value?: string) {
+  if (!value) {
+    return '--.--.--';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '--.--.--';
+  }
+
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+}
+
+function formatTimeRange(start?: string, end?: string) {
+  if (!start || !end) {
+    return '--:-- – --:--';
+  }
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return '--:-- – --:--';
+  }
+
+  return `${pad(startDate.getHours())}:${pad(startDate.getMinutes())} – ${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`;
+}
+
+function getDurationMinutes(start?: string, end?: string) {
+  if (!start || !end) {
+    return 0;
+  }
+
+  const diff = new Date(end).getTime() - new Date(start).getTime();
+  if (Number.isNaN(diff) || diff <= 0) {
+    return 0;
+  }
+
+  return Math.round(diff / (1000 * 60));
+}
+
+function getWeekdayLabel(value?: string) {
+  if (!value) {
+    return '待定';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '待定';
+  }
+
+  const weekday = Weekdays.find((item) => item.value === date.getDay())?.label;
+  return weekday || '待定';
+}
 
 export default function CoachDetail() {
   const [loading, setLoading] = useState(true);
@@ -32,19 +90,23 @@ export default function CoachDetail() {
   useLoad((options) => {
     if (options?.id) {
       fetchData(options.id);
+      return;
     }
+
+    setLoading(false);
   });
 
-  const formatSessionTime = (start: string, end: string) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const month = startDate.getMonth() + 1;
-    const day = startDate.getDate();
-    const weekday = Weekdays.find(w => w.value === startDate.getDay())?.label || '';
-    const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
-    const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
-    return `${month}月${day}日 ${weekday} ${startTime}-${endTime}`;
-  };
+  const upcomingSchedule = useMemo(() => {
+    return [...schedule].sort((left, right) => {
+      const leftTime = new Date(left.startsAt).getTime();
+      const rightTime = new Date(right.startsAt).getTime();
+
+      const safeLeft = Number.isNaN(leftTime) ? Number.MAX_SAFE_INTEGER : leftTime;
+      const safeRight = Number.isNaN(rightTime) ? Number.MAX_SAFE_INTEGER : rightTime;
+
+      return safeLeft - safeRight;
+    });
+  }, [schedule]);
 
   if (loading) {
     return <Loading />;
@@ -54,103 +116,192 @@ export default function CoachDetail() {
     return <Empty title='教练不存在' />;
   }
 
+  const heroImage = coach.avatar || '/assets/ui/booking-dark.svg';
+  const coachName = coach.name || '未命名教练';
+  const specialties = coach.specialties || [];
+  const certifications = coach.certifications || [];
+  const totalCourses = coach.courses?.length || 0;
+
+  const trainingTypeTags = Array.from(new Set((coach.courses || []).map((course) => getLabelByValue(CourseTypes, course.type))));
+
   return (
-    <View className='coach-detail'>
-      <ScrollView className='coach-detail__content' scrollY enhanced showScrollbar={false}>
-        {/* Header */}
-        <View className='coach-detail__header'>
-          <Image
-            className='coach-detail__avatar'
-            src={coach.avatar || '/assets/default-avatar.png'}
+    <View className='coach-detail-page'>
+      <View className='coach-detail-page__hero'>
+        <Image className='coach-detail-page__hero-image' src={heroImage} mode='aspectFill' />
+        <View className='coach-detail-page__hero-mask' />
+
+        <View
+          className='coach-detail-page__back'
+          onClick={async () => {
+            try {
+              await Taro.navigateBack({ delta: 1 });
+            } catch (error) {
+              Taro.redirectTo({ url: '/pages/coaches/index' });
+            }
+          }}
+        >
+          <Icon name='chevron-left' className='coach-detail-page__back-icon' />
+        </View>
+
+        <View className='coach-detail-page__hero-text'>
+          <Text className='coach-detail-page__subtitle'>COACH PROFILE</Text>
+          <Text className='coach-detail-page__title'>{coachName}</Text>
+        </View>
+      </View>
+
+      <View className='coach-detail-page__body'>
+        <AppCard className='coach-detail-page__info-card'>
+          <View className='coach-detail-page__identity'>
+            <View className='coach-detail-page__avatar-wrap'>
+              {coach.avatar ? (
+                <Image className='coach-detail-page__avatar-image' src={coach.avatar} mode='aspectFill' />
+              ) : (
+                <Text className='coach-detail-page__avatar-text'>{coachName.slice(0, 1)}</Text>
+              )}
+            </View>
+
+            <View className='coach-detail-page__identity-content'>
+              <Text className='coach-detail-page__identity-name'>{coachName}</Text>
+              <Text className='coach-detail-page__identity-meta'>
+                {coach.isActive ? '排课中' : '未排课'} · {totalCourses} 门课程
+              </Text>
+            </View>
+          </View>
+
+          <Divider spacing='none' />
+
+          <View className='coach-detail-page__meta-row'>
+            <Text className='coach-detail-page__meta-label'>电话</Text>
+            <Text className='coach-detail-page__meta-value'>{coach.phone || '--'}</Text>
+          </View>
+
+          <Divider spacing='none' />
+
+          <View className='coach-detail-page__meta-row'>
+            <Text className='coach-detail-page__meta-label'>邮箱</Text>
+            <Text className='coach-detail-page__meta-value'>{coach.email || '--'}</Text>
+          </View>
+        </AppCard>
+
+        <View className='coach-detail-page__section'>
+          <SectionTitle
+            eyebrow='ABOUT'
+            title='教练介绍'
+            subtitle='基于当前公开资料与排课信息'
           />
-          <Text className='coach-detail__name'>{coach.name}</Text>
-          <View className='coach-detail__tags'>
-            {coach.specialties?.map((specialty, index) => (
-              <View key={index} className='coach-detail__tag'>
-                <Text>{specialty}</Text>
-              </View>
-            ))}
-          </View>
+
+          <AppCard>
+            <Text className='coach-detail-page__about'>
+              {coach.bio || '暂无教练介绍，后续将补充训练背景与授课风格说明。'}
+            </Text>
+          </AppCard>
         </View>
 
-        {/* Contact Info */}
-        <View className='coach-detail__card'>
-          <Text className='coach-detail__card-title'>联系方式</Text>
-          <View className='coach-detail__info-list'>
-            <View className='coach-detail__info-item'>
-              <Text className='coach-detail__info-label'>电话</Text>
-              <Text className='coach-detail__info-value'>{coach.phone}</Text>
-            </View>
-            <View className='coach-detail__info-item'>
-              <Text className='coach-detail__info-label'>邮箱</Text>
-              <Text className='coach-detail__info-value'>{coach.email}</Text>
-            </View>
-          </View>
-        </View>
+        <View className='coach-detail-page__section'>
+          <SectionTitle
+            eyebrow='QUALIFICATIONS'
+            title='认证与专长'
+            subtitle='展示认证、专长方向与授课类型'
+          />
 
-        {/* Bio */}
-        {coach.bio && (
-          <View className='coach-detail__card'>
-            <Text className='coach-detail__card-title'>个人简介</Text>
-            <Text className='coach-detail__bio'>{coach.bio}</Text>
-          </View>
-        )}
-
-        {/* Certifications */}
-        {coach.certifications && coach.certifications.length > 0 && (
-          <View className='coach-detail__card'>
-            <Text className='coach-detail__card-title'>专业认证</Text>
-            <View className='coach-detail__certifications'>
-              {coach.certifications.map((cert, index) => (
-                <View key={index} className='coach-detail__cert-item'>
-                  <Text className='coach-detail__cert-icon'>🏆</Text>
-                  <Text className='coach-detail__cert-text'>{cert}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Courses */}
-        {coach.courses && coach.courses.length > 0 && (
-          <View className='coach-detail__card'>
-            <Text className='coach-detail__card-title'>授课课程</Text>
-            <View className='coach-detail__courses'>
-              {coach.courses.map((course) => (
-                <View key={course.id} className='coach-detail__course-item'>
-                  <Text className='coach-detail__course-name'>{course.name}</Text>
-                  <Text className='coach-detail__course-type'>
-                    {getLabelByValue(CourseTypes, course.type)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Schedule */}
-        <View className='coach-detail__card'>
-          <Text className='coach-detail__card-title'>近期排课</Text>
-          {schedule.length > 0 ? (
-            <View className='coach-detail__schedule'>
-              {schedule.map((session) => (
-                <View key={session.id} className='coach-detail__schedule-item'>
-                  <View className='coach-detail__schedule-info'>
-                    <Text className='coach-detail__schedule-time'>
-                      {formatSessionTime(session.startsAt, session.endsAt)}
-                    </Text>
-                    <Text className='coach-detail__schedule-course'>
-                      {session.course?.name || '未知课程'}
-                    </Text>
+          <AppCard>
+            {certifications.length > 0 ? (
+              <View className='coach-detail-page__qualification-list'>
+                {certifications.map((certification) => (
+                  <View key={certification} className='coach-detail-page__qualification-item'>
+                    <Text className='coach-detail-page__qualification-dot' />
+                    <Text className='coach-detail-page__qualification-text'>{certification}</Text>
                   </View>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <Empty title='暂无排课' description='敬请期待' />
-          )}
+                ))}
+              </View>
+            ) : (
+              <Text className='coach-detail-page__hint'>暂无认证信息</Text>
+            )}
+
+            {(specialties.length > 0 || trainingTypeTags.length > 0) ? (
+              <View className='coach-detail-page__tag-groups'>
+                {specialties.length > 0 ? (
+                  <View className='coach-detail-page__tag-row'>
+                    {specialties.map((specialty) => (
+                      <Text key={specialty} className='coach-detail-page__tag'>
+                        {specialty}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
+
+                {trainingTypeTags.length > 0 ? (
+                  <View className='coach-detail-page__tag-row'>
+                    {trainingTypeTags.map((tag) => (
+                      <Text key={tag} className='coach-detail-page__tag coach-detail-page__tag--muted'>
+                        {tag}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
+          </AppCard>
         </View>
-      </ScrollView>
+
+        <View className='coach-detail-page__section'>
+          <SectionTitle
+            eyebrow='SCHEDULE'
+            title='近期排课'
+            subtitle='按时间升序展示即将开始的课程场次'
+          />
+
+          <AppCard padding='none' className='coach-detail-page__schedule-card'>
+            {upcomingSchedule.length > 0 ? (
+              upcomingSchedule.map((session, index) => {
+                const startDate = new Date(session.startsAt);
+                const monthDay = Number.isNaN(startDate.getTime())
+                  ? '--.--'
+                  : `${pad(startDate.getMonth() + 1)}.${pad(startDate.getDate())}`;
+
+                const duration = getDurationMinutes(session.startsAt, session.endsAt);
+
+                return (
+                  <View key={session.id}>
+                    <View className='coach-detail-page__schedule-item'>
+                      <View className='coach-detail-page__schedule-date'>
+                        <Text className='coach-detail-page__schedule-day'>{monthDay}</Text>
+                        <Text className='coach-detail-page__schedule-weekday'>{getWeekdayLabel(session.startsAt)}</Text>
+                      </View>
+
+                      <View className='coach-detail-page__schedule-content'>
+                        <Text className='coach-detail-page__schedule-course'>{session.course?.name || '未知课程'}</Text>
+                        <View className='coach-detail-page__schedule-meta-row'>
+                          <Icon name='clock' className='coach-detail-page__schedule-meta-icon' />
+                          <Text className='coach-detail-page__schedule-meta'>
+                            {formatTimeRange(session.startsAt, session.endsAt)} · {duration > 0 ? `${duration}min` : '--min'}
+                          </Text>
+                        </View>
+                        <View className='coach-detail-page__schedule-meta-row'>
+                          <Icon name='pin' className='coach-detail-page__schedule-meta-icon' />
+                          <Text className='coach-detail-page__schedule-date-label'>{formatDateLabel(session.startsAt)}</Text>
+                        </View>
+                      </View>
+
+                      <Text className='coach-detail-page__schedule-kind'>
+                        {session.course?.type ? getLabelByValue(CourseTypes, session.course.type) : '待定'}
+                      </Text>
+                    </View>
+
+                    {index < upcomingSchedule.length - 1 ? <Divider spacing='none' /> : null}
+                  </View>
+                );
+              })
+            ) : (
+              <View className='coach-detail-page__empty-wrap'>
+                <Empty title='暂无排课' description='敬请期待' />
+              </View>
+            )}
+          </AppCard>
+        </View>
+
+        <View className='coach-detail-page__spacer' />
+      </View>
     </View>
   );
 }

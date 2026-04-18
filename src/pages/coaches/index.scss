@@ -1,32 +1,38 @@
 @import '../../styles/variables.scss';
 
-.coaches {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: $bg-gray;
-
-  &__list {
-    flex: 1;
-    padding: $spacing-md;
-    overflow-y: auto;
+.coaches-page {
+  &__section {
+    margin-bottom: $spacing-md;
   }
 
-  &__grid {
+  &__list-card,
+  &__empty-card {
+    border-radius: $radius-xl;
+    overflow: hidden;
+    background: rgba($surface, 0.98);
+  }
+
+  &__item {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-md;
+    align-items: stretch;
   }
 
-  &__loading-more,
-  &__no-more {
+  &__empty-card {
+    padding: $spacing-md;
+  }
+
+  &__loading-more {
     text-align: center;
-    padding: $spacing-md 0;
+    padding: $spacing-lg 0 $spacing-sm;
   }
 
-  &__loading-more-text,
-  &__no-more-text {
-    font-size: $font-size-sm;
+  &__loading-more-text {
+    font-size: 10px;
     color: $text-muted;
+    letter-spacing: $letter-spacing-wide;
+  }
+
+  &__spacer {
+    height: $spacing-lg;
   }
 }

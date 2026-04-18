@@ -11,12 +11,14 @@ export interface BookingDateItemData {
   day: string;
   label?: string;
   active?: boolean;
+  disabled?: boolean;
 }
 
 export interface BookingCategoryItemData {
   key: string;
   label: string;
   active?: boolean;
+  disabled?: boolean;
 }
 
 export interface BookingCourseCardData {

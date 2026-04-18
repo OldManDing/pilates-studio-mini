@@ -1,10 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import { transactionsApi, Transaction } from '../../api/transactions';
-import { Loading, Empty, Price, StatusTag } from '../../components';
+import { AppCard, Divider, Empty, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
 import { TransactionStatuses, TransactionKinds } from '../../constants/enums';
 import './index.scss';
+
+function pad(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatDate(isoString?: string) {
+  if (!isoString) {
+    return '--.--.-- --:--';
+  }
+
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) {
+    return '--.--.-- --:--';
+  }
+
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 export default function Transactions() {
   const [loading, setLoading] = useState(true);
@@ -57,59 +74,86 @@ export default function Transactions() {
     }
   });
 
-  const formatDate = (isoString: string) => {
-    if (!isoString) return '';
-    const date = new Date(isoString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  };
-
   return (
-    <View className="transactions">
-      {/* Summary Card */}
-      <View className="transactions__summary">
-        <Text className="transactions__summary-title">累计消费</Text>
-        <Price amount={summary.totalRevenue} size="xl" variant="primary" />
-        <Text className="transactions__summary-count">共 {summary.transactionCount} 笔交易</Text>
+    <PageShell className='transactions-page' safeAreaBottom>
+      <PageHeader
+        title='消费记录'
+        subtitle='查看你的历史交易与支付状态'
+        eyebrow='ACTIVITY'
+      />
+
+      <View className='transactions-page__section'>
+        <SectionTitle
+          eyebrow='SUMMARY'
+          title='消费总览'
+          subtitle='会员中心累计账单'
+        />
+
+        <AppCard className='transactions-page__summary-card'>
+          <Text className='transactions-page__summary-label'>累计消费</Text>
+          <View className='transactions-page__summary-amount'>
+            <Price amount={summary.totalRevenue} size='xl' variant='default' />
+          </View>
+
+          <View className='transactions-page__summary-meta'>
+            <Text className='transactions-page__summary-meta-label'>交易笔数</Text>
+            <Text className='transactions-page__summary-meta-value'>{summary.transactionCount} 笔</Text>
+          </View>
+        </AppCard>
       </View>
 
-      {/* Transaction List */}
-      <ScrollView className="transactions__list" scrollY enhanced showScrollbar={false}>
+      <View className='transactions-page__section'>
+        <SectionTitle
+          eyebrow='LEDGER'
+          title='交易流水'
+          subtitle='按时间倒序展示最近记录'
+        />
+
         {loading && page === 1 ? (
           <Loading />
         ) : transactions.length > 0 ? (
-          <View className="transactions__items">
-            {transactions.map((transaction) => (
-              <View key={transaction.id} className="transactions__item">
-                <View className="transactions__item-header">
-                  <View className="transactions__item-info">
-                    <Text className="transactions__item-kind">
-                      {TransactionKinds.find(k => k.value === transaction.kind)?.label || transaction.kind}
+          <AppCard padding='none' className='transactions-page__ledger-card'>
+            {transactions.map((transaction, index) => (
+              <View key={transaction.id}>
+                <View className='transactions-page__item'>
+                  <View className='transactions-page__item-main'>
+                    <Text className='transactions-page__item-kind'>
+                      {TransactionKinds.find((item) => item.value === transaction.kind)?.label || transaction.kind}
                     </Text>
-                    <Text className="transactions__item-date">{formatDate(transaction.createdAt)}</Text>
+                    <Text className='transactions-page__item-date'>{formatDate(transaction.createdAt)}</Text>
+                    <Text className='transactions-page__item-code'>{transaction.transactionCode}</Text>
                   </View>
-                  <Price amount={transaction.amountCents} size="normal" variant="default" />
+
+                  <View className='transactions-page__item-side'>
+                    <StatusTag value={transaction.status} options={TransactionStatuses} size='small' />
+                    <Price amount={transaction.amountCents} size='normal' variant='default' />
+                  </View>
                 </View>
-                <View className="transactions__item-footer">
-                  <Text className="transactions__item-code">{transaction.transactionCode}</Text>
-                  <StatusTag value={transaction.status} options={TransactionStatuses} size="small" />
-                </View>
+
+                {index < transactions.length - 1 ? <Divider spacing='none' /> : null}
               </View>
             ))}
-          </View>
+          </AppCard>
         ) : (
-          <Empty title="暂无消费记录" description="去购买会员卡或预约课程吧" />
+          <AppCard className='transactions-page__empty-card'>
+            <Empty title='暂无消费记录' description='去购买会员卡或预约课程吧' />
+          </AppCard>
         )}
-        {hasMore && !loading && transactions.length > 0 && (
-          <View className="transactions__loading-more">
-            <Text className="transactions__loading-more-text">加载中...</Text>
+
+        {hasMore && !loading && transactions.length > 0 ? (
+          <View className='transactions-page__loading-more'>
+            <Text className='transactions-page__loading-more-text'>上拉加载更多</Text>
           </View>
-        )}
-        {!hasMore && transactions.length > 0 && (
-          <View className="transactions__no-more">
-            <Text className="transactions__no-more-text">没有更多了</Text>
+        ) : null}
+
+        {!hasMore && transactions.length > 0 ? (
+          <View className='transactions-page__loading-more'>
+            <Text className='transactions-page__loading-more-text'>没有更多了</Text>
           </View>
-        )}
-      </ScrollView>
-    </View>
+        ) : null}
+      </View>
+
+      <View className='transactions-page__spacer' />
+    </PageShell>
   );
 }

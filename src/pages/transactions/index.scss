@@ -1,98 +1,121 @@
 @import '../../styles/variables.scss';
 
-.transactions {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: $bg-gray;
-
-  &__summary {
-    background: linear-gradient(135deg, $mint 0%, $mint-dark 100%);
-    padding: $spacing-2xl $spacing-lg;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: $text-inverse;
-    border-radius: 0 0 $radius-xl $radius-xl;
-  }
-
-  &__summary-title {
-    font-size: $font-size-sm;
-    opacity: 0.9;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__summary-count {
-    font-size: $font-size-sm;
-    opacity: 0.8;
-    margin-top: $spacing-xs;
-  }
-
-  &__list {
-    flex: 1;
-    padding: $spacing-md;
-    overflow-y: auto;
-  }
-
-  &__items {
+.transactions-page {
+  &__section {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__summary-card {
+    padding: 32px;
+    background:
+      radial-gradient(circle at top right, rgba($accent, 0.12) 0%, rgba($accent, 0) 52%),
+      linear-gradient(180deg, rgba($surface, 1) 0%, rgba($background-muted, 0.94) 100%);
+  }
+
+  &__summary-label,
+  &__summary-meta-label,
+  &__item-date,
+  &__item-code,
+  &__loading-more-text {
+    font-size: 10px;
+    color: $text-muted;
+    letter-spacing: $letter-spacing-wide;
+  }
+
+  &__summary-label,
+  &__summary-meta-label {
+    text-transform: uppercase;
+  }
+
+  &__summary-amount {
+    margin: 10px 0 28px;
+
+    .price {
+      color: $accent;
+    }
+  }
+
+  &__summary-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid rgba($gray-300, 0.7);
+  }
+
+  &__summary-meta-value {
+    color: $text-primary;
+    font-size: 16px;
+    font-weight: $font-weight-medium;
+    line-height: 1;
+  }
+
+  &__ledger-card,
+  &__empty-card {
+    border-radius: $radius-2xl;
+    overflow: hidden;
+    background: rgba($surface, 0.98);
   }
 
   &__item {
-    background: $white;
-    border-radius: $radius-lg;
-    padding: $spacing-lg;
-    box-shadow: $shadow-sm;
-  }
-
-  &__item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__item-info {
-    flex: 1;
-  }
-
-  &__item-kind {
-    font-size: $font-size-md;
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-    display: block;
-    margin-bottom: $spacing-xs;
-  }
-
-  &__item-date {
-    font-size: $font-size-xs;
-    color: $text-muted;
-  }
-
-  &__item-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: $spacing-sm;
-    border-top: 1px solid $border-light;
+    gap: $spacing-md;
+    padding: 20px 24px;
   }
 
-  &__item-code {
+  &__item-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__item-kind {
+    display: block;
+    margin-bottom: $spacing-2xs;
+    color: $text-primary;
     font-size: $font-size-xs;
-    color: $text-muted;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &__loading-more,
-  &__no-more {
+  &__item-date,
+  &__item-code {
+    display: block;
+    margin-top: $spacing-2xs;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__item-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+
+    .price {
+      font-size: $font-size-xs;
+    }
+  }
+
+  &__loading-more {
     text-align: center;
-    padding: $spacing-md 0;
+    padding: $spacing-sm 0;
   }
 
-  &__loading-more-text,
-  &__no-more-text {
-    font-size: $font-size-sm;
-    color: $text-muted;
+  &__empty-card {
+    padding: $spacing-md;
+  }
+
+  &__spacer {
+    height: $spacing-lg;
   }
 }

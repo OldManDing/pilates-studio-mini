@@ -1,176 +1,328 @@
 @import '../../styles/variables.scss';
 
-.coach-detail {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: $bg-gray;
+.coach-detail-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $background 0%, $background-muted 100%);
 
-  &__content {
-    flex: 1;
-    overflow-y: auto;
+  &__hero {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
   }
 
-  &__header {
-    background: linear-gradient(135deg, $violet 0%, $violet-dark 100%);
-    padding: $spacing-2xl $spacing-lg;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: $text-inverse;
+  &__hero-image,
+  &__hero-mask {
+    position: absolute;
+    inset: 0;
   }
 
-  &__avatar {
-    width: 160px;
-    height: 160px;
+  &__hero-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__hero-mask {
+    background: linear-gradient(180deg, rgba($black, 0.28) 0%, rgba($black, 0.14) 46%, rgba($black, 0.42) 100%);
+  }
+
+  &__back {
+    position: absolute;
+    left: $spacing-md;
+    top: calc(#{$spacing-xl} + constant(safe-area-inset-top));
+    top: calc(#{$spacing-xl} + env(safe-area-inset-top));
+    width: 44px;
+    height: 44px;
     border-radius: $radius-full;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    background: $gray-200;
-    margin-bottom: $spacing-md;
+    border: none;
+    background: rgba($white, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
   }
 
-  &__name {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
+  &__back-icon {
+    color: $white;
+    width: 14px;
+    height: 14px;
+  }
+
+  &__hero-text {
+    position: absolute;
+    left: $spacing-md;
+    right: $spacing-md;
+    bottom: $spacing-lg;
+  }
+
+  &__subtitle {
+    display: block;
+    color: rgba($white, 0.58);
+    font-size: 10px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    display: block;
+    color: $white;
+    font-size: 30px;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  }
+
+  &__body {
+    position: relative;
+    z-index: 2;
+    margin-top: -$spacing-md;
+    padding: 0 $spacing-md;
+  }
+
+  &__info-card {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__identity {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
     margin-bottom: $spacing-sm;
   }
 
-  &__tags {
+  &__avatar-wrap {
+    width: 84px;
+    height: 84px;
+    border-radius: $radius-full;
+    overflow: hidden;
+    background: rgba($gray-200, 0.8);
+    border: 1px solid $border-faint;
+    flex-shrink: 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-xs;
+    align-items: center;
     justify-content: center;
   }
 
-  &__tag {
-    padding: 4px $spacing-sm;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: $radius-full;
-    font-size: $font-size-xs;
+  &__avatar-image {
+    width: 100%;
+    height: 100%;
   }
 
-  &__card {
-    background: $white;
-    border-radius: $radius-lg;
-    padding: $spacing-lg;
-    margin: $spacing-md;
-    box-shadow: $shadow-sm;
+  &__avatar-text {
+    color: $text-muted;
+    font-size: $font-size-base;
+    font-weight: 300;
   }
 
-  &__card-title {
-    font-size: $font-size-md;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-    margin-bottom: $spacing-md;
+  &__identity-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__identity-name {
     display: block;
+    margin-bottom: $spacing-2xs;
+    color: $text-primary;
+    font-size: 22px;
+    font-weight: $font-weight-normal;
+    line-height: $line-height-snug;
   }
 
-  &__info-list {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
+  &__identity-meta {
+    display: block;
+    color: $text-muted;
+    font-size: 11px;
+    letter-spacing: $letter-spacing-wide;
   }
 
-  &__info-item {
+  &__meta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md 0;
   }
 
-  &__info-label {
-    font-size: $font-size-sm;
-    color: $text-secondary;
+  &__meta-label {
+    color: $text-muted;
+    font-size: 11px;
+    letter-spacing: $letter-spacing-wide;
   }
 
-  &__info-value {
-    font-size: $font-size-sm;
+  &__meta-value {
+    min-width: 0;
+    max-width: 65%;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: $text-primary;
+    font-size: 14px;
     font-weight: $font-weight-medium;
   }
 
-  &__bio {
-    font-size: $font-size-base;
-    color: $text-secondary;
-    line-height: $line-height-relaxed;
+  &__section {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__about {
     display: block;
-  }
-
-  &__certifications {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-
-  &__cert-item {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-sm;
-    background: $violet-light;
-    border-radius: $radius-md;
-  }
-
-  &__cert-icon {
-    font-size: $font-size-md;
-  }
-
-  &__cert-text {
+    color: $text-secondary;
     font-size: $font-size-sm;
-    color: $violet;
+    line-height: $line-height-relaxed;
   }
 
-  &__courses {
+  &__qualification-list {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
+    margin-bottom: $spacing-md;
   }
 
-  &__course-item {
+  &__qualification-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: $spacing-sm 0;
-    border-bottom: 1px solid $border-light;
+    gap: $spacing-xs;
+  }
 
-    &:last-child {
-      border-bottom: none;
+  &__qualification-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: $radius-full;
+    background: linear-gradient(180deg, $accent 0%, $accent-strong 100%);
+    flex-shrink: 0;
+  }
+
+  &__qualification-text {
+    color: $text-secondary;
+    font-size: 14px;
+  }
+
+  &__tag-groups {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 $spacing-sm;
+    border-radius: $radius-full;
+    background: rgba($accent-soft, 0.84);
+    border: 1px solid rgba($accent, 0.2);
+    color: $accent-strong;
+    font-size: $font-size-2xs;
+
+    &--muted {
+      background: rgba($gray-200, 0.8);
+      border-color: $border-faint;
+      color: $text-muted;
     }
   }
 
-  &__course-name {
-    font-size: $font-size-sm;
-    color: $text-primary;
-    font-weight: $font-weight-medium;
-  }
-
-  &__course-type {
-    font-size: $font-size-xs;
+  &__hint {
+    display: block;
+    margin-bottom: $spacing-sm;
     color: $text-muted;
+    font-size: $font-size-xs;
   }
 
-  &__schedule {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
+  &__schedule-card {
+    border-radius: $radius-xl;
+    overflow: hidden;
   }
 
   &__schedule-item {
-    padding: $spacing-md;
-    background: $gray-100;
-    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 20px 24px;
   }
 
-  &__schedule-time {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-    margin-bottom: 4px;
+  &__schedule-date {
+    min-width: 38px;
+    flex-shrink: 0;
+  }
+
+  &__schedule-day {
     display: block;
+    color: $text-primary;
+    font-size: 24px;
+    font-weight: 200;
+    line-height: $line-height-tight;
+  }
+
+  &__schedule-weekday {
+    display: block;
+    margin-top: $spacing-2xs;
+    color: $text-muted;
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.12em;
+  }
+
+  &__schedule-content {
+    flex: 1;
+    min-width: 0;
   }
 
   &__schedule-course {
-    font-size: $font-size-xs;
-    color: $text-muted;
     display: block;
+    color: $text-primary;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  }
+
+  &__schedule-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  &__schedule-meta-icon {
+    width: 12px;
+    height: 12px;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+
+  &__schedule-meta,
+  &__schedule-date-label {
+    display: block;
+    color: $text-muted;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  &__schedule-kind {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-height: 24px;
+    padding: 0 8px;
+    border-radius: $radius-full;
+    background: rgba($violet-light, 0.9);
+    color: $violet-dark;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  &__empty-wrap {
+    padding: $spacing-md;
+  }
+
+  &__spacer {
+    height: $spacing-xl;
   }
 }

@@ -1,5 +1,7 @@
+import { useMemo, useState } from 'react';
 import Taro, { useShareAppMessage } from '@tarojs/taro';
-import { ScrollView, View } from '@tarojs/components';
+import { View } from '@tarojs/components';
+import { PageShell, SectionTitle } from '../../components';
 import BookingCategoryPills from './components/BookingCategoryPills';
 import BookingCourseCard from './components/BookingCourseCard';
 import BookingDateStrip from './components/BookingDateStrip';
@@ -13,12 +15,14 @@ import type {
 import './index.scss';
 
 export default function Courses() {
+  const [selectedDateKey, setSelectedDateKey] = useState('d1');
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState('all');
+
   useShareAppMessage(() => ({
     title: 'Pilates Studio - 预约课程',
     path: '/pages/courses/index',
   }));
 
-  // Static shell data anchors: replace with API mappers after visual direction is approved.
   const heroData: BookingHeroData = {
     eyebrow: 'COURSE BOOKING',
     title: '预约课程',
@@ -26,22 +30,28 @@ export default function Courses() {
     actionLabel: '我的预约',
   };
 
-  const dateItems: BookingDateItemData[] = [
-    { key: 'd1', weekday: 'MON', day: '06', label: '今天', active: true },
-    { key: 'd2', weekday: 'TUE', day: '07', label: '明天' },
-    { key: 'd3', weekday: 'WED', day: '08' },
-    { key: 'd4', weekday: 'THU', day: '09' },
-    { key: 'd5', weekday: 'FRI', day: '10' },
-    { key: 'd6', weekday: 'SAT', day: '11' },
-    { key: 'd7', weekday: 'SUN', day: '12' },
-  ];
+  const dateItems: BookingDateItemData[] = useMemo(
+    () => [
+      { key: 'd1', weekday: 'MON', day: '06', label: '今天', active: selectedDateKey === 'd1' },
+      { key: 'd2', weekday: 'TUE', day: '07', label: '明天', active: selectedDateKey === 'd2' },
+      { key: 'd3', weekday: 'WED', day: '08', active: selectedDateKey === 'd3' },
+      { key: 'd4', weekday: 'THU', day: '09', active: selectedDateKey === 'd4' },
+      { key: 'd5', weekday: 'FRI', day: '10', active: selectedDateKey === 'd5' },
+      { key: 'd6', weekday: 'SAT', day: '11', active: selectedDateKey === 'd6' },
+      { key: 'd7', weekday: 'SUN', day: '12', active: selectedDateKey === 'd7' },
+    ],
+    [selectedDateKey],
+  );
 
-  const categoryItems: BookingCategoryItemData[] = [
-    { key: 'all', label: '全部', active: true },
-    { key: 'yoga', label: '瑜伽' },
-    { key: 'pilates', label: '普拉提' },
-    { key: 'meditation', label: '冥想' },
-  ];
+  const categoryItems: BookingCategoryItemData[] = useMemo(
+    () => [
+      { key: 'all', label: '全部', active: selectedCategoryKey === 'all' },
+      { key: 'yoga', label: '瑜伽', active: selectedCategoryKey === 'yoga' },
+      { key: 'pilates', label: '普拉提', active: selectedCategoryKey === 'pilates' },
+      { key: 'meditation', label: '冥想', active: selectedCategoryKey === 'meditation' },
+    ],
+    [selectedCategoryKey],
+  );
 
   const courseItems: BookingCourseCardData[] = [
     {
@@ -105,24 +115,62 @@ export default function Courses() {
     Taro.navigateTo({ url: '/pages/course-detail/index?id=static-demo' });
   };
 
-  return (
-    <ScrollView className='booking-shell' scrollY enhanced showScrollbar={false}>
-      <View className='booking-shell__content'>
-        <BookingHero data={heroData} onActionClick={handleMyBookings} />
-        <BookingDateStrip items={dateItems} />
-        <BookingCategoryPills items={categoryItems} />
+  const handleDateSelect = (key: BookingDateItemData['key']) => {
+    setSelectedDateKey(key);
+  };
 
-        <View className='booking-shell__section-head'>
-          <View className='booking-shell__section-title'>可预约课程</View>
-          <View className='booking-shell__section-count'>5 节</View>
+  const handleCategorySelect = (key: BookingCategoryItemData['key']) => {
+    setSelectedCategoryKey(key);
+  };
+
+  const courseDateMap: Record<string, BookingDateItemData['key'][]> = {
+    'course-1': ['d1', 'd2'],
+    'course-2': ['d1', 'd3'],
+    'course-3': ['d1', 'd4'],
+    'course-4': ['d2', 'd5'],
+    'course-5': ['d3', 'd6'],
+  };
+
+  const courseCategoryMap: Record<string, BookingCategoryItemData['key']> = {
+    'course-1': 'yoga',
+    'course-2': 'pilates',
+    'course-3': 'meditation',
+    'course-4': 'yoga',
+    'course-5': 'yoga',
+  };
+
+  const filteredCourseItems = useMemo(() => {
+    return courseItems.filter((item) => {
+      const matchesCategory = selectedCategoryKey === 'all' || courseCategoryMap[item.key] === selectedCategoryKey;
+      const matchesDate = (courseDateMap[item.key] || []).includes(selectedDateKey);
+      return matchesCategory && matchesDate;
+    });
+  }, [courseItems, selectedCategoryKey, selectedDateKey]);
+
+  return (
+    <PageShell className='booking-page' reserveTabBarSpace>
+      <View className='booking-page__content'>
+        <BookingHero data={heroData} onActionClick={handleMyBookings} />
+
+        <View className='booking-page__filters'>
+          <BookingDateStrip items={dateItems} onSelect={handleDateSelect} />
+          <BookingCategoryPills items={categoryItems} onSelect={handleCategorySelect} />
         </View>
 
-        <View className='booking-shell__list'>
-          {courseItems.map((item) => (
-            <BookingCourseCard key={item.key} data={item} onClick={handleCourseClick} />
-          ))}
+        <View className='booking-page__section'>
+          <SectionTitle
+            title='可预约课程'
+            actionLabel={`${filteredCourseItems.length} 节`}
+            actionTone='muted'
+          />
+
+          <View className='booking-page__list'>
+            {filteredCourseItems.map((item) => (
+              <BookingCourseCard key={item.key} data={item} onClick={handleCourseClick} />
+            ))}
+          </View>
         </View>
       </View>
-    </ScrollView>
+    </PageShell>
   );
 }

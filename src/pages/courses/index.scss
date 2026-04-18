@@ -1,320 +1,271 @@
 @import '../../styles/variables.scss';
 
-.booking-shell {
-  min-height: 100vh;
-  background: linear-gradient(180deg, $cream-100 0%, rgba($gray-100, 0.84) 100%);
-
+.booking-page {
   &__content {
-    padding: ($spacing-2xl + 8px) $spacing-lg ($spacing-2xl + $tabbar-height);
-  }
-
-  &__section-head {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 12px;
+    flex-direction: column;
+    gap: 0;
   }
 
-  &__section-title {
-    font-size: 32px;
-    font-weight: 500;
-    color: $ink;
-    letter-spacing: 0.3px;
+  &__filters {
+    display: flex;
+    flex-direction: column;
+    gap: 42px;
+    margin-top: 42px;
   }
 
-  &__section-count {
-    font-size: 20px;
-    color: rgba($ink-soft, 0.34);
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $figma-section-title-gap;
+    margin-top: 56px;
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 21px;
+  }
+
+  .section-title-block {
+    margin-bottom: 0;
+
+    &__action-text {
+      color: $gray-500;
+      font-size: $figma-caption;
+      font-weight: $font-weight-normal;
+      letter-spacing: 0.04em;
+    }
   }
 }
 
 .booking-hero {
-  padding: 56px 0 6px;
+  padding-top: 35px;
 
   &__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2px;
+    margin-bottom: 7px;
+  }
+
+  &__eyebrow,
+  &__subtitle {
+    display: block;
   }
 
   &__eyebrow {
-    font-size: 10px;
-    color: rgba($ink-soft, 0.48);
-    letter-spacing: 1.8px;
+    color: #c8c8c8;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.12em;
   }
 
   &__action {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: 1px;
   }
 
   &__action-text {
-    font-size: 11px;
-    color: rgba($ink-soft, 0.58);
+    color: #bcbcbc;
+    font-size: $figma-small;
+    font-weight: $font-weight-normal;
   }
 
   &__action-arrow {
-    width: 8px;
-    height: 8px;
-    border-top: 1px solid rgba($ink-soft, 0.38);
-    border-right: 1px solid rgba($ink-soft, 0.38);
-    transform: rotate(45deg);
+    color: #d0d0d0;
+    font-size: 20px;
+    font-weight: $font-weight-normal;
+    line-height: 1;
   }
 
   &__title {
     display: block;
-    margin: 8px 0;
-    font-size: 44px;
+    margin-bottom: 14px;
+    color: $text-primary;
+    font-size: 42px;
     font-weight: 300;
-    color: $ink;
+    letter-spacing: 0.01em;
     line-height: 1.2;
   }
 
   &__subtitle {
     display: block;
-    font-size: 22px;
-    color: rgba($ink-soft, 0.38);
+    color: $gray-500;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.02em;
   }
 }
 
 .booking-date-strip {
-  padding: 20px 0 22px;
-
   &__row {
     display: flex;
-    gap: 6px;
+    gap: 14px;
     white-space: nowrap;
   }
 
   &__pill {
-    min-width: 46px;
-    padding: 8px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba($cream-300, 0.58);
+    min-width: 84px;
+    padding: 17px 21px;
+    border-radius: 24px;
+    border: 1px solid #f0f0f0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    background: rgba($white, 0.9);
+    gap: 0;
+    background: transparent;
 
     &--active {
-      background: $ink;
-      border-color: $ink;
+      background: $primary;
+      border-color: transparent;
 
       .booking-date-strip__weekday,
       .booking-date-strip__label {
-        color: rgba($white, 0.52);
+        color: rgba($white, 0.5);
       }
 
       .booking-date-strip__day {
         color: $white;
+        font-weight: $font-weight-normal;
       }
+    }
+
+    &--disabled {
+      opacity: 0.45;
     }
   }
 
   &__weekday,
+  &__label,
+  &__day {
+    display: block;
+  }
+
+  &__weekday,
   &__label {
-    font-size: 8px;
-    color: rgba($ink-soft, 0.34);
-    letter-spacing: 1.4px;
+    color: $text-muted;
+    font-size: $figma-micro;
+    letter-spacing: 0.04em;
+  }
+
+  &__weekday {
+    margin-bottom: 10px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.09em;
+  }
+
+  &__label {
+    font-weight: $font-weight-normal;
+    min-height: $figma-micro;
   }
 
   &__day {
-    font-size: 18px;
+    color: $text-primary;
+    margin-bottom: 7px;
+    font-size: 31px;
     font-weight: 300;
-    color: $ink;
+    font-feature-settings: 'tnum';
     line-height: 1;
   }
 }
 
 .booking-category-pills {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 14px;
+  flex-wrap: wrap;
 
   &__pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 32px;
-    padding: 0 14px;
-    border-radius: 9999px;
-    border: 1px solid rgba($cream-300, 0.66);
-    background: rgba($white, 0.9);
+    min-height: 45px;
+    padding: 12px 28px;
+    border-radius: $radius-full;
+    border: 1px solid #ebebeb;
+    background: transparent;
 
     &--active {
-      background: $ink;
-      border-color: $ink;
+      background: $primary;
+      border-color: transparent;
 
       .booking-category-pills__text {
         color: $white;
       }
     }
+
+    &--disabled {
+      opacity: 0.45;
+    }
   }
 
   &__text {
-    font-size: 12px;
-    color: rgba($ink-soft, 0.58);
+    color: $text-secondary;
+    font-size: $figma-body;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.02em;
   }
 }
 
 .booking-course-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px;
-  border: 1px solid rgba($cream-300, 0.58);
-  border-radius: 22px;
-  background: $white;
-  box-shadow: $shadow-soft;
+  gap: 35px;
+  padding: 42px;
+  border: none;
+  border-radius: $figma-radius-card;
+  background: $surface;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+
+  &--full {
+    .booking-course-card__title,
+    .booking-course-card__time,
+    .booking-course-card__meta {
+      color: #b0b0b0;
+    }
+  }
 
   &__thumb {
     position: relative;
-    width: 76px;
-    height: 76px;
+    width: 126px;
+    height: 126px;
     flex-shrink: 0;
-    border-radius: 18px;
     overflow: hidden;
-    box-shadow: inset 0 0 0 1px rgba($white, 0.22);
-
-    &--yoga {
-      background: linear-gradient(135deg, #efe7da 0%, #d8c8b0 100%);
-    }
-
-    &--pilates {
-      background: linear-gradient(135deg, #ede7df 0%, #cbbca7 100%);
-    }
-
-    &--meditation {
-      background: linear-gradient(135deg, #59544f 0%, #2c2825 100%);
-    }
+    border-radius: 21px;
+    background: $surface-strong;
 
     &--dark {
-      background: linear-gradient(135deg, #433d37 0%, #171514 100%);
+      filter: grayscale(0.55) brightness(0.9);
     }
   }
 
-  &__thumb-scene,
-  &__thumb-glow,
-  &__thumb-frame,
-  &__thumb-beam,
-  &__thumb-figure,
-  &__thumb-floor {
-    position: absolute;
+  &__thumb-image {
+    width: 100%;
+    height: 100%;
   }
 
-  &__thumb-scene {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  &__thumb-glow {
-    left: -12%;
-    bottom: -10%;
-    width: 86%;
-    height: 62%;
-    border-radius: $radius-full;
-    background: radial-gradient(circle, rgba($white, 0.36) 0%, rgba($white, 0) 70%);
-  }
-
-  &__thumb-frame {
-    top: 10px;
-    right: 10px;
-    bottom: 12px;
-    left: 10px;
-    border-radius: 14px;
-    background: linear-gradient(180deg, rgba($white, 0.5) 0%, rgba($white, 0.08) 100%);
-    overflow: hidden;
-  }
-
-  &__thumb-beam {
-    top: 0;
-    left: 12%;
-    width: 44%;
-    height: 48%;
-    background: linear-gradient(180deg, rgba($white, 0.6) 0%, rgba($white, 0) 100%);
-    transform: skewX(-18deg);
-  }
-
-  &__thumb-figure {
-    left: 22%;
-    right: 18%;
-    bottom: 24%;
-    height: 24%;
-    border-radius: 999px;
-    background: rgba($ink, 0.48);
-    box-shadow: 0 4px 16px rgba($ink, 0.12);
-  }
-
-  &__thumb-floor {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 26%;
-    background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($white, 0.26) 100%);
-  }
-
-  &__thumb--yoga &__thumb-figure {
-    left: 16%;
-    right: 30%;
-    bottom: 22%;
-    transform: rotate(-14deg);
-  }
-
-  &__thumb--pilates &__thumb-figure {
-    left: 18%;
-    right: 18%;
-    bottom: 26%;
-    height: 18%;
-    border-radius: 12px;
-  }
-
-  &__thumb--meditation &__thumb-figure,
-  &__thumb--dark &__thumb-figure {
-    left: 26%;
-    right: 26%;
-    bottom: 24%;
-    height: 28%;
-    border-radius: 50% 50% 42% 42%;
-    background: rgba($white, 0.28);
-  }
-
-  &__thumb-label {
-    position: absolute;
-    left: 8px;
-    top: 8px;
-    z-index: 1;
-    padding: 2px 6px;
-    border-radius: 999px;
-    background: rgba($white, 0.68);
-    font-size: 8px;
-    letter-spacing: 1.2px;
-    color: rgba($ink, 0.5);
+  &__full-badge,
+  &__title,
+  &__time,
+  &__meta,
+  &__spots,
+  &__arrow,
+  &__clock {
+    display: block;
   }
 
   &__full-badge {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
-    color: $white;
-    font-size: 9px;
-    letter-spacing: 1px;
+    background: rgba($primary, 0.34);
+    color: $text-inverse;
+    font-size: 16px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.1em;
   }
 
   &__body {
@@ -323,76 +274,112 @@
   }
 
   &__title {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    color: $ink;
+    margin-bottom: 14px;
+    color: $text-primary;
+    font-size: 26px;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
   }
 
   &__meta-line {
     display: flex;
     align-items: center;
-    gap: 5px;
-    margin-bottom: 5px;
+    gap: 3px;
+    margin-bottom: 14px;
   }
 
   &__clock {
-    width: 12px;
-    height: 12px;
-    border: 1px solid rgba($ink-soft, 0.34);
-    border-radius: 50%;
     position: relative;
+    width: 21px;
+    height: 21px;
+    border: 2px solid #cdcdcd;
+    border-radius: 999px;
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 2px;
-      width: 1px;
-      height: 3px;
-      background: rgba($ink-soft, 0.34);
-      transform: translateX(-50%);
-    }
-
+    &::before,
     &::after {
       content: '';
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 3px;
-      height: 1px;
-      background: rgba($ink-soft, 0.34);
-      transform: translateY(-50%);
+      background: #cdcdcd;
+      border-radius: 999px;
+      transform-origin: bottom center;
+    }
+
+    &::before {
+      width: 2px;
+      height: 5px;
+      transform: translate(-50%, -100%);
+    }
+
+    &::after {
+      width: 2px;
+      height: 4px;
+      transform: translate(-50%, -100%) rotate(55deg);
     }
   }
 
   &__time,
-  &__duration {
-    font-size: 11px;
-    color: rgba($ink-soft, 0.56);
+  &__meta {
+    color: #ababab;
+    font-size: $figma-small;
+    font-weight: $font-weight-normal;
+    line-height: 1.25;
   }
 
-  &__meta {
-    display: block;
-    font-size: 11px;
-    color: rgba($ink-soft, 0.42);
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
   }
 
   &__spots {
-    align-self: center;
-    padding: 6px 10px;
-    border: 1px solid rgba($gold, 0.12);
-    border-radius: 999px;
-    background: rgba($gold-light, 0.58);
-    font-size: 10px;
-    color: rgba($gold-dark, 0.72);
-    letter-spacing: 0.3px;
+    color: $accent;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.02em;
 
     &--full {
-      border-color: rgba($cream-300, 0.84);
-      background: rgba($gray-100, 0.92);
-      color: rgba($ink-soft, 0.42);
+      color: #d0d0d0;
     }
+  }
+
+  &__arrow {
+    position: relative;
+    width: 21px;
+    height: 21px;
+  }
+
+  &__arrow-line,
+  &__arrow-head {
+    position: absolute;
+    border-radius: 999px;
+  }
+
+  &__arrow-line {
+    left: 2px;
+    top: 50%;
+    width: 14px;
+    height: 2px;
+    background: rgba($gray-400, 0.88);
+    transform: translateY(-50%);
+  }
+
+  &__arrow-head {
+    right: 2px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid rgba($gray-400, 0.88);
+    border-right: 2px solid rgba($gray-400, 0.88);
+    transform: translateY(-50%) rotate(45deg);
   }
 }

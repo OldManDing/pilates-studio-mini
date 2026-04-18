@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
-import { Loading, Empty, CoachCard } from '../../components';
+import { AppCard, CoachCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
 export default function Coaches() {
@@ -59,30 +59,54 @@ export default function Coaches() {
   };
 
   return (
-    <View className='coaches'>
-      <ScrollView className='coaches__list' scrollY enhanced showScrollbar={false}>
-        {loading && page === 1 ? (
-          <Loading />
-        ) : coaches.length > 0 ? (
-          <View className='coaches__grid'>
-            {coaches.map((coach) => (
-              <CoachCard key={coach.id} coach={coach} onClick={() => handleCoachClick(coach)} />
-            ))}
-          </View>
-        ) : (
+    <PageShell className='coaches-page' safeAreaBottom>
+      <PageHeader
+        title='教练团队'
+        subtitle='查看教练专长与近期可预约排课'
+        eyebrow='COACHES'
+      />
+
+      <View className='coaches-page__section'>
+        <SectionTitle
+          eyebrow='TEAM'
+          title='在岗教练'
+          subtitle={coaches.length > 0 ? `当前共 ${coaches.length} 位` : '按专长选择更适合你的训练指导'}
+        />
+      </View>
+
+      {loading && page === 1 ? (
+        <Loading />
+      ) : coaches.length > 0 ? (
+        <AppCard padding='none' className='coaches-page__list-card'>
+          {coaches.map((coach, index) => (
+            <View key={coach.id}>
+              <View className='coaches-page__item'>
+                <CoachCard coach={coach} compact onClick={() => handleCoachClick(coach)} />
+              </View>
+
+              {index < coaches.length - 1 ? <Divider spacing='none' /> : null}
+            </View>
+          ))}
+        </AppCard>
+      ) : (
+        <AppCard className='coaches-page__empty-card'>
           <Empty title='暂无教练' description='敬请期待' />
-        )}
-        {hasMore && !loading && coaches.length > 0 && (
-          <View className='coaches__loading-more'>
-            <Text className='coaches__loading-more-text'>加载中...</Text>
+        </AppCard>
+      )}
+
+        {hasMore && !loading && coaches.length > 0 ? (
+          <View className='coaches-page__loading-more'>
+            <Text className='coaches-page__loading-more-text'>上拉加载更多</Text>
           </View>
-        )}
-        {!hasMore && coaches.length > 0 && (
-          <View className='coaches__no-more'>
-            <Text className='coaches__no-more-text'>没有更多了</Text>
-          </View>
-        )}
-      </ScrollView>
-    </View>
+        ) : null}
+
+      {!hasMore && coaches.length > 0 ? (
+        <View className='coaches-page__loading-more'>
+          <Text className='coaches-page__loading-more-text'>没有更多了</Text>
+        </View>
+      ) : null}
+
+      <View className='coaches-page__spacer' />
+    </PageShell>
   );
 }
