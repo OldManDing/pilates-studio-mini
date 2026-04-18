@@ -1,4 +1,5 @@
-export { http, default as request, ApiResponse, PaginationParams, defaultPagination } from './request';
+export { http, default as request, defaultPagination } from './request';
+export type { ApiResponse, PaginationParams } from './request';
 export { coursesApi, courseSessionsApi } from './courses';
 export { coachesApi } from './coaches';
 export { bookingsApi } from './bookings';

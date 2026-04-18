@@ -54,8 +54,8 @@ export interface CourseFilter {
 // Course APIs
 export const coursesApi = {
   // Get all courses
-  getAll: (params?: PaginationParams & CourseFilter) =>
-    http.get<{ courses: Course[]; meta: any }>('/courses', params),
+  getAll: (params?: PaginationParams & CourseFilter, config?: { showLoading?: boolean }) =>
+    http.get<{ courses: Course[]; meta: any }>('/courses', params, config),
 
   // Get course by ID
   getById: (id: string) =>

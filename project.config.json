@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "pilates-studio-mini",
   "description": "Pilates Studio Mini Program",
-  "appid": "YOUR_APPID",
+  "appid": "wx9608a7c1e99814f2",
   "setting": {
     "urlCheck": true,
     "es6": true,

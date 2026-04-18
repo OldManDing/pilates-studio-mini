@@ -46,8 +46,8 @@ export interface CreateMemberData {
 // Member APIs
 export const membersApi = {
   // Get current member profile
-  getProfile: () =>
-    http.get<{ member: Member }>('/members/profile'),
+  getProfile: (config?: { showLoading?: boolean }) =>
+    http.get<{ member: Member }>('/members/profile', undefined, config),
 
   // Get member by ID
   getById: (id: string) =>
@@ -58,6 +58,6 @@ export const membersApi = {
     http.put<{ member: Member }>(`/members/${id}`, data),
 
   // Get my memberships
-  getMyMemberships: () =>
-    http.get<{ memberships: Membership[] }>('/members/my-memberships'),
+  getMyMemberships: (config?: { showLoading?: boolean }) =>
+    http.get<{ memberships: Membership[] }>('/members/my-memberships', undefined, config),
 };

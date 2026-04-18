@@ -54,8 +54,8 @@ export const bookingsApi = {
     http.get<{ bookings: Booking[]; meta: any }>('/bookings', params),
 
   // Get my bookings
-  getMyBookings: (params?: PaginationParams) =>
-    http.get<{ bookings: Booking[]; meta: any }>('/bookings/my', params),
+  getMyBookings: (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) =>
+    http.get<{ bookings: Booking[]; meta: any }>('/bookings/my', params, config),
 
   // Get booking by ID
   getById: (id: string) =>
