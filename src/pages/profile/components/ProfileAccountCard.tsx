@@ -1,4 +1,5 @@
 import { Image, Text, View } from '@tarojs/components';
+import { AppCard } from '../../../components';
 import type { ProfileAccountCardData } from './types';
 
 interface ProfileAccountCardProps {
@@ -7,7 +8,7 @@ interface ProfileAccountCardProps {
 
 export default function ProfileAccountCard({ data }: ProfileAccountCardProps) {
   return (
-    <View className='profile-shell-card profile-account-card'>
+    <AppCard className='profile-account-card' padding='medium'>
       <View className='profile-account-card__top'>
         <View className='profile-account-card__avatar-wrap'>
           {data.avatarUrl ? (
@@ -47,6 +48,6 @@ export default function ProfileAccountCard({ data }: ProfileAccountCardProps) {
           </View>
         ))}
       </View>
-    </View>
+    </AppCard>
   );
 }

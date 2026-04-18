@@ -1,116 +1,97 @@
 @import '../../styles/variables.scss';
 
-.membership {
-  min-height: 100vh;
-  background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
-
+.membership-page {
   &__content {
-    padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
   }
 
   &__section {
-    margin-bottom: $spacing-lg;
-  }
-
-  &__section-heading {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-md;
-  }
-
-  &__section-title {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-medium;
-    color: $ink;
-  }
-
-  &__section-subtitle,
-  &__overview-label {
-    font-size: $font-size-xs;
-    letter-spacing: 2px;
-    color: $ink-soft;
-  }
-
-  &__panel,
-  &__status-card {
-    border-radius: $radius-xl;
-    background: $white;
-    box-shadow: $shadow-soft;
+    flex-direction: column;
+    gap: $spacing-sm;
   }
 
   &__status-card {
-    position: relative;
-    overflow: hidden;
-    padding: $spacing-xl;
-    background: linear-gradient(180deg, rgba($white, 0.96) 0%, rgba($cream-100, 0.98) 100%);
+    background: $surface;
+    box-shadow: none;
+    border-color: rgba($gray-300, 0.84);
+  }
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba($gold, 0.08) 0%, rgba($white, 0) 48%, rgba($mint, 0.05) 100%);
-    }
+  &__status-main {
+    padding: 32px 32px 24px;
   }
 
   &__status-top,
-  &__status-caption,
-  &__status-name,
-  &__status-code,
+  &__status-badge-group,
+  &__status-badge,
   &__status-stats,
-  &__status-progress,
-  &__actions {
-    position: relative;
-    z-index: 1;
+  &__progress,
+  &__section-title,
+  &__benefit,
+  &__overview,
+  &__overview-value-row,
+  &__overview-side-row,
+  &__activity {
+    display: flex;
+    align-items: center;
   }
 
   &__status-top {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
+    margin-bottom: 28px;
+  }
+
+  &__status-badge-group {
+    gap: 10px;
   }
 
   &__status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: $spacing-xs;
-    padding: 6px $spacing-sm;
+    gap: 5px;
+    min-height: 22px;
+    padding: 3px 10px;
     border-radius: $radius-full;
-    border: 1px solid rgba($gold, 0.3);
-    background: rgba($white, 0.72);
+    border: 0.5px solid rgba($accent, 0.3);
+    background: transparent;
   }
 
-  &__status-badge-dot {
-    width: $spacing-xs;
-    height: $spacing-xs;
+  &__status-dot {
+    width: 4px;
+    height: 4px;
     border-radius: $radius-full;
-    background: $gold;
+    background: $accent;
+  }
+
+  &__status-name {
+    color: $gray-600;
+    font-size: 12px;
+    font-weight: $font-weight-normal;
   }
 
   &__status-badge-text,
-  &__status-state,
-  &__status-caption,
+  &__status-flag,
+  &__status-label,
   &__status-stat-label,
-  &__status-progress-text,
-  &__overview-note,
+  &__progress-text,
+  &__section-en,
+  &__overview-label,
+  &__overview-side-label,
+  &__activity-tag,
   &__activity-date,
-  &__empty-desc,
   &__benefit-desc {
-    font-size: $font-size-xs;
+    font-size: 10px;
   }
 
   &__status-badge-text,
-  &__status-progress-text,
-  &__activity-tag {
-    color: $gold-dark;
+  &__progress-text,
+  &__activity-tag--renew {
+    color: $accent;
   }
 
   &__status-badge-text,
-  &__status-state,
-  &__status-caption,
+  &__status-flag,
+  &__status-label,
   &__status-stat-label,
   &__overview-label,
   &__overview-side-label,
@@ -118,205 +99,158 @@
     font-weight: $font-weight-medium;
   }
 
-  &__status-state,
-  &__status-caption,
+  &__status-flag,
+  &__status-label,
   &__status-stat-label,
-  &__overview-note,
+  &__section-en,
+  &__overview-label,
+  &__overview-side-label,
   &__activity-date,
-  &__empty-desc,
-  &__benefit-desc {
-    color: $ink-soft;
+  &__benefit-desc,
+  &__activity-tag {
+    color: $gray-500;
+    letter-spacing: 0.08em;
   }
 
-  &__status-caption {
+  &__status-label,
+  &__status-code,
+  &__status-plan {
     display: block;
-    margin-bottom: $spacing-xs;
-    letter-spacing: 1px;
   }
 
-  &__status-name,
-  &__overview-value {
-    display: block;
-    line-height: $line-height-tight;
-    color: $ink;
-  }
-
-  &__status-name {
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-2xl;
-    font-weight: 300;
+  &__status-label {
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   &__status-code {
-    display: block;
-    margin-bottom: $spacing-lg;
-    font-size: $font-size-sm;
-    color: $ink-soft;
+    margin-bottom: 24px;
+    color: $text-primary;
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  &__status-plan {
+    margin-bottom: 24px;
+    color: $text-secondary;
+    font-size: 12px;
   }
 
   &__status-stats {
-    display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
+    margin-bottom: 28px;
   }
 
-  &__status-stat {
-    flex: 1;
+  &__status-right {
+    text-align: right;
+  }
 
-    &--right {
-      text-align: right;
-    }
+  &__status-stat-label,
+  &__status-stat-value {
+    display: block;
   }
 
   &__status-stat-label {
-    display: block;
-    margin-bottom: $spacing-sm;
-    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   &__status-stat-value {
-    display: block;
-    font-size: $font-size-xl;
+    color: $text-primary;
+    font-size: 26px;
     font-weight: 300;
     line-height: 1;
-    color: $ink;
+    letter-spacing: 0.01em;
   }
 
-  &__status-progress {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-lg;
+  &__progress {
+    gap: 12px;
+    margin-bottom: 28px;
   }
 
-  &__status-progress-track {
+  &__progress-track {
     flex: 1;
-    height: $spacing-xs;
-    overflow: hidden;
+    height: 2px;
     border-radius: $radius-full;
-    background: $cream-200;
+    overflow: hidden;
+    background: #f0f0f0;
   }
 
-  &__status-progress-fill {
+  &__progress-fill {
     height: 100%;
     border-radius: $radius-full;
-    background: linear-gradient(90deg, $gold 0%, $gold-dark 100%);
+    background: linear-gradient(90deg, $accent 0%, $accent-strong 100%);
   }
 
-  &__divider {
-    height: 1px;
-    margin: 0;
-    background: $cream-300;
-
-    &--soft {
-      margin-left: $spacing-xl + $spacing-lg;
-      background: rgba($cream-300, 0.9);
-    }
+  &__renew {
+    margin-top: 24px;
   }
 
-  &__actions {
-    display: flex;
-    padding-top: $spacing-lg;
-  }
-
-  &__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 88px;
-    border-radius: $radius-lg;
-
-    &--primary {
-      background: linear-gradient(135deg, $gold 0%, $gold-dark 100%);
-      box-shadow: $shadow-gold;
-    }
-  }
-
-  &__button-text {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-
-    &--primary {
-      color: $white;
-    }
-  }
-
-  &__panel {
-    overflow: hidden;
-  }
-
-  &__benefit-item,
-  &__activity-item {
-    display: flex;
-    align-items: center;
+  &__section-title {
     justify-content: space-between;
-    gap: $spacing-md;
-    padding: $spacing-lg;
+    padding: 0 $spacing-xs;
   }
 
-  &__benefit-item {
+  &__section-name {
+    color: $text-primary;
+    font-size: 17px;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+  }
+
+  &__benefit {
     align-items: flex-start;
+    gap: 16px;
+    padding: 20px 32px;
   }
 
-  &__benefit-marker {
-    width: 64px;
-    height: 64px;
-    border-radius: $radius-lg;
-    background: $gold-light;
+  &__benefit-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-md;
+    background: rgba($accent-soft, 0.92);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
 
-  &__benefit-marker-text {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $gold-dark;
-    letter-spacing: 1px;
+  &__benefit-icon-text {
+    color: $accent;
+    width: 16px;
+    height: 16px;
   }
 
-  &__benefit-content,
-  &__activity-meta {
+  &__benefit-content {
     flex: 1;
     min-width: 0;
   }
 
   &__benefit-label,
-  &__activity-title,
-  &__empty-title {
+  &__activity-title {
     display: block;
-    color: $ink;
-  }
-
-  &__benefit-label,
-  &__activity-title,
-  &__empty-title,
-  &__section-title {
+    color: $text-primary;
+    font-size: 14px;
     font-weight: $font-weight-medium;
+    margin-bottom: 2px;
   }
 
-  &__benefit-label,
-  &__activity-title,
-  &__empty-title {
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-sm;
-  }
-
-  &__benefit-desc,
-  &__empty-desc {
-    display: block;
+  &__benefit-desc {
+    color: $gray-500;
+    font-size: 11px;
     line-height: $line-height-normal;
-    font-size: $font-size-xs;
+    letter-spacing: 0;
   }
 
   &__overview {
-    display: flex;
     align-items: flex-end;
-    padding: $spacing-xl;
+    gap: 20px;
+    padding: 28px 32px;
   }
 
   &__overview-main {
@@ -324,78 +258,79 @@
   }
 
   &__overview-label,
-  &__overview-side-label,
-  &__activity-tag {
-    color: $ink-soft;
-    letter-spacing: 1px;
-  }
-
-  &__overview-label {
+  &__overview-side-label {
     display: block;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__overview-value-row,
-  &__overview-side-value-row {
-    display: flex;
-    align-items: flex-end;
-    gap: $spacing-xs;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    color: #bcbcbc;
+    letter-spacing: 0.08em;
+    font-weight: $font-weight-normal;
   }
 
   &__overview-value {
-    font-size: 80px;
+    color: $text-primary;
+    font-size: 40px;
     font-weight: 200;
     line-height: 1;
+    letter-spacing: -0.03em;
   }
 
   &__overview-unit,
   &__overview-side-unit {
-    margin-bottom: 6px;
-    font-size: $font-size-xs;
-    color: $ink-soft;
-  }
-
-  &__overview-note {
-    display: block;
-    margin-top: $spacing-sm;
+    margin-bottom: 2px;
+    color: #c0c0c0;
+    font-size: 10px;
   }
 
   &__overview-divider {
     width: 1px;
-    align-self: stretch;
-    margin: 0 $spacing-lg;
-    background: $cream-300;
+    height: 48px;
+    margin: 0 4px 4px 0;
+    align-self: flex-end;
+    background: #f0f0f0;
   }
 
   &__overview-side {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-lg;
-  }
-
-  &__overview-side-item {
-    min-width: 132px;
-  }
-
-  &__overview-side-label {
-    display: block;
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-xs;
+    flex-direction: row;
+    gap: 24px;
+    margin-bottom: 4px;
   }
 
   &__overview-side-value {
-    font-size: $font-size-xl;
+    color: $text-primary;
+    font-size: 22px;
     font-weight: 300;
     line-height: 1;
-    color: $ink;
+  }
+
+  &__activity {
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 32px;
+  }
+
+  &__activity-content {
+    flex: 1;
+    min-width: 0;
   }
 
   &__activity-tag {
+    font-size: 10px;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.04em;
     flex-shrink: 0;
-    color: $gold-dark;
+
+    &--renew {
+      color: $accent;
+    }
   }
 
-  &__empty-state {
-    padding: $spacing-xl;
+  &__empty-wrap {
+    padding: $spacing-lg;
+  }
+
+  &__spacer {
+    height: $spacing-xl;
   }
 }

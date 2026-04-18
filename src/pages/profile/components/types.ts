@@ -15,6 +15,9 @@ export interface ProfileAccountCardData {
   name: string;
   badgeLabel: string;
   phone: string;
+  membershipLabel: string;
+  membershipTitle: string;
+  membershipDescription: string;
   stats: ProfileStatData[];
 }
 

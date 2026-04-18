@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
-import { ScrollView, Text, View } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
-import { Loading } from '../../components';
+import { Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
 import ProfileMenuSection from './components/ProfileMenuSection';
 import ProfileSignOutButton from './components/ProfileSignOutButton';
@@ -49,6 +49,40 @@ function getJoinedMonths(joinedAt?: string) {
   return Math.max(0, months || (now.getDate() >= joinedDate.getDate() ? 1 : 0));
 }
 
+function calculateMinutes(start?: string, end?: string) {
+  if (!start || !end) {
+    return 0;
+  }
+
+  const startTime = new Date(start).getTime();
+  const endTime = new Date(end).getTime();
+  const diff = endTime - startTime;
+
+  if (Number.isNaN(diff) || diff <= 0) {
+    return 0;
+  }
+
+  return Math.round(diff / (1000 * 60));
+}
+
+function padNumber(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatDateLabel(dateString?: string) {
+  if (!dateString) {
+    return '--';
+  }
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return '--';
+  }
+
+  return `${date.getFullYear()}.${padNumber(date.getMonth() + 1)}.${padNumber(date.getDate())}`;
+}
+
 export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<Member | null>(null);
@@ -60,9 +94,9 @@ export default function Profile() {
       setLoading(true);
 
       const [profileRes, membershipsRes, bookingsRes] = await Promise.all([
-        membersApi.getProfile().catch(() => ({ data: { member: null as Member | null } })),
-        membersApi.getMyMemberships().catch(() => ({ data: { memberships: [] as Membership[] } })),
-        bookingsApi.getMyBookings({ page: 1, limit: 100 }).catch(() => ({ data: { bookings: [] as Booking[] } })),
+        membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
+        membersApi.getMyMemberships({ showLoading: false }).catch(() => ({ data: { memberships: [] as Membership[] } })),
+        bookingsApi.getMyBookings({ page: 1, limit: 100 }, { showLoading: false }).catch(() => ({ data: { bookings: [] as Booking[] } })),
       ]);
 
       setMember(profileRes.data.member);
@@ -89,8 +123,10 @@ export default function Profile() {
 
   const accountCardData = useMemo<ProfileAccountCardData>(() => {
     const completedBookings = bookings.filter((booking) => booking.status === 'COMPLETED').length;
+    const completedMinutes = bookings
+      .filter((booking) => booking.status === 'COMPLETED')
+      .reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0);
     const totalBookings = bookings.length;
-    const activeMembershipCount = memberships.filter((membership) => membership.isActive).length;
     const joinedMonths = getJoinedMonths(member?.joinedAt);
 
     const stats: ProfileStatData[] = [
@@ -102,7 +138,7 @@ export default function Profile() {
       },
       {
         key: 'hours',
-        value: member ? String(activeMembershipCount) : '--',
+        value: member ? String(Math.round(completedMinutes / 60) || 0) : '--',
         unit: 'h',
         label: '训练时长',
       },
@@ -120,9 +156,14 @@ export default function Profile() {
       name: getDisplayName(member),
       badgeLabel: activeMembership ? 'GOLD' : 'GUEST',
       phone: getMaskedPhone(member?.phone),
+      membershipLabel: activeMembership ? 'ACTIVE MEMBERSHIP' : 'GUEST MODE',
+      membershipTitle: activeMembership?.planName || '尚未开通会员',
+      membershipDescription: activeMembership
+        ? `剩余 ${activeMembership.remainingCredits}/${activeMembership.totalCredits} 次 · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
+        : '登录后即可同步会员权益、课次余额与训练记录。',
       stats,
     };
-  }, [activeMembership, bookings, member, memberships]);
+  }, [activeMembership, bookings, member]);
 
   const menuSections = useMemo<ProfileMenuSectionData[]>(() => [
     {
@@ -161,18 +202,21 @@ export default function Profile() {
           icon: 'notifications',
           label: '消息通知',
           description: '课程提醒与系统通知',
+          route: '/pages/notifications/index',
         },
         {
           key: 'support',
           icon: 'support',
           label: '帮助与反馈',
           description: '常见问题与意见反馈',
+          route: '/pages/help/index',
         },
         {
           key: 'settings',
           icon: 'settings',
           label: '设置',
           description: '账户安全与偏好设置',
+          route: '/pages/settings/index',
         },
       ],
     },
@@ -185,15 +229,6 @@ export default function Profile() {
   const handleMenuClick = (item: ProfileMenuItemData) => {
     if (item.route) {
       Taro.navigateTo({ url: item.route });
-      return;
-    }
-
-    if (item.key === 'support') {
-      Taro.showModal({
-        title: '帮助与反馈',
-        content: '常见问题与反馈通道整理中，如需帮助请联系门店顾问。',
-        showCancel: false,
-      });
       return;
     }
 
@@ -232,10 +267,10 @@ export default function Profile() {
   }
 
   return (
-    <ScrollView className='profile-shell' scrollY enhanced showScrollbar={false}>
-      <View className='profile-shell__content'>
-        <View className='profile-shell__heading'>
-          <Text className='profile-shell__eyebrow'>MY ACCOUNT</Text>
+    <PageShell className='profile-page' reserveTabBarSpace>
+      <View className='profile-page__content'>
+        <View className='profile-page__header'>
+          <Text className='profile-page__eyebrow'>MY ACCOUNT</Text>
         </View>
 
         <ProfileAccountCard data={accountCardData} />
@@ -246,6 +281,6 @@ export default function Profile() {
 
         <ProfileSignOutButton data={signOutData} onClick={handleSignOut} />
       </View>
-    </ScrollView>
+    </PageShell>
   );
 }

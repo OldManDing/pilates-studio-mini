@@ -1,44 +1,33 @@
 @import '../../styles/variables.scss';
 
-$profile-avatar-size: $spacing-unit * 14;
-$profile-icon-size: calc($spacing-xl + $spacing-unit);
-$profile-glyph-size: $spacing-unit * 4;
-$profile-menu-indent: $spacing-xl + $spacing-lg;
-$profile-stat-divider-height: $spacing-unit * 9;
-
-.profile-shell {
-  min-height: 100vh;
-  background: linear-gradient(180deg, $cream-100 0%, $bg-gray 100%);
-
+.profile-page {
   &__content {
     display: flex;
     flex-direction: column;
-    gap: calc($spacing-lg - $spacing-unit);
-    padding: ($spacing-2xl + $spacing-sm) $spacing-lg ($spacing-2xl + $tabbar-height);
+    gap: 0;
   }
 
-  &__heading {
-    margin-bottom: calc($spacing-xs / 2);
+  &__header {
+    padding: 0;
+    margin-bottom: 42px;
   }
 
   &__eyebrow {
     display: block;
-    font-size: $font-size-xs;
+    color: #c8c8c8;
+    font-size: $figma-caption;
     font-weight: $font-weight-normal;
-    letter-spacing: 2px;
-    color: rgba($ink-soft, 0.58);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 }
 
-.profile-shell-card {
-  background: $white;
-  border: 1px solid $border-subtle;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-card;
-}
-
 .profile-account-card {
-  padding: calc($spacing-xl - $spacing-unit);
+  background: $surface;
+  border: none;
+  border-radius: $figma-radius-card;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+  padding: 49px 56px;
 
   &__top,
   &__identity-row,
@@ -50,13 +39,13 @@ $profile-stat-divider-height: $spacing-unit * 9;
   }
 
   &__top {
-    gap: ($spacing-lg - $spacing-unit);
-    margin-bottom: $spacing-md;
+    gap: 35px;
+    margin-bottom: 42px;
   }
 
   &__avatar-wrap {
-    width: $profile-avatar-size;
-    height: $profile-avatar-size;
+    width: 98px;
+    height: 98px;
     flex-shrink: 0;
   }
 
@@ -68,22 +57,22 @@ $profile-stat-divider-height: $spacing-unit * 9;
   }
 
   &__avatar-image {
-    background: linear-gradient(135deg, rgba($gold, 0.12) 0%, rgba($gold, 0.04) 100%);
+    background: linear-gradient(135deg, rgba($accent, 0.12) 0%, rgba($accent, 0.06) 100%);
   }
 
   &__avatar-fallback {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba($gold, 0.2);
-    background: linear-gradient(135deg, rgba($gold, 0.12) 0%, rgba($gold, 0.06) 100%);
+    background: linear-gradient(135deg, rgba($accent, 0.12) 0%, rgba($accent, 0.06) 100%);
+    border: 0.5px solid rgba($accent, 0.2);
   }
 
   &__avatar-text {
-    font-size: $font-size-lg;
+    color: $accent;
+    font-size: 35px;
     font-weight: 300;
-    line-height: $line-height-tight;
-    color: $gold-dark;
+    line-height: 1;
   }
 
   &__identity {
@@ -92,86 +81,134 @@ $profile-stat-divider-height: $spacing-unit * 9;
   }
 
   &__identity-row {
-    gap: $spacing-sm;
-    margin-bottom: calc($spacing-xs / 2);
     flex-wrap: wrap;
+    gap: 21px;
+    margin-bottom: 7px;
+  }
+
+  &__name,
+  &__phone,
+  &__summary-label,
+  &__summary-title,
+  &__summary-description,
+  &__stat-value,
+  &__stat-unit,
+  &__stat-label {
+    display: block;
   }
 
   &__name {
-    font-size: $font-size-lg;
+    color: $text-primary;
+    font-size: 31px;
     font-weight: $font-weight-medium;
-    line-height: $line-height-tight;
-    color: $ink;
+    line-height: 1.1;
   }
 
   &__badge {
-    gap: calc($spacing-xs / 2);
-    padding: calc($spacing-xs / 2) calc($spacing-sm - $spacing-unit / 2);
-    border: 1px solid rgba($gold, 0.18);
+    gap: 9px;
+    min-height: 24px;
+    padding: 5px 17px;
     border-radius: $radius-full;
-    background: rgba($white, 0.88);
+    border: 0.5px solid rgba($accent, 0.3);
+    background: transparent;
   }
 
   &__badge-dot {
-    width: calc($spacing-xs / 2);
-    height: calc($spacing-xs / 2);
+    width: 6px;
+    height: 6px;
     border-radius: $radius-full;
-    background: $gold;
+    background: $accent;
   }
 
   &__badge-text {
-    font-size: $font-size-xs;
+    color: $accent;
+    font-size: 15px;
     font-weight: $font-weight-semibold;
-    letter-spacing: 1.6px;
-    color: $gold-dark;
-  }
-
-  &__phone,
-  &__stat-label,
-  &__stat-unit {
-    font-size: $font-size-xs;
+    letter-spacing: 0.18em;
+    line-height: 1;
   }
 
   &__phone {
-    display: block;
-    color: rgba($ink-soft, 0.46);
+    color: #cdcdcd;
+    font-size: $figma-small;
+    font-feature-settings: 'tnum';
+    line-height: $line-height-normal;
+  }
+
+  &__summary {
+    display: none;
+  }
+
+  &__summary-label,
+  &__summary-description,
+  &__stat-unit,
+  &__stat-label {
+    font-size: $font-size-xs;
+  }
+
+  &__summary-label {
+    margin-bottom: $spacing-sm;
+    color: $accent;
+    font-weight: $font-weight-medium;
+    letter-spacing: $letter-spacing-wider;
+  }
+
+  &__summary-title {
+    margin-bottom: $spacing-xs;
+    color: $text-primary;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+  }
+
+  &__summary-description {
+    color: $text-secondary;
+    line-height: $line-height-relaxed;
   }
 
   &__stats {
     align-items: stretch;
-    padding: $spacing-md 0;
-    border-radius: $radius-lg;
-    background: rgba($gray-100, 0.56);
+    gap: 0;
+    padding: 35px 0;
+    border-radius: 21px;
+    background: #fafafa;
   }
 
   &__stat {
     position: relative;
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: calc($spacing-xs / 4);
+    padding: 0 $spacing-xs;
+    text-align: center;
   }
 
   &__stat-value-row {
-    gap: calc($spacing-xs / 2);
+    gap: 2px;
+    justify-content: center;
     align-items: flex-end;
+    margin-bottom: 7px;
   }
 
   &__stat-value {
-    font-size: $font-size-base;
+    color: $text-primary;
+    font-size: 35px;
     font-weight: 300;
     line-height: 1;
-    color: $ink;
+    font-feature-settings: 'tnum';
   }
 
   &__stat-unit {
-    color: rgba($ink-soft, 0.36);
+    color: #c0c0c0;
+    font-size: 16px;
+    font-weight: $font-weight-normal;
+    line-height: 1;
   }
 
   &__stat-label {
-    color: rgba($ink-soft, 0.46);
+    color: #cdcdcd;
+    font-size: 16px;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
   }
 
   &__stat-divider {
@@ -179,8 +216,8 @@ $profile-stat-divider-height: $spacing-unit * 9;
     top: 50%;
     right: 0;
     width: 1px;
-    height: $profile-stat-divider-height;
-    background: rgba($cream-300, 0.88);
+    height: 42px;
+    background: #ebebeb;
     transform: translateY(-50%);
   }
 }
@@ -188,182 +225,53 @@ $profile-stat-divider-height: $spacing-unit * 9;
 .profile-menu-section {
   display: flex;
   flex-direction: column;
-  gap: calc($spacing-xs + $spacing-unit / 2);
+  gap: 21px;
+  margin-top: 56px;
 
   &__label {
     display: block;
-    padding-left: calc($spacing-xs / 2);
-    font-size: $font-size-xs;
+    padding-left: 2px;
+    color: #cdcdcd;
+    font-size: 16px;
     font-weight: $font-weight-medium;
-    letter-spacing: 1.6px;
-    color: rgba($ink-soft, 0.5);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 
   &__card {
-    overflow: hidden;
+    background: $surface;
+    border: none;
+    border-radius: $figma-radius-card;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
   }
 
   &__item,
-  &__icon {
+  &__icon,
+  &__arrow {
     display: flex;
     align-items: center;
   }
 
   &__item {
-    gap: calc($spacing-sm + $spacing-unit / 2);
-    padding: calc($spacing-sm + $spacing-unit / 2) ($spacing-xl - $spacing-unit);
+    gap: 28px;
+    padding: 31px 49px;
+
+    &:active {
+      background: #fdfdfd;
+    }
   }
 
   &__icon {
-    width: $profile-icon-size;
-    height: $profile-icon-size;
+    width: 63px;
+    height: 63px;
     justify-content: center;
-    border: 1px solid rgba($cream-300, 0.58);
-    border-radius: calc($radius-md - 2px);
-    background: rgba($gray-100, 0.54);
-
-    &--bookings {
-      color: rgba($gold-dark, 0.76);
-    }
-
-    &--records {
-      color: rgba($ink-soft, 0.66);
-    }
-
-    &--membership {
-      color: rgba($gold-dark, 0.76);
-    }
-
-    &--notifications {
-      color: rgba($ink-soft, 0.66);
-    }
-
-    &--support {
-      color: rgba($ink-soft, 0.66);
-    }
-
-    &--settings {
-      background: rgba($gray-100, 0.64);
-      color: rgba($ink-soft, 0.66);
-    }
+    border-radius: 21px;
+    background: #f8f8f8;
   }
 
-  &__glyph {
-    position: relative;
-    width: $profile-glyph-size;
-    height: $profile-glyph-size;
-    color: inherit;
-
-    &--bookings {
-      border: 1px solid currentColor;
-      border-radius: calc($radius-sm / 2);
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: calc($spacing-xs / 2);
-        right: calc($spacing-xs / 2);
-        top: calc($spacing-xs - $spacing-unit / 2);
-        height: 1px;
-        background: currentColor;
-      }
-    }
-
-    &--records {
-      border: 1px solid currentColor;
-      border-radius: calc($radius-sm / 2);
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        top: calc($spacing-xs / 2);
-        bottom: calc($spacing-xs / 2);
-        width: 1px;
-        background: currentColor;
-      }
-
-      &::before {
-        left: calc($spacing-xs / 2 + $spacing-unit / 2);
-      }
-
-      &::after {
-        right: calc($spacing-xs / 2 + $spacing-unit / 2);
-      }
-    }
-
-    &--membership {
-      border: 1px solid currentColor;
-      border-radius: calc($radius-sm / 2);
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: calc($spacing-xs / 2);
-        right: calc($spacing-xs / 2);
-        top: calc($spacing-sm - $spacing-unit / 2);
-        height: 1px;
-        background: currentColor;
-      }
-    }
-
-    &--notifications {
-      border: 1px solid currentColor;
-      border-radius: $radius-full $radius-full calc($radius-sm / 2) calc($radius-sm / 2);
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 50%;
-        bottom: calc(-1 * $spacing-unit / 2);
-        width: calc($spacing-xs / 2);
-        height: calc($spacing-xs / 2);
-        border-radius: $radius-full;
-        background: currentColor;
-        transform: translateX(-50%);
-      }
-    }
-
-    &--support {
-      border: 1px solid currentColor;
-      border-radius: $radius-full;
-
-      &::before {
-        content: '?';
-        position: absolute;
-        inset: 0;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
-        line-height: $profile-glyph-size;
-        text-align: center;
-        color: currentColor;
-      }
-    }
-
-    &--settings {
-      border: 1px solid currentColor;
-      border-radius: $radius-full;
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        background: currentColor;
-        transform: translate(-50%, -50%);
-      }
-
-      &::before {
-        width: calc($spacing-sm - $spacing-unit);
-        height: 1px;
-      }
-
-      &::after {
-        width: 1px;
-        height: calc($spacing-sm - $spacing-unit);
-      }
-    }
+  &__icon-image {
+    width: 28px;
+    height: 28px;
   }
 
   &__body {
@@ -371,86 +279,65 @@ $profile-stat-divider-height: $spacing-unit * 9;
     min-width: 0;
   }
 
-  &__title {
+  &__title,
+  &__description {
     display: block;
-    margin-bottom: calc($spacing-xs / 4);
-    font-size: $font-size-sm;
+  }
+
+  &__title {
+    margin-bottom: 1px;
+    color: $text-primary;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
-    line-height: $line-height-tight;
-    color: $ink;
+    line-height: 1.25;
   }
 
   &__description {
-    display: block;
-    font-size: $font-size-xs;
-    line-height: $line-height-normal;
-    color: rgba($ink-soft, 0.48);
+    color: #cdcdcd;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    line-height: 1.4;
   }
 
   &__arrow {
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #e5e5e5;
     flex-shrink: 0;
-    font-size: $font-size-xs;
-    color: rgba($ink-soft, 0.28);
   }
 
   &__divider {
     height: 1px;
-    margin-left: $profile-menu-indent;
-    background: rgba($cream-300, 0.54);
+    margin: 0 49px;
+    background: #f0f0f0;
   }
 }
 
 .profile-signout-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xs;
-  min-height: calc($spacing-xl + $spacing-sm);
-  border: 1px solid rgba($cream-300, 0.62);
-  border-radius: $radius-lg;
-  background: rgba($white, 0.86);
+  margin-top: 56px;
+  height: auto;
+  min-height: 0;
+  padding: 28px 0;
+  border: 1px solid #f0f0f0;
+  border-radius: $figma-radius-card;
+  background: transparent;
+  color: #cdcdcd;
+  font-size: $figma-body;
+  font-weight: $font-weight-normal;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+  gap: 14px;
 
   &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #d0d0d0;
   }
 
-  &__icon-glyph {
-    position: relative;
-    width: $profile-glyph-size;
-    height: $profile-glyph-size;
-    color: rgba($ink-soft, 0.42);
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-    }
-
-    &::before {
-      left: 0;
-      top: calc($spacing-xs / 4);
-      bottom: calc($spacing-xs / 4);
-      width: 1px;
-      background: currentColor;
-    }
-
-    &::after {
-      right: 0;
-      top: 50%;
-      width: calc($spacing-sm - $spacing-unit / 2);
-      height: calc($spacing-sm - $spacing-unit / 2);
-      border-top: 1px solid currentColor;
-      border-right: 1px solid currentColor;
-      transform: translateY(-50%) rotate(45deg);
-    }
-  }
-
-  &__text {
-    font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
-    letter-spacing: 1px;
-    color: rgba($ink-soft, 0.56);
+  &:active {
+    background: rgba($gray-100, 0.58);
+    transform: scale(0.985);
+    box-shadow: none;
   }
 }

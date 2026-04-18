@@ -1,4 +1,4 @@
-import { Text, View } from '@tarojs/components';
+import { AppButton, Icon } from '../../../components';
 import type { ProfileSignOutData } from './types';
 
 interface ProfileSignOutButtonProps {
@@ -8,11 +8,9 @@ interface ProfileSignOutButtonProps {
 
 export default function ProfileSignOutButton({ data, onClick }: ProfileSignOutButtonProps) {
   return (
-    <View className='profile-signout-button' onClick={onClick}>
-      <View className='profile-signout-button__icon'>
-        <View className='profile-signout-button__icon-glyph' />
-      </View>
-      <Text className='profile-signout-button__text'>{data.label}</Text>
-    </View>
+    <AppButton className='profile-signout-button' variant='ghost' size='small' onClick={onClick}>
+      <Icon name='logout' className='profile-signout-button__icon' />
+      {data.label}
+    </AppButton>
   );
 }

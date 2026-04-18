@@ -1,71 +1,247 @@
 @import '../../styles/variables.scss';
 
-.my-bookings {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: $bg-gray;
+.my-bookings-page {
+  .page-shell__inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  &__tab-shell {
+    margin-bottom: $spacing-lg;
+  }
 
   &__tabs {
     display: flex;
-    background: $white;
-    border-bottom: 1px solid $border-light;
+    padding: 4px;
+    border-radius: $radius-xl;
+    background: #f5f5f5;
+    border: none;
+    gap: 4px;
   }
 
   &__tab {
     flex: 1;
+    min-height: 44px;
+    border-radius: $radius-md;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 88px;
-    font-size: $font-size-md;
-    color: $text-secondary;
-    position: relative;
-    transition: all $duration-fast $ease-in-out;
+    transition: background-color $duration-fast $ease-in-out, box-shadow $duration-fast $ease-in-out;
 
     &--active {
-      color: $mint;
-      font-weight: $font-weight-semibold;
+      background: $surface;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 48px;
-        height: 4px;
-        background: $mint;
-        border-radius: 2px;
+      .my-bookings-page__tab-text {
+        color: $text-primary;
+        font-weight: $font-weight-medium;
       }
     }
+  }
 
-    &:active {
-      opacity: 0.7;
-    }
+  &__tab-text {
+    color: $text-muted;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    font-weight: $font-weight-normal;
+    transition: color $duration-fast $ease-in-out;
+  }
+
+  &__count-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+    padding: 0 $spacing-xs;
+  }
+
+  &__count-title {
+    color: $text-primary;
+    font-size: 17px;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-tight;
+  }
+
+  &__count-value {
+    color: $gray-600;
+    font-size: 10px;
+    letter-spacing: 0.04em;
   }
 
   &__list {
     flex: 1;
-    padding: $spacing-md;
-    overflow-y: auto;
+    min-height: 0;
   }
 
-  &__items {
+  &__list-inner {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    padding-bottom: $spacing-xl;
   }
 
-  &__loading-more,
-  &__no-more {
+  &__card,
+  &__empty-card {
+    background: $surface;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: none;
+    border-color: rgba($gray-300, 0.84);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 32px;
+
+    &--completed {
+      .my-bookings-page__accent {
+        background: rgba($gray-500, 0.35);
+      }
+    }
+
+    &--cancelled {
+      .my-bookings-page__accent {
+        background: rgba($gray-300, 0.9);
+      }
+
+      .my-bookings-page__day,
+      .my-bookings-page__title,
+      .my-bookings-page__meta {
+        color: $gray-500;
+      }
+
+      .my-bookings-page__title {
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  &__date {
+    min-width: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  &__day {
+    color: $text-primary;
+    font-size: 24px;
+    font-weight: 200;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  &__weekday {
+    color: $gray-500;
+    font-size: 8px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  &__accent {
+    width: 1px;
+    height: 32px;
+    border-radius: 1px;
+    background: rgba($accent, 0.5);
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 3px;
+  }
+
+  &__title {
+    color: $text-primary;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 18px;
+    padding: 2px 6px;
+    border-radius: $radius-full;
+    font-size: 8px;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.06em;
+    line-height: 1;
+
+    &--today {
+      color: $accent;
+      background: rgba($accent-soft, 0.9);
+      border: 1px solid rgba($accent, 0.16);
+    }
+
+    &--completed {
+      color: $gray-600;
+      background: #f5f5f5;
+    }
+
+    &--cancelled {
+      color: $gray-600;
+      background: rgba($gray-200, 0.74);
+    }
+  }
+
+  &__meta {
+    display: block;
+    color: $gray-500;
+    font-size: 11px;
+    letter-spacing: 0.01em;
+    line-height: $line-height-normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    color: #e5e5e5;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  &__empty-card {
+    padding: $spacing-md;
+  }
+
+  &__empty-action {
+    margin: $spacing-md $spacing-md $spacing-sm;
+  }
+
+  &__loading-more {
     text-align: center;
-    padding: $spacing-md 0;
+    padding: $spacing-sm 0;
   }
 
-  &__loading-more-text,
-  &__no-more-text {
-    font-size: $font-size-sm;
+  &__loading-more-text {
     color: $text-muted;
+    font-size: 10px;
+  }
+
+  .app-divider {
+    background: #f0f0f0;
   }
 }
