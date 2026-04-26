@@ -1,6 +1,7 @@
 const fallbackApiBaseUrl = process.env.NODE_ENV === 'production'
   ? ''
   : 'http://127.0.0.1:3000/api';
+const packageInfo = require('../package.json');
 
 const config = {
   projectName: 'pilates-studio-mini',
@@ -18,7 +19,10 @@ const config = {
     API_BASE_URL: process.env.API_BASE_URL
       ? JSON.stringify(process.env.API_BASE_URL)
       : JSON.stringify(fallbackApiBaseUrl),
-    MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || '')
+    MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || ''),
+    APP_VERSION: JSON.stringify(process.env.APP_VERSION || `v${packageInfo.version}`),
+    SUPPORT_PHONE: JSON.stringify(process.env.SUPPORT_PHONE || ''),
+    SUPPORT_EMAIL: JSON.stringify(process.env.SUPPORT_EMAIL || '')
   },
   copy: {
     patterns: [

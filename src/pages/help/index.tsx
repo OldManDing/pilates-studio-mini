@@ -5,6 +5,9 @@ import { supportApi } from '../../api/support';
 import { AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
+declare const SUPPORT_PHONE: string;
+declare const SUPPORT_EMAIL: string;
+
 interface FaqItem {
   id: string;
   category: FaqCategory;
@@ -243,15 +246,23 @@ export default function Help() {
 
         <AppCard className='help-contact' padding='none'>
           {[
-            { label: '客服热线', value: '400-888-0000', description: '工作日 09:00 – 18:00', icon: 'info' as const },
-            { label: '电子邮箱', value: 'support@studio.com', description: '1-3 个工作日内回复', icon: 'mail' as const },
+            { label: '客服热线', value: SUPPORT_PHONE, displayValue: SUPPORT_PHONE || '热线待配置', description: SUPPORT_PHONE ? '工作日 09:00 – 18:00' : '请联系门店获取最新电话', icon: 'info' as const },
+            { label: '电子邮箱', value: SUPPORT_EMAIL, displayValue: SUPPORT_EMAIL || '邮箱待配置', description: SUPPORT_EMAIL ? '1-3 个工作日内回复' : '请联系门店获取最新邮箱', icon: 'mail' as const },
           ].map((item, index) => (
               <View key={item.label}>
               <View
                 className='help-contact__item help-contact__item--clickable'
                 onClick={() => {
                   if (item.label === '客服热线') {
+                    if (!item.value) {
+                      Taro.showToast({ title: '客服热线暂未配置', icon: 'none' });
+                      return;
+                    }
                     Taro.makePhoneCall({ phoneNumber: item.value });
+                    return;
+                  }
+                  if (!item.value) {
+                    Taro.showToast({ title: '客服邮箱暂未配置', icon: 'none' });
                     return;
                   }
                   Taro.setClipboardData({ data: item.value });
@@ -265,7 +276,7 @@ export default function Help() {
                   <Text className='help-contact__description'>{item.description}</Text>
                 </View>
                 <View className='help-contact__right'>
-                  <Text className='help-contact__value'>{item.value}</Text>
+                  <Text className='help-contact__value'>{item.displayValue}</Text>
                   <Icon name='chevron-right' className='help-contact__arrow' />
                 </View>
               </View>
