@@ -23,7 +23,7 @@ export default function BookingDateStrip({ items, onSelect }: BookingDateStripPr
             >
               <Text className='booking-date-strip__weekday'>{item.weekday}</Text>
               <Text className='booking-date-strip__day'>{item.day}</Text>
-              <Text className='booking-date-strip__label'>{item.label || ' '}</Text>
+              <Text className='booking-date-strip__label'>{item.label}</Text>
             </View>
           ))}
         </View>
