@@ -68,6 +68,7 @@ function toNotificationItem(notification: ApiNotificationItem): NotificationItem
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [markingAllRead, setMarkingAllRead] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const fetchNotifications = useCallback(async () => {
@@ -107,15 +108,18 @@ export default function Notifications() {
 
   const handleMarkAllRead = async () => {
     const unreadIds = unread.map((notification) => notification.id);
-    if (unreadIds.length === 0) {
+    if (unreadIds.length === 0 || markingAllRead) {
       return;
     }
 
     try {
+      setMarkingAllRead(true);
       await Promise.all(unreadIds.map((id) => notificationsApi.markMyAsRead(id)));
       setNotifications((previous) => previous.map((notification) => ({ ...notification, status: 'read' as const })));
     } catch {
       Taro.showToast({ title: '标记失败，请稍后重试', icon: 'none' });
+    } finally {
+      setMarkingAllRead(false);
     }
   };
 
@@ -161,9 +165,9 @@ export default function Notifications() {
         subtitle={unreadCount > 0 ? `${unreadCount} 条未读消息` : '所有消息已读'}
         fallbackUrl='/pages/profile/index'
         rightSlot={unreadCount > 0 ? (
-          <View className='notifications-page__header-action' onClick={handleMarkAllRead}>
+          <View className={`notifications-page__header-action ${markingAllRead ? 'notifications-page__header-action--disabled' : ''}`} onClick={handleMarkAllRead}>
             <Icon name='check' className='notifications-page__header-action-icon' />
-            <Text className='notifications-page__header-action-text'>全部已读</Text>
+            <Text className='notifications-page__header-action-text'>{markingAllRead ? '处理中' : '全部已读'}</Text>
           </View>
         ) : undefined}
       />
