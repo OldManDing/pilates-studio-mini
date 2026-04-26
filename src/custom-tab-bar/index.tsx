@@ -49,7 +49,7 @@ export default class CustomTabBar extends Component<Record<string, never>, Custo
 
     try {
       await Taro.switchTab({ url: toTabPageUrl(item.pagePath) });
-    } catch (error) {
+    } catch {
       this.setSelected(getSelectedIndex());
       Taro.showToast({ title: '切换失败，请重试', icon: 'none' });
     } finally {

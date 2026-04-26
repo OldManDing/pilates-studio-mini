@@ -47,5 +47,11 @@ export default defineAppConfig({
     navigationBarTextStyle: 'black',
     navigationStyle: 'default'
   },
+  networkTimeout: {
+    request: 30000,
+    connectSocket: 30000,
+    uploadFile: 30000,
+    downloadFile: 30000,
+  },
   usingComponents: {}
 });
