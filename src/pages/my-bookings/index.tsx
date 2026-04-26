@@ -257,7 +257,7 @@ export default function MyBookings() {
 
       <ScrollView className='my-bookings-page__list' scrollY showScrollbar={false} lowerThreshold={80} onScrollToLower={handleLoadMore}>
         {loading && page === 1 ? (
-          <Loading />
+          <Loading compact />
         ) : (
           <View className='my-bookings-page__list-inner'>
             {loadFailed ? (

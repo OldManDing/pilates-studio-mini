@@ -9,6 +9,24 @@
   padding: $spacing-xl;
   background: linear-gradient(180deg, $background 0%, $bg-gray 100%);
 
+  &--compact {
+    min-height: 360px;
+    padding: $spacing-lg;
+    background: transparent;
+
+    .loading__panel {
+      max-width: none;
+      padding: $spacing-lg $spacing-md;
+      box-shadow: none;
+    }
+
+    .loading__spinner {
+      width: 48px;
+      height: 48px;
+      margin-bottom: $spacing-sm;
+    }
+  }
+
   &__panel {
     width: 100%;
     max-width: 420px;

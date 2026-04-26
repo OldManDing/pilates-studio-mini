@@ -3,11 +3,16 @@ import './index.scss';
 
 interface LoadingProps {
   text?: string;
+  compact?: boolean;
 }
 
-export default function Loading({ text = '加载中...' }: LoadingProps) {
+function joinClasses(classes: Array<string | false | undefined>) {
+  return classes.filter(Boolean).join(' ');
+}
+
+export default function Loading({ text = '加载中...', compact = false }: LoadingProps) {
   return (
-    <View className='loading'>
+    <View className={joinClasses(['loading', compact && 'loading--compact'])}>
       <View className='loading__panel'>
         <View className='loading__spinner' />
         <Text className='loading__title'>正在准备页面</Text>
