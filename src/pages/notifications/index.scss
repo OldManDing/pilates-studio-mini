@@ -82,6 +82,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   border-radius: $figma-radius-card;
   box-shadow: $support-card-shadow;
 
+  &--empty {
+    padding: 40px 32px;
+  }
+
   &__item,
   &__icon,
   &__heading-row,
@@ -211,6 +215,12 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__empty {
     padding: 112px 56px;
     text-align: center;
+  }
+
+  &__empty-action {
+    display: flex;
+    justify-content: center;
+    margin-top: $spacing-md;
   }
 
   &__empty-title,

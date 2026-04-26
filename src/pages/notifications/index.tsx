@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
-import { STORAGE_KEYS } from '../../constants/storage';
-import { readStorage, writeStorage } from '../../utils/storage';
+import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
 import './index.scss';
 
 type NotificationType = 'course' | 'system' | 'member';
@@ -18,69 +18,82 @@ interface NotificationItem {
   status: NotificationStatus;
 }
 
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'n1',
-    type: 'course',
-    title: '课程即将开始',
-    body: '「流瑜伽进阶」将于今日 14:00 开课，请提前 15 分钟到达朝阳门店。',
-    time: '09:30',
-    timeLabel: '今日',
-    status: 'unread',
-  },
-  {
-    id: 'n2',
-    type: 'course',
-    title: '预约确认',
-    body: '你已成功预约 4月7日「哈他瑜伽」16:00 - 17:00，王梦瑶教练。',
-    time: '昨日',
-    timeLabel: '04.05',
-    status: 'unread',
-  },
-  {
-    id: 'n3',
-    type: 'member',
-    title: '会员权益提醒',
-    body: '你的 GOLD 年度金卡将于 2026.12.31 到期，剩余 271 天。提前续费可享专属优惠。',
-    time: '3天前',
-    timeLabel: '04.03',
-    status: 'read',
-  },
-  {
-    id: 'n4',
-    type: 'system',
-    title: '系统维护通知',
-    body: '4月10日 02:00 – 06:00 进行系统维护，届时预约服务将暂停，请提前安排。',
-    time: '4天前',
-    timeLabel: '04.02',
-    status: 'read',
-  },
-  {
-    id: 'n5',
-    type: 'course',
-    title: '课程完成',
-    body: '「普拉提塑形」已完成，本月已完成 12 节课程，继续保持！',
-    time: '5天前',
-    timeLabel: '04.01',
-    status: 'read',
-  },
-  {
-    id: 'n6',
-    type: 'system',
-    title: '新课程上线',
-    body: '「空中瑜伽 · 入门」现已开放预约，由资深教练李芮带课，名额有限。',
-    time: '1周前',
-    timeLabel: '03.30',
-    status: 'read',
-  },
-];
+function pad(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatTimeLabel(value?: string) {
+  if (!value) return '--:--';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '--:--';
+
+  const now = new Date();
+  const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const dayDiff = Math.round((todayStart - dateStart) / (1000 * 60 * 60 * 24));
+
+  if (dayDiff === 0) return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  if (dayDiff === 1) return '昨日';
+  if (dayDiff > 1 && dayDiff < 7) return `${dayDiff}天前`;
+  return `${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+}
+
+function formatDateLabel(value?: string) {
+  if (!value) return '--.--';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '--.--';
+  return `${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+}
+
+function getNotificationType(notification: ApiNotificationItem): NotificationType {
+  if (notification.type.includes('COURSE') || notification.type.includes('BOOKING')) return 'course';
+  if (notification.type.includes('MEMBER') || notification.type.includes('PAYMENT')) return 'member';
+  return 'system';
+}
+
+function toNotificationItem(notification: ApiNotificationItem): NotificationItem {
+  const eventTime = notification.sentAt || notification.createdAt;
+
+  return {
+    id: notification.id,
+    type: getNotificationType(notification),
+    title: notification.title,
+    body: notification.content,
+    time: formatTimeLabel(eventTime),
+    timeLabel: formatDateLabel(eventTime),
+    status: notification.status === 'READ' ? 'read' : 'unread',
+  };
+}
 
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadFailed(false);
+      const response = await notificationsApi.getMy({ page: 1, limit: 50 }, { showLoading: false });
+      setNotifications((response.data.notifications || []).map(toNotificationItem));
+    } catch {
+      setNotifications([]);
+      setLoadFailed(true);
+      Taro.showToast({ title: '消息加载失败', icon: 'none' });
+    } finally {
+      setLoading(false);
+      Taro.stopPullDownRefresh();
+    }
+  }, []);
 
   useEffect(() => {
-    setNotifications(readStorage(STORAGE_KEYS.notifications, INITIAL_NOTIFICATIONS));
-  }, []);
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  usePullDownRefresh(() => {
+    fetchNotifications();
+  });
+
   const unread = useMemo(
     () => notifications.filter((notification) => notification.status === 'unread'),
     [notifications],
@@ -92,24 +105,31 @@ export default function Notifications() {
 
   const unreadCount = unread.length;
 
-  const handleMarkAllRead = () => {
-    setNotifications((previous) => {
-      const next = previous.map((notification) => ({ ...notification, status: 'read' as const }));
-      writeStorage(STORAGE_KEYS.notifications, next);
-      return next;
-    });
+  const handleMarkAllRead = async () => {
+    const unreadIds = unread.map((notification) => notification.id);
+    if (unreadIds.length === 0) {
+      return;
+    }
+
+    try {
+      await Promise.all(unreadIds.map((id) => notificationsApi.markMyAsRead(id)));
+      setNotifications((previous) => previous.map((notification) => ({ ...notification, status: 'read' as const })));
+    } catch {
+      Taro.showToast({ title: '标记失败，请稍后重试', icon: 'none' });
+    }
   };
 
-  const handleMarkRead = (id: string) => {
-    setNotifications((previous) => {
-      const next = previous.map((notification) => (
+  const handleMarkRead = async (id: string) => {
+    try {
+      await notificationsApi.markMyAsRead(id);
+      setNotifications((previous) => previous.map((notification) => (
         notification.id === id
           ? { ...notification, status: 'read' as const }
           : notification
-      ));
-      writeStorage(STORAGE_KEYS.notifications, next);
-      return next;
-    });
+      )));
+    } catch {
+      Taro.showToast({ title: '标记失败，请稍后重试', icon: 'none' });
+    }
   };
 
   const getIconChipClass = (type: NotificationType, isRead: boolean) => {
@@ -130,6 +150,10 @@ export default function Notifications() {
     return 'info' as const;
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <PageShell className='notifications-page' safeAreaBottom>
       <PageHeader
@@ -144,7 +168,16 @@ export default function Notifications() {
         ) : undefined}
       />
 
-      {unread.length > 0 ? (
+      {loadFailed ? (
+        <View className='notifications-page__section'>
+          <AppCard className='notifications-list notifications-list--empty'>
+            <Empty title='消息加载失败' description='请检查网络后重试。' />
+            <View className='notifications-list__empty-action'>
+              <AppButton size='small' variant='primary' onClick={fetchNotifications}>重新加载</AppButton>
+            </View>
+          </AppCard>
+        </View>
+      ) : unread.length > 0 ? (
         <View className='notifications-page__section'>
           <SectionTitle title='未读' actionLabel='UNREAD' actionTone='muted' />
           <AppCard className='notifications-list' padding='none'>
@@ -174,13 +207,18 @@ export default function Notifications() {
         </View>
       ) : null}
 
-      <View className='notifications-page__section'>
+      {!loadFailed ? <View className='notifications-page__section'>
         <SectionTitle title='已读' actionLabel='EARLIER' actionTone='muted' />
         <AppCard className='notifications-list' padding='none'>
-          {read.length === 0 ? (
+          {read.length === 0 && unread.length === 0 ? (
             <View className='notifications-list__empty'>
               <Text className='notifications-list__empty-title'>暂无消息</Text>
               <Text className='notifications-list__empty-description'>新的通知将会显示在这里</Text>
+            </View>
+          ) : read.length === 0 ? (
+            <View className='notifications-list__empty'>
+              <Text className='notifications-list__empty-title'>暂无已读消息</Text>
+              <Text className='notifications-list__empty-description'>点击未读消息后会归档到这里</Text>
             </View>
           ) : (
             read.map((notification, index) => (
@@ -204,7 +242,7 @@ export default function Notifications() {
             ))
           )}
         </AppCard>
-      </View>
+      </View> : null}
     </PageShell>
   );
 }
