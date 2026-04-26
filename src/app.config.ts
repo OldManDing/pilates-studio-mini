@@ -3,7 +3,7 @@ import { TAB_NAV_ITEMS } from './constants/navigation';
 const NAVIGATION_BAR_BACKGROUND_COLOR = '#FFFDF9';
 const TAB_BAR_TEXT_COLOR = '#D0CCC6';
 const TAB_BAR_SELECTED_COLOR = '#1A1A1A';
-const TAB_BAR_BACKGROUND_COLOR = '#FFFFFF';
+const TAB_BAR_BACKGROUND_COLOR = '#FAFAFA';
 const APP_TAB_BAR_LIST = TAB_NAV_ITEMS.map(({ pagePath, text, iconPath, selectedIconPath }) => ({
   pagePath,
   text,
