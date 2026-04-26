@@ -376,8 +376,8 @@ export default function Index() {
 
   const heroData: HomeHeroData = {
     dateLabel: formatShellDate(now),
-    badgeLabel: 'GOLD',
-    badgeTone: 'accent',
+    badgeLabel: activeMembership ? 'GOLD' : 'GUEST',
+    badgeTone: activeMembership ? 'accent' : 'muted',
     title: `${getGreeting(now)}，${getDisplayMemberName(member?.name)}`,
     subtitle: todayCourseSummary.heroSubtitle,
   };
@@ -385,17 +385,17 @@ export default function Index() {
   const membershipData: HomeMembershipData = {
     label: 'MEMBERSHIP',
     status: activeMembership ? '详情' : getMembershipStatus(activeMembership),
-    planName: activeMembership?.planName || '',
+    planName: activeMembership?.planName || '尚未开通会员',
     description: getMembershipDescription(activeMembership),
     primaryMetricLabel: '有效期至',
     primaryMetricValue: activeMembership ? formatDateLabel(activeMembership.endDate) : '--.--.--',
     secondaryMetricLabel: '课程权益',
     secondaryMetricValue: getMembershipCreditsText(activeMembership),
-    progressLabel: '',
-    progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '--天',
-    progressPercent: getMembershipProgressPercent(activeMembership),
+    progressLabel: activeMembership ? '进度' : '状态',
+    progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '待开通',
+    progressPercent: activeMembership ? getMembershipProgressPercent(activeMembership) : 0,
     primaryAction: '立即预约课程',
-    secondaryAction: '改约',
+    secondaryAction: activeMembership ? '查看详情' : '开通会员',
   };
 
   const todayCourseData: HomeTodayCourseData = {

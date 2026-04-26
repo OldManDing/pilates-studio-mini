@@ -13,6 +13,10 @@
     gap: $spacing-sm;
   }
 
+  &__section--studio {
+    margin-top: 4px;
+  }
+
   &__notice {
     padding: 10px 12px;
     border: 1px solid rgba($accent, 0.18);
@@ -189,7 +193,12 @@
   }
 
   &__title {
-    display: none;
+    display: block;
+    margin-top: 4px;
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-snug;
   }
 
   &__status {
@@ -228,7 +237,11 @@
   }
 
   &__description {
-    display: none;
+    display: block;
+    margin-top: 6px;
+    color: $text-muted;
+    font-size: $figma-caption;
+    line-height: $line-height-normal;
   }
 
   &__metrics {
@@ -269,13 +282,23 @@
   }
 
   &__progress-row {
+    flex-direction: column;
+    align-items: stretch;
     gap: 14px;
     margin-top: 22px;
     margin-bottom: 0;
   }
 
   &__progress-label {
-    display: none;
+    display: block;
+    color: $text-muted;
+    letter-spacing: 0.04em;
+  }
+
+  &__progress-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
   &__progress-value {
@@ -304,6 +327,44 @@
 
   &__actions {
     gap: 0;
+  }
+
+  &__secondary-action {
+    margin-top: 18px;
+  }
+
+  &__secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    min-height: 40px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    line-height: 1;
+
+    &::after {
+      border: none;
+    }
+
+    &:active {
+      opacity: 0.72;
+    }
+  }
+
+  &__secondary-text {
+    color: $accent-strong;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.04em;
+  }
+
+  &__secondary-icon {
+    width: 10px;
+    height: 10px;
+    color: rgba($accent-strong, 0.72);
   }
 
   &__divider {
@@ -1297,16 +1358,16 @@
   }
 
   &__name {
-    font-size: 31px;
+    font-size: $font-size-xl;
   }
 
   &__address {
-    font-size: 21px;
+    font-size: $figma-body;
     margin-bottom: 9px;
   }
 
   &__hours {
-    font-size: 19px;
+    font-size: $figma-small;
     margin-bottom: 38px;
   }
 
@@ -1318,6 +1379,6 @@
   }
 
   &__action-text {
-    font-size: 19px;
+    font-size: $figma-small;
   }
 }

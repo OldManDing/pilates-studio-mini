@@ -16,7 +16,8 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick
       <View className='home-membership-card__header'>
         <View className='home-membership-card__heading'>
           <Text className='home-membership-card__label'>{data.label}</Text>
-          {data.planName ? <Text className='home-membership-card__title'>{data.planName}</Text> : null}
+          <Text className='home-membership-card__title'>{data.planName}</Text>
+          {data.description ? <Text className='home-membership-card__description'>{data.description}</Text> : null}
         </View>
         <Button className='home-membership-card__status' hoverClass='none' onClick={onDetailClick}>
           <Text className='home-membership-card__status-text'>{data.status}</Text>
@@ -37,11 +38,23 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick
       </View>
 
       <View className='home-membership-card__progress-row'>
-        <View className='home-membership-card__progress-bar'>
-          <View className='home-membership-card__progress-fill' style={{ width: progressWidth }} />
+        {data.progressLabel ? <Text className='home-membership-card__progress-label'>{data.progressLabel}</Text> : null}
+        <View className='home-membership-card__progress-meta'>
+          <View className='home-membership-card__progress-bar'>
+            <View className='home-membership-card__progress-fill' style={{ width: progressWidth }} />
+          </View>
+          <Text className='home-membership-card__progress-value'>{data.progressValue}</Text>
         </View>
-        <Text className='home-membership-card__progress-value'>{data.progressValue}</Text>
       </View>
+
+      {data.secondaryAction ? (
+        <View className='home-membership-card__secondary-action'>
+          <Button className='home-membership-card__secondary-button' hoverClass='none' onClick={onDetailClick}>
+            <Text className='home-membership-card__secondary-text'>{data.secondaryAction}</Text>
+            <Icon name='chevron-right' className='home-membership-card__secondary-icon' />
+          </Button>
+        </View>
+      ) : null}
 
       <View className='home-membership-card__divider' />
 
