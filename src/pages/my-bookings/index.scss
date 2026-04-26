@@ -117,6 +117,12 @@
         text-decoration: line-through;
       }
     }
+
+    &--upcoming {
+      .my-bookings-page__accent {
+        background: rgba($accent, 0.5);
+      }
+    }
   }
 
   &__date {
@@ -131,14 +137,14 @@
   &__day {
     color: $text-primary;
     font-size: 24px;
-    font-weight: 200;
+    font-weight: $font-weight-medium;
     line-height: 1;
     letter-spacing: -0.02em;
   }
 
   &__weekday {
     color: $gray-500;
-    font-size: 8px;
+    font-size: $font-size-3xs;
     font-weight: $font-weight-medium;
     letter-spacing: 0.12em;
     line-height: 1;
@@ -183,7 +189,7 @@
     min-height: 18px;
     padding: 2px 6px;
     border-radius: $radius-full;
-    font-size: 8px;
+    font-size: $font-size-3xs;
     font-weight: $font-weight-normal;
     letter-spacing: 0.06em;
     line-height: 1;
