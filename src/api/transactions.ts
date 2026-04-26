@@ -6,11 +6,12 @@ export interface Transaction {
   transactionCode: string;
   memberId: string;
   membershipId?: string;
-  kind: 'PLAN_PURCHASE' | 'PLAN_RENEWAL' | 'PRIVATE_SESSION' | 'MERCHANDISE' | 'OTHER';
+  kind: 'MEMBERSHIP_PURCHASE' | 'MEMBERSHIP_RENEWAL' | 'CLASS_PACKAGE_PURCHASE' | 'PRIVATE_CLASS_PURCHASE' | 'REFUND' | 'ADJUSTMENT';
   amountCents: number;
-  paymentMethod: 'CASH' | 'CREDIT_CARD' | 'WECHAT_PAY' | 'ALIPAY' | 'TRANSFER';
-  status: 'PENDING' | 'COMPLETED' | 'REFUNDED' | 'FAILED';
+  paymentMethod?: 'CASH' | 'CREDIT_CARD' | 'WECHAT_PAY' | 'ALIPAY' | 'TRANSFER';
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'REFUNDED' | 'FAILED';
   notes?: string;
+  happenedAt?: string;
   createdAt: string;
   member?: {
     id: string;

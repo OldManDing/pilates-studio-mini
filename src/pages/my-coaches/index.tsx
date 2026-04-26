@@ -12,11 +12,18 @@ interface CoachSummary {
   lastCourseName: string;
 }
 
+function getBookingTimeValue(booking: Booking) {
+  const value = booking.session?.startsAt || booking.bookingTime || booking.bookedAt;
+  const time = value ? new Date(value).getTime() : NaN;
+
+  return Number.isNaN(time) ? 0 : time;
+}
+
 function buildCoachSummaries(coaches: Coach[], bookings: Booking[]): CoachSummary[] {
   return coaches.map((coach) => {
     const related = bookings
       .filter((booking) => booking.session?.coach?.id === coach.id || booking.session?.coach?.name === coach.name)
-      .sort((left, right) => new Date(right.session?.startsAt || right.bookingTime).getTime() - new Date(left.session?.startsAt || left.bookingTime).getTime());
+      .sort((left, right) => getBookingTimeValue(right) - getBookingTimeValue(left));
     const lastCourseName = related[0]?.session?.course?.name || coach.courses?.[0]?.name || '暂无最近课程';
 
     return {
@@ -60,8 +67,7 @@ export default function MyCoaches() {
 
       setCoaches(allCoaches);
       setBookings(allBookings);
-    } catch (error) {
-      console.error('Failed to fetch my coaches:', error);
+    } catch {
       setCoaches([]);
       Taro.showToast({ title: '教练信息加载失败', icon: 'none' });
     } finally {

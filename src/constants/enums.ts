@@ -27,16 +27,15 @@ export const BookingStatuses = [
 
 // Membership Plan Categories
 export const PlanCategories = [
-  { value: 'SINGLE', label: '次卡', color: '#43c7ab' },
-  { value: 'RECURRING', label: '周期卡', color: '#8b7cff' },
-  { value: 'PACKAGE', label: '套餐卡', color: '#ffb760' },
-  { value: 'PRIVATE', label: '私教卡', color: '#ff8da8' },
-  { value: 'TAILOR', label: '定制卡', color: '#35a090' },
+  { value: 'TIME_CARD', label: '次卡', color: '#43c7ab' },
+  { value: 'PERIOD_CARD', label: '周期卡', color: '#8b7cff' },
+  { value: 'PRIVATE_PACKAGE', label: '私教卡', color: '#ff8da8' },
 ] as const;
 
 // Transaction Status
 export const TransactionStatuses = [
   { value: 'PENDING', label: '待处理', color: '#ffb760' },
+  { value: 'PROCESSING', label: '处理中', color: '#8b7cff' },
   { value: 'COMPLETED', label: '已完成', color: '#43c7ab' },
   { value: 'FAILED', label: '失败', color: '#ff4d4f' },
   { value: 'REFUNDED', label: '已退款', color: '#a0aec0' },
@@ -44,11 +43,12 @@ export const TransactionStatuses = [
 
 // Transaction Kind
 export const TransactionKinds = [
-  { value: 'PLAN_PURCHASE', label: '会员卡购买', color: '#43c7ab' },
-  { value: 'PLAN_RENEWAL', label: '会员卡续费', color: '#8b7cff' },
-  { value: 'PRIVATE_SESSION', label: '私教课程', color: '#ffb760' },
-  { value: 'MERCHANDISE', label: '商品购买', color: '#ff8da8' },
-  { value: 'OTHER', label: '其他', color: '#6f8198' },
+  { value: 'MEMBERSHIP_PURCHASE', label: '会员卡购买', color: '#43c7ab' },
+  { value: 'MEMBERSHIP_RENEWAL', label: '会员卡续费', color: '#8b7cff' },
+  { value: 'CLASS_PACKAGE_PURCHASE', label: '课包购买', color: '#ffb760' },
+  { value: 'PRIVATE_CLASS_PURCHASE', label: '私教课购买', color: '#ff8da8' },
+  { value: 'REFUND', label: '退款', color: '#a0aec0' },
+  { value: 'ADJUSTMENT', label: '手动调整', color: '#6f8198' },
 ] as const;
 
 // Payment Methods

@@ -54,7 +54,7 @@ export default function BookingItem({ booking, onClick }: BookingItemProps) {
         </View>
       </View>
       <View className='booking-item__footer'>
-        <Text className='booking-item__time'>预约时间：{formatDateTime(booking.bookingTime)}</Text>
+        <Text className='booking-item__time'>预约时间：{formatDateTime(booking.bookingTime || booking.bookedAt || '')}</Text>
       </View>
     </View>
   );

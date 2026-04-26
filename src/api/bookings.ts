@@ -6,7 +6,8 @@ export interface Booking {
   bookingCode: string;
   memberId: string;
   sessionId: string;
-  bookingTime: string;
+  bookingTime?: string;
+  bookedAt?: string;
   checkInTime?: string;
   status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
   notes?: string;
@@ -33,6 +34,16 @@ export interface Booking {
   };
 }
 
+function normalizeBooking(booking: Booking): Booking {
+  const bookingTime = booking.bookingTime || booking.bookedAt || '';
+
+  return {
+    ...booking,
+    bookingTime,
+    bookedAt: booking.bookedAt || bookingTime,
+  };
+}
+
 export interface CreateBookingData {
   memberId: string;
   sessionId: string;
@@ -50,26 +61,38 @@ export interface BookingFilter {
 // Booking APIs
 export const bookingsApi = {
   // Get all bookings
-  getAll: async (params?: PaginationParams & BookingFilter) =>
-    wrapListData(await http.get<Booking[]>('/bookings', params), 'bookings'),
+  getAll: async (params?: PaginationParams & BookingFilter) => {
+    const response = await http.get<Booking[]>('/bookings', params);
+    return wrapListData({ ...response, data: response.data.map(normalizeBooking) }, 'bookings');
+  },
 
   // Get my bookings
-  getMyBookings: async (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) =>
-    wrapListData(await http.get<Booking[]>('/bookings/my', params, config), 'bookings'),
+  getMyBookings: async (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) => {
+    const response = await http.get<Booking[]>('/bookings/my', params, config);
+    return wrapListData({ ...response, data: response.data.map(normalizeBooking) }, 'bookings');
+  },
 
   // Get booking by ID
-  getById: async (id: string) =>
-    wrapObjectData(await http.get<Booking>(`/bookings/${id}`), 'booking'),
+  getById: async (id: string) => {
+    const response = await http.get<Booking>(`/bookings/${id}`);
+    return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
+  },
 
   // Create booking
-  create: async (data: CreateBookingData) =>
-    wrapObjectData(await http.post<Booking>('/bookings', data), 'booking'),
+  create: async (data: CreateBookingData) => {
+    const response = await http.post<Booking>('/bookings', data);
+    return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
+  },
 
   // Cancel booking
-  cancel: async (id: string, reason?: string) =>
-    wrapObjectData(await http.patch<Booking>(`/bookings/${id}/cancel`, { reason }), 'booking'),
+  cancel: async (id: string, reason?: string) => {
+    const response = await http.patch<Booking>(`/bookings/${id}/cancel`, { reason });
+    return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
+  },
 
   // Check in
-  checkIn: async (id: string) =>
-    wrapObjectData(await http.patch<Booking>(`/bookings/${id}/checkin`), 'booking'),
+  checkIn: async (id: string) => {
+    const response = await http.patch<Booking>(`/bookings/${id}/checkin`);
+    return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
+  },
 };

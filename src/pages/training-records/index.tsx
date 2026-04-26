@@ -45,8 +45,7 @@ export default function TrainingRecords() {
       } while (currentPage <= totalPages);
 
       setRecords(allRecords);
-    } catch (error) {
-      console.error('Failed to fetch training records:', error);
+    } catch {
       setRecords([]);
       setLoadFailed(true);
       Taro.showToast({ title: '训练记录加载失败', icon: 'none' });
@@ -110,7 +109,7 @@ export default function TrainingRecords() {
                 <View className='training-records-list__item'>
                   <View className='training-records-list__main'>
                     <Text className='training-records-list__title'>{record.session?.course?.name || '已完成课程'}</Text>
-                    <Text className='training-records-list__meta'>{record.session?.coach?.name || '教练待同步'} · {formatDate(record.session?.startsAt || record.bookingTime)}</Text>
+                    <Text className='training-records-list__meta'>{record.session?.coach?.name || '教练待同步'} · {formatDate(record.session?.startsAt || record.bookingTime || record.bookedAt)}</Text>
                   </View>
                   <View className='training-records-list__side'>
                     <Text className='training-records-list__duration'>{calculateMinutes(record.session?.startsAt, record.session?.endsAt) || '--'}min</Text>

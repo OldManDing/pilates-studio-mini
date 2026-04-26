@@ -60,8 +60,7 @@ export default function Transactions() {
       if (summaryRes) {
         setSummary(summaryRes.data);
       }
-    } catch (error) {
-      console.error('Failed to fetch transactions:', error);
+    } catch {
       if (!append) {
         setTransactions([]);
         setLoadFailed(true);
@@ -140,7 +139,7 @@ export default function Transactions() {
                     <Text className='transactions-page__item-kind'>
                       {TransactionKinds.find((item) => item.value === transaction.kind)?.label || transaction.kind}
                     </Text>
-                    <Text className='transactions-page__item-date'>{formatDate(transaction.createdAt)}</Text>
+                    <Text className='transactions-page__item-date'>{formatDate(transaction.happenedAt || transaction.createdAt)}</Text>
                     <Text className='transactions-page__item-code'>{transaction.transactionCode}</Text>
                   </View>
 
