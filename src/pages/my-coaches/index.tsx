@@ -36,12 +36,14 @@ function buildCoachSummaries(coaches: Coach[], bookings: Booking[]): CoachSummar
 
 export default function MyCoaches() {
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadFailed(false);
       const pageSize = 50;
       const allCoaches: Coach[] = [];
       let coachPage = 1;
@@ -69,6 +71,7 @@ export default function MyCoaches() {
       setBookings(allBookings);
     } catch {
       setCoaches([]);
+      setLoadFailed(true);
       Taro.showToast({ title: '教练信息加载失败', icon: 'none' });
     } finally {
       setLoading(false);
@@ -96,13 +99,22 @@ export default function MyCoaches() {
 
       <View className='my-coaches-page__hero'>
         <Text className='my-coaches-page__hero-label'>COACH TEAM</Text>
-        <Text className='my-coaches-page__hero-value'>{summaries.length}</Text>
-        <Text className='my-coaches-page__hero-desc'>位可预约教练，结合历史课程展示你的常用教练关系。</Text>
+        <Text className='my-coaches-page__hero-value'>{loadFailed ? '--' : summaries.length}</Text>
+        <Text className='my-coaches-page__hero-desc'>{loadFailed ? '教练信息暂时无法同步，请稍后重试。' : '位可预约教练，结合历史课程展示你的常用教练关系。'}</Text>
       </View>
 
       <View className='my-coaches-page__section'>
         <SectionTitle title='常用教练' actionLabel='FAVORITES' actionTone='muted' />
-        {summaries.length > 0 ? (
+        {loadFailed ? (
+          <AppCard className='my-coaches-page__empty'>
+            <Empty title='教练信息加载失败' description='请检查网络后重试。' />
+            <View className='my-coaches-page__empty-action'>
+              <AppButton size='small' variant='primary' onClick={fetchData}>
+                重新加载
+              </AppButton>
+            </View>
+          </AppCard>
+        ) : summaries.length > 0 ? (
           <AppCard padding='none' className='my-coaches-list'>
             {summaries.map((item, index) => (
               <View key={item.coach.id || item.coach.coachCode}>

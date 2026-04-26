@@ -3,7 +3,7 @@ import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
 import { CourseSession } from '../../api/courses';
-import { AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { getLabelByValue, CourseTypes, Weekdays } from '../../constants/enums';
 import './index.scss';
 
@@ -67,20 +67,23 @@ function getWeekdayLabel(value?: string) {
 
 export default function CoachDetail() {
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [schedule, setSchedule] = useState<CourseSession[]>([]);
+  const [coachId, setCoachId] = useState('');
 
   const fetchData = useCallback(async (id: string) => {
     try {
       setLoading(true);
+      setLoadFailed(false);
       const [coachRes, scheduleRes] = await Promise.all([
         coachesApi.getById(id),
         coachesApi.getSchedule(id, { from: new Date().toISOString() }),
       ]);
       setCoach(coachRes.data.coach);
       setSchedule(scheduleRes.data.sessions || []);
-    } catch (error) {
-      console.error('Failed to fetch coach detail:', error);
+    } catch {
+      setLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);
@@ -89,6 +92,7 @@ export default function CoachDetail() {
 
   useLoad((options) => {
     if (options?.id) {
+      setCoachId(options.id);
       fetchData(options.id);
       return;
     }
@@ -115,9 +119,16 @@ export default function CoachDetail() {
   if (!coach) {
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title='教练不存在' subtitle='该教练可能已下架或链接已失效' fallbackUrl='/pages/coaches/index' />
+        <PageHeader title={loadFailed ? '教练加载失败' : '教练不存在'} subtitle={loadFailed ? '网络异常或教练信息暂时不可用' : '该教练可能已下架或链接已失效'} fallbackUrl='/pages/coaches/index' />
         <AppCard>
-          <Empty title='教练不存在' description='请返回教练列表重新选择。' />
+          <Empty title={loadFailed ? '教练加载失败' : '教练不存在'} description={loadFailed ? '请检查网络后重试，或返回教练列表重新选择。' : '请返回教练列表重新选择。'} />
+          {loadFailed ? (
+            <View className='coach-detail-page__error-action'>
+              <AppButton size='small' variant='primary' onClick={() => fetchData(coachId)}>
+                重新加载
+              </AppButton>
+            </View>
+          ) : null}
         </AppCard>
       </PageShell>
     );
@@ -142,12 +153,13 @@ export default function CoachDetail() {
           onClick={async () => {
             try {
               await Taro.navigateBack({ delta: 1 });
-            } catch (error) {
+            } catch {
               Taro.redirectTo({ url: '/pages/coaches/index' });
             }
           }}
         >
           <Icon name='chevron-left' className='coach-detail-page__back-icon' />
+          <Text className='coach-detail-page__back-label'>返回</Text>
         </View>
 
         <View className='coach-detail-page__hero-text'>

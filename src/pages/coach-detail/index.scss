@@ -47,6 +47,15 @@
     height: 14px;
   }
 
+  &__back-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   &__hero-text {
     position: absolute;
     left: $spacing-md;
@@ -110,7 +119,7 @@
   &__avatar-text {
     color: $text-muted;
     font-size: $font-size-base;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
   }
 
   &__identity-content {
@@ -162,6 +171,11 @@
 
   &__section {
     margin-bottom: $spacing-lg;
+  }
+
+  &__error-action {
+    margin-top: $spacing-lg;
+    padding: 0 $spacing-lg;
   }
 
   &__about {
@@ -256,7 +270,7 @@
     display: block;
     color: $text-primary;
     font-size: 24px;
-    font-weight: 200;
+    font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
 
@@ -264,7 +278,7 @@
     display: block;
     margin-top: $spacing-2xs;
     color: $text-muted;
-    font-size: 8px;
+    font-size: $font-size-3xs;
     line-height: 1;
     letter-spacing: 0.12em;
   }
