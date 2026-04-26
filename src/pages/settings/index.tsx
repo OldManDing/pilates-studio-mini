@@ -7,6 +7,8 @@ import { STORAGE_KEYS } from '../../constants/storage';
 import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
 
+declare const APP_VERSION: string;
+
 interface SettingRow {
   icon: string;
   title: string;
@@ -113,7 +115,7 @@ const ABOUT_ROWS: SettingRow[] = [
     title: '当前版本',
     description: '',
     type: 'value',
-    value: 'v2.6.0',
+    value: APP_VERSION,
   },
   {
     icon: '/assets/ui/icon-support.svg',
@@ -314,11 +316,18 @@ export default function Settings() {
             <Text className='danger-confirm__title'>确认注销账户？</Text>
             <Text className='danger-confirm__description'>注销后所有数据将被永久删除且无法恢复，包括会员权益、训练记录等。</Text>
             <View className='danger-confirm__actions'>
-              <View className='danger-confirm__button danger-confirm__button--cancel' onClick={() => setShowDeleteConfirm(false)}>
+              <View
+                className={`danger-confirm__button danger-confirm__button--cancel ${deletingAccount ? 'danger-confirm__button--disabled' : ''}`}
+                onClick={() => {
+                  if (!deletingAccount) {
+                    setShowDeleteConfirm(false);
+                  }
+                }}
+              >
                 <Text className='danger-confirm__button-text danger-confirm__button-text--cancel'>取消</Text>
               </View>
               <View
-                className='danger-confirm__button danger-confirm__button--danger'
+                className={`danger-confirm__button danger-confirm__button--danger ${deletingAccount ? 'danger-confirm__button--disabled' : ''}`}
                 onClick={() => {
                   handleDeleteAccount();
                 }}
