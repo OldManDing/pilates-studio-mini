@@ -98,6 +98,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     gap: 28px;
     padding: 35px 49px;
 
+    &:active {
+      background: rgba($accent-soft, 0.32);
+    }
+
     &--read {
       .notifications-list__title {
         color: $support-muted-1;

@@ -363,6 +363,27 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     }
   }
 
+  &__icon-wrap,
+  &__right {
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon-wrap {
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+    border-radius: 19px;
+    background: rgba($accent-soft, 0.72);
+    color: $accent-strong;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+  }
+
   &__left {
     flex: 1;
     min-width: 0;
@@ -390,11 +411,22 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__value {
     color: $ink-soft;
-    font-size: 23px;
+    font-size: $figma-body;
     font-weight: $font-weight-normal;
     font-feature-settings: 'tnum';
     text-align: right;
     line-height: 1.25;
+  }
+
+  &__right {
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  &__arrow {
+    width: 18px;
+    height: 18px;
+    color: rgba($ink-soft, 0.34);
   }
 
   &__divider {

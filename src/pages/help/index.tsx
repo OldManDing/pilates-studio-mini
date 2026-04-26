@@ -243,8 +243,8 @@ export default function Help() {
 
         <AppCard className='help-contact' padding='none'>
           {[
-            { label: '客服热线', value: '400-888-0000', description: '工作日 09:00 – 18:00' },
-            { label: '电子邮箱', value: 'support@studio.com', description: '1-3 个工作日内回复' },
+            { label: '客服热线', value: '400-888-0000', description: '工作日 09:00 – 18:00', icon: 'info' as const },
+            { label: '电子邮箱', value: 'support@studio.com', description: '1-3 个工作日内回复', icon: 'mail' as const },
           ].map((item, index) => (
               <View key={item.label}>
               <View
@@ -257,11 +257,17 @@ export default function Help() {
                   Taro.setClipboardData({ data: item.value });
                 }}
               >
+                <View className='help-contact__icon-wrap'>
+                  <Icon name={item.icon} className='help-contact__icon' />
+                </View>
                 <View className='help-contact__left'>
                   <Text className='help-contact__label'>{item.label}</Text>
                   <Text className='help-contact__description'>{item.description}</Text>
                 </View>
-                <Text className='help-contact__value'>{item.value}</Text>
+                <View className='help-contact__right'>
+                  <Text className='help-contact__value'>{item.value}</Text>
+                  <Icon name='chevron-right' className='help-contact__arrow' />
+                </View>
               </View>
               {index < 1 ? <Divider spacing='none' className='help-contact__divider' /> : null}
             </View>
