@@ -15,6 +15,7 @@ interface SettingRow {
   value?: string;
   toggleKey?: ToggleKey;
   route?: string;
+  action?: 'clear-cache';
 }
 
 interface SettingSection {
@@ -100,7 +101,7 @@ const SECTIONS: SettingSection[] = [
         description: '',
         type: 'navigate',
         value: '点击清理',
-        route: 'clear-cache',
+        action: 'clear-cache',
       },
     ],
   },
@@ -178,8 +179,7 @@ export default function Settings() {
       await membersApi.requestAccountDeletion();
       setShowDeleteConfirm(false);
       Taro.showToast({ title: '注销申请已提交', icon: 'success' });
-    } catch (error) {
-      console.error('Failed to request account deletion:', error);
+    } catch {
       Taro.showToast({ title: '注销申请提交失败', icon: 'none' });
     } finally {
       setDeletingAccount(false);
@@ -202,7 +202,7 @@ export default function Settings() {
             return;
           }
 
-          if (item.route === 'clear-cache') {
+          if (item.action === 'clear-cache') {
             handleClearCache();
             return;
           }

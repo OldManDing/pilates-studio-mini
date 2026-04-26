@@ -69,8 +69,7 @@ export default function Courses() {
       setLoading(true);
       setLoadFailed(false);
       setSessions(await fetchAllUpcomingSessions());
-    } catch (error) {
-      console.error('Failed to fetch booking courses:', error);
+    } catch {
       setSessions([]);
       setLoadFailed(true);
       Taro.showToast({ title: '课程加载失败', icon: 'none' });

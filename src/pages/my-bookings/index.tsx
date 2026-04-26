@@ -165,8 +165,7 @@ export default function MyBookings() {
       });
       setHasMore(hasMorePages);
       setPage(currentPage);
-    } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+    } catch {
       if (!append) {
         setBookings([]);
         setLoadFailed(true);
@@ -218,8 +217,7 @@ export default function MyBookings() {
             await bookingsApi.cancel(booking.id);
             Taro.showToast({ title: '已取消', icon: 'success' });
             fetchBookings(1, false);
-          } catch (error) {
-            console.error('Cancel failed:', error);
+          } catch {
             Taro.showToast({ title: '取消失败，请稍后重试', icon: 'none' });
           }
         }

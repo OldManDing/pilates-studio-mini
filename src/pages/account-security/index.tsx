@@ -49,8 +49,7 @@ export default function AccountSecurity() {
       await membersApi.changePassword({ currentPassword, newPassword });
       Taro.showToast({ title: '密码已更新', icon: 'success' });
       resetPasswordForm();
-    } catch (error) {
-      console.error('Failed to change password:', error);
+    } catch {
       Taro.showToast({ title: '密码修改失败，请稍后重试', icon: 'none' });
     } finally {
       setSubmitting(false);

@@ -38,8 +38,7 @@ export default function Coaches() {
 
       setHasMore(meta ? meta.page < meta.totalPages : newCoaches.length === 10);
       setPage(currentPage);
-    } catch (error) {
-      console.error('Failed to fetch coaches:', error);
+    } catch {
       if (!append) {
         setCoaches([]);
         setLoadFailed(true);

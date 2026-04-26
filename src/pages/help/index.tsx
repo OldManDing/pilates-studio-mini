@@ -92,8 +92,7 @@ export default function Help() {
       setSubmittingFeedback(true);
       await supportApi.submitFeedback({ content: feedbackText.trim() });
       setFeedbackStep('sent');
-    } catch (error) {
-      console.error('Failed to submit feedback:', error);
+    } catch {
       Taro.showToast({ title: '反馈提交失败，请稍后重试', icon: 'none' });
       return;
     } finally {

@@ -28,8 +28,7 @@ export default function MembershipRenew() {
       const activePlans = response.data.plans || [];
       setPlans(activePlans);
       setSelectedPlanId((previous) => previous || activePlans[0]?.id || '');
-    } catch (error) {
-      console.error('Failed to fetch membership plans:', error);
+    } catch {
       setPlans([]);
       setLoadFailed(true);
       Taro.showToast({ title: '会员方案加载失败', icon: 'none' });
@@ -67,8 +66,7 @@ export default function MembershipRenew() {
         setSubmitting(true);
         await membershipPlansApi.requestRenewal(selectedPlan.id);
         Taro.showToast({ title: '续费申请已提交', icon: 'success' });
-      } catch (error) {
-        console.error('Failed to submit renewal request:', error);
+      } catch {
         Taro.showToast({ title: '续费提交失败，请稍后重试', icon: 'none' });
       } finally {
         setSubmitting(false);

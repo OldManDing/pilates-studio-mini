@@ -141,8 +141,7 @@ export default function Membership() {
 
       setMemberships(membershipsData);
       setPlans(plansData);
-    } catch (error) {
-      console.error('Failed to fetch membership data:', error);
+    } catch {
       Taro.showToast({ title: '加载失败', icon: 'none' });
       setLoadFailed(true);
     } finally {

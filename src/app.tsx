@@ -4,9 +4,7 @@ import './app.scss';
 
 function App(props: { children?: React.ReactNode }) {
   useEffect(() => {
-    ensureMiniProgramAuth().catch((error) => {
-      console.error('Failed to initialize mini program auth:', error);
-    });
+    ensureMiniProgramAuth().catch(() => undefined);
   }, []);
 
   return <>{props.children}</>;

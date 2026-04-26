@@ -128,8 +128,7 @@ export default function Profile() {
       }
       setMemberships(membershipsRes.data.memberships || profileRes.data.member?.memberships || []);
       setBookings(bookingsRes.data.bookings || []);
-    } catch (error) {
-      console.error('Failed to fetch profile shell data:', error);
+    } catch {
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);

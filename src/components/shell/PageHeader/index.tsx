@@ -41,20 +41,22 @@ export default function PageHeader({
     const pages = Taro.getCurrentPages();
 
     if (pages.length > 1) {
-      try {
-        await Taro.navigateBack({ delta: 1 });
+      const navigatedBack = await Taro.navigateBack({ delta: 1 })
+        .then(() => true)
+        .catch(() => false);
+
+      if (navigatedBack) {
         return;
-      } catch (error) {
-        console.warn('PageHeader navigateBack failed, will switch to default tab.', error);
       }
     }
 
     if (isTabPageUrl(safeFallbackUrl)) {
-      try {
-        await Taro.switchTab({ url: safeFallbackUrl });
+      const switchedTab = await Taro.switchTab({ url: safeFallbackUrl })
+        .then(() => true)
+        .catch(() => false);
+
+      if (switchedTab) {
         return;
-      } catch (error) {
-        console.warn('PageHeader switchTab fallback failed, relaunching fallback page.', error);
       }
     }
 
