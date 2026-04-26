@@ -126,11 +126,14 @@ export default function CourseDetail() {
   const [booked, setBooked] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
   const [profileLoadFailed, setProfileLoadFailed] = useState(false);
+  const [courseLoadFailed, setCourseLoadFailed] = useState(false);
+  const [courseId, setCourseId] = useState('');
   const [heroImageSrc, setHeroImageSrc] = useState('');
 
   const fetchData = useCallback(async (id: string) => {
     try {
       setLoading(true);
+      setCourseLoadFailed(false);
       const [courseRes, sessionsRes, profileRes] = await Promise.all([
         coursesApi.getById(id),
         coursesApi.getSessions(id, { upcoming: true }),
@@ -144,8 +147,10 @@ export default function CourseDetail() {
       setProfileLoadFailed(profileRes.failed);
       const nextHero = HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg';
       setHeroImageSrc(nextHero);
-    } catch (error) {
-      console.error('Failed to fetch course detail:', error);
+    } catch {
+      setCourse(null);
+      setSessions([]);
+      setCourseLoadFailed(true);
       Taro.showToast({ title: '课程加载失败', icon: 'none' });
     } finally {
       setLoading(false);
@@ -154,10 +159,13 @@ export default function CourseDetail() {
 
   useLoad((options) => {
     if (options?.id) {
-      fetchData(options.id);
+      const nextCourseId = String(options.id);
+      setCourseId(nextCourseId);
+      fetchData(nextCourseId);
       return;
     }
 
+    setCourseLoadFailed(true);
     setLoading(false);
   });
 
@@ -197,8 +205,7 @@ export default function CourseDetail() {
       Taro.showToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
       fetchData(course.id);
-    } catch (error) {
-      console.error('Booking failed:', error);
+    } catch {
       Taro.showToast({ title: '预约失败，请稍后重试', icon: 'none' });
     } finally {
       setBookingLoading(false);
@@ -212,9 +219,14 @@ export default function CourseDetail() {
   if (!course) {
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title='课程不存在' subtitle='该课程可能已下架或链接已失效' fallbackUrl='/pages/courses/index' />
+        <PageHeader title={courseLoadFailed ? '课程加载失败' : '课程不存在'} subtitle={courseLoadFailed ? '网络异常或课程暂时不可用' : '该课程可能已下架或链接已失效'} fallbackUrl='/pages/courses/index' />
         <AppCard>
-          <Empty title='课程不存在' description='请返回课程列表重新选择。' />
+          <Empty title={courseLoadFailed ? '课程加载失败' : '课程不存在'} description={courseLoadFailed ? '请检查网络后重试，或返回课程列表重新选择。' : '请返回课程列表重新选择。'} />
+          {courseLoadFailed && courseId ? (
+            <View className='course-detail-page__error-action'>
+              <AppButton size='small' variant='primary' onClick={() => fetchData(courseId)}>重新加载</AppButton>
+            </View>
+          ) : null}
         </AppCard>
       </PageShell>
     );
@@ -253,7 +265,7 @@ export default function CourseDetail() {
             onClick={async () => {
               try {
                 await Taro.navigateBack({ delta: 1 });
-              } catch (error) {
+              } catch {
                 Taro.switchTab({ url: '/pages/courses/index' });
               }
             }}

@@ -191,6 +191,12 @@ $course-detail-cta-content-height: 74px;
     margin-bottom: $spacing-sm;
   }
 
+  &__error-action {
+    display: flex;
+    justify-content: center;
+    margin-top: $spacing-md;
+  }
+
   &__section-label {
     display: block;
     margin-bottom: 6px;
