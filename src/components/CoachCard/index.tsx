@@ -1,5 +1,6 @@
 import { View, Text, Image } from '@tarojs/components';
 import { Coach } from '../../api/coaches';
+import Icon from '../shell/Icon';
 import './index.scss';
 
 interface CoachCardProps {
@@ -17,7 +18,7 @@ export default function CoachCard({ coach, onClick, compact = false }: CoachCard
 
   return (
     <View className={joinClasses(['coach-card', compact && 'coach-card--compact'])} onClick={onClick}>
-      <Image className='coach-card__avatar' src={coach.avatar || '/assets/default-avatar.png'} />
+      <Image className='coach-card__avatar' src={coach.avatar || '/assets/ui/default-avatar.svg'} mode='aspectFill' />
       <View className='coach-card__info'>
         <View className='coach-card__title-row'>
           <Text className='coach-card__name'>{coach.name}</Text>
@@ -36,7 +37,7 @@ export default function CoachCard({ coach, onClick, compact = false }: CoachCard
           <Text className='coach-card__courses'>授课：{courseText}</Text>
         ) : null}
       </View>
-      <Text className='coach-card__arrow'>›</Text>
+      <Icon name='chevron-right' className='coach-card__arrow' />
     </View>
   );
 }
