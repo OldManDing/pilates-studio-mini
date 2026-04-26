@@ -13,6 +13,20 @@
     gap: $spacing-sm;
   }
 
+  &__notice {
+    padding: 10px 12px;
+    border: 1px solid rgba($accent, 0.18);
+    border-radius: $radius-md;
+    background: rgba($accent-soft, 0.48);
+  }
+
+  &__notice-text {
+    display: block;
+    color: $accent-strong;
+    font-size: $figma-caption;
+    line-height: $line-height-normal;
+  }
+
   &__today-header {
     display: flex;
     align-items: baseline;

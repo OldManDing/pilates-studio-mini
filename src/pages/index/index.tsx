@@ -47,7 +47,7 @@ function getGreeting(date: Date) {
 
 function getDisplayMemberName(name?: string | null) {
   if (!name) {
-    return '林女士';
+    return '会员';
   }
 
   if (name.endsWith('女士') || name.endsWith('先生') || name.endsWith('小姐')) {
@@ -178,7 +178,7 @@ function getMembershipStatus(membership?: Membership | null) {
 }
 
 function getMembershipDescription(membership?: Membership | null) {
-  if (!membership) return '当前还没有已生效会员卡，可先保留视觉卡位等待后续接入。';
+  if (!membership) return '当前还没有已生效会员卡，可前往会员中心选择适合的训练方案。';
   if (membership.totalCredits <= 0) return `${membership.planName || '会员卡'} 当前权益为无限次，可继续安排训练。`;
   return `${membership.planName || '会员卡'} 当前剩余 ${membership.remainingCredits}/${membership.totalCredits} 次，可继续安排训练。`;
 }
@@ -268,6 +268,7 @@ async function fetchAllMyBookings() {
 
 export default function Index() {
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -285,20 +286,23 @@ export default function Index() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [profileRes, membershipsRes, bookingsRes, coursesRes] = await Promise.all([
-        membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
-        membersApi.getMyMemberships({ showLoading: false }).catch(() => ({ data: { memberships: [] as Membership[] } })),
-        fetchAllMyBookings().then((items) => ({ data: { bookings: items } })).catch(() => ({ data: { bookings: [] as Booking[] } })),
-        coursesApi.getAll({ page: 1, limit: 6, isActive: true }, { showLoading: false }).catch(() => ({ data: { courses: [] as Course[] } })),
+      const [profileRes, membershipsRes, bookingsRes, coursesRes] = await Promise.allSettled([
+        membersApi.getProfile({ showLoading: false }),
+        membersApi.getMyMemberships({ showLoading: false }),
+        fetchAllMyBookings().then((items) => ({ data: { bookings: items } })),
+        coursesApi.getAll({ page: 1, limit: 6, isActive: true }, { showLoading: false }),
       ]);
 
-      setMember(profileRes.data.member);
-      setMemberships(membershipsRes.data.memberships || []);
-      setBookings(bookingsRes.data.bookings || []);
-      setCourses(coursesRes.data.courses || []);
-    } catch (error) {
+      const hasFailedSection = [profileRes, membershipsRes, bookingsRes, coursesRes].some((result) => result.status === 'rejected');
+
+      setLoadFailed(hasFailedSection);
+      setMember(profileRes.status === 'fulfilled' ? profileRes.value.data.member : null);
+      setMemberships(membershipsRes.status === 'fulfilled' ? membershipsRes.value.data.memberships || [] : []);
+      setBookings(bookingsRes.status === 'fulfilled' ? bookingsRes.value.data.bookings || [] : []);
+      setCourses(coursesRes.status === 'fulfilled' ? coursesRes.value.data.courses || [] : []);
+    } catch {
+      setLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
-      console.error('Failed to fetch home shell data:', error);
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -425,8 +429,8 @@ export default function Index() {
       {
         key: 'focus',
         label: '连续',
-        value: '7',
-        unit: 'd',
+        value: monthlySessions > 0 ? String(monthlySessions) : '--',
+        unit: '次',
         detail: '',
       },
     ],
@@ -509,7 +513,13 @@ export default function Index() {
 
   return (
     <PageShell className='home-page' reserveTabBarSpace>
-      <View className='home-page__content'>
+        <View className='home-page__content'>
+        {loadFailed ? (
+          <View className='home-page__notice'>
+            <Text className='home-page__notice-text'>部分数据暂时加载失败，下拉刷新可重新同步。</Text>
+          </View>
+        ) : null}
+
         <HomeHero data={heroData} />
 
         <View className='home-page__section'>
