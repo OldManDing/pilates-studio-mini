@@ -21,7 +21,12 @@ const config = {
     MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || '')
   },
   copy: {
-    patterns: [],
+    patterns: [
+      {
+        from: 'src/assets/ui',
+        to: 'dist/assets/ui',
+      },
+    ],
     options: {}
   },
   framework: 'react',
