@@ -8,19 +8,30 @@
   padding: $spacing-xl $spacing-md;
 
   &__icon {
-    width: 168px;
-    height: 168px;
-    margin-bottom: $spacing-md;
+    width: 148px;
+    height: 148px;
+    margin-bottom: $spacing-lg;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  &__icon-box {
+  &__icon-ring {
     width: 104px;
     height: 104px;
-    border: 2px dashed $gray-400;
-    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba($accent, 0.16);
+    border-radius: $radius-full;
+    background: radial-gradient(circle at 50% 42%, rgba($accent-soft, 0.94) 0%, rgba($surface, 0.98) 68%);
+    box-shadow: inset 0 0 0 12px rgba($accent-soft, 0.32), $shadow-xs;
+  }
+
+  &__icon-symbol {
+    width: 34px;
+    height: 34px;
+    color: rgba($accent-strong, 0.82);
   }
 
   &__image {
@@ -31,15 +42,18 @@
   }
 
   &__title {
-    font-size: 15px;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $text-primary;
     margin-bottom: $spacing-xs;
     font-weight: $font-weight-medium;
+    line-height: $line-height-snug;
   }
 
   &__desc {
-    font-size: 11px;
+    max-width: 420px;
+    font-size: $font-size-xs;
     color: $text-muted;
     line-height: $line-height-normal;
+    text-align: center;
   }
 }
