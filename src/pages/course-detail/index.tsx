@@ -235,7 +235,7 @@ export default function CourseDetail() {
   const subtitle = TYPE_SUBTITLE_MAP[course.type] || getLabelByValue(CourseTypes, course.type);
   const heroImageFallback = HERO_IMAGE_FALLBACK_BY_TYPE[course.type] || '/assets/ui/booking-yoga.svg';
   const instructorName = course.coach?.name || '待安排';
-  const instructorDescription = `${instructorName}教练 · 8年教学经验`;
+  const instructorDescription = course.coach?.bio || '基于当前课程资料展示教练公开信息。';
   const sessionDate = featuredSession?.startsAt;
   const timeRange = formatTimeRange(featuredSession?.startsAt, featuredSession?.endsAt);
   const durationMinutes = getDurationMinutes(featuredSession?.startsAt, featuredSession?.endsAt, course.durationMinutes);
@@ -271,6 +271,7 @@ export default function CourseDetail() {
             }}
           >
             <Icon name='chevron-left' className='course-detail-page__back-icon' />
+            <Text className='course-detail-page__back-label'>返回</Text>
           </View>
 
           <View className='course-detail-page__hero-text'>

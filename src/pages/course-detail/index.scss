@@ -53,6 +53,15 @@ $course-detail-cta-content-height: 74px;
     height: 14px;
   }
 
+  &__back-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   &__hero-text {
     position: absolute;
     left: $spacing-lg;
@@ -235,7 +244,7 @@ $course-detail-cta-content-height: 74px;
   &__instructor-avatar-text {
     color: $text-muted;
     font-size: $font-size-sm;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
   }
 
   &__instructor-content {

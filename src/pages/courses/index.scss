@@ -79,9 +79,8 @@
 
   &__action-arrow {
     color: #d0d0d0;
-    font-size: 20px;
-    font-weight: $font-weight-normal;
-    line-height: 1;
+    width: 16px;
+    height: 16px;
   }
 
   &__title {
@@ -89,7 +88,7 @@
     margin-bottom: 14px;
     color: $text-primary;
     font-size: 42px;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
     letter-spacing: 0.01em;
     line-height: 1.2;
   }
@@ -169,7 +168,7 @@
     color: $text-primary;
     margin-bottom: 7px;
     font-size: 31px;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
     font-feature-settings: 'tnum';
     line-height: 1;
   }
@@ -241,6 +240,18 @@
 
     &--dark {
       filter: grayscale(0.55) brightness(0.9);
+    }
+
+    &--yoga {
+      background: rgba($accent-soft, 0.82);
+    }
+
+    &--pilates {
+      background: rgba($violet-light, 0.82);
+    }
+
+    &--meditation {
+      background: rgba($orange-light, 0.82);
     }
   }
 

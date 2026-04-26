@@ -1,4 +1,5 @@
 import { Text, View } from '@tarojs/components';
+import { Icon } from '../../../components';
 import type { BookingHeroData } from './types';
 
 interface BookingHeroProps {
@@ -13,7 +14,7 @@ export default function BookingHero({ data, onActionClick }: BookingHeroProps) {
         <Text className='booking-hero__eyebrow'>{data.eyebrow}</Text>
         <View className='booking-hero__action' onClick={onActionClick}>
           <Text className='booking-hero__action-text'>{data.actionLabel}</Text>
-          <Text className='booking-hero__action-arrow'>›</Text>
+          <Icon name='chevron-right' className='booking-hero__action-arrow' />
         </View>
       </View>
       <Text className='booking-hero__title'>{data.title}</Text>
