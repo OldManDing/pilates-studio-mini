@@ -34,6 +34,12 @@ export default function ProfileAccountCard({ data }: ProfileAccountCardProps) {
         </View>
       </View>
 
+      <View className='profile-account-card__summary'>
+        <Text className='profile-account-card__summary-label'>{data.membershipLabel}</Text>
+        <Text className='profile-account-card__summary-title'>{data.membershipTitle}</Text>
+        <Text className='profile-account-card__summary-description'>{data.membershipDescription}</Text>
+      </View>
+
       <View className='profile-account-card__stats'>
         {data.stats.map((item, index) => (
           <View key={item.key} className='profile-account-card__stat'>

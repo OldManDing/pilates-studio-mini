@@ -71,7 +71,7 @@
   &__avatar-text {
     color: $accent;
     font-size: 35px;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
     line-height: 1;
   }
 
@@ -99,7 +99,7 @@
 
   &__name {
     color: $text-primary;
-    font-size: 31px;
+    font-size: $font-size-xl;
     font-weight: $font-weight-medium;
     line-height: 1.1;
   }
@@ -122,7 +122,7 @@
 
   &__badge-text {
     color: $accent;
-    font-size: 15px;
+    font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
     letter-spacing: 0.18em;
     line-height: 1;
@@ -136,7 +136,11 @@
   }
 
   &__summary {
-    display: none;
+    margin-bottom: 30px;
+    padding: 22px 24px;
+    border-radius: 18px;
+    background: rgba($accent, 0.04);
+    border: 1px solid rgba($accent, 0.1);
   }
 
   &__summary-label,
@@ -191,7 +195,7 @@
   &__stat-value {
     color: $text-primary;
     font-size: 35px;
-    font-weight: 300;
+    font-weight: $font-weight-medium;
     line-height: 1;
     font-feature-settings: 'tnum';
   }

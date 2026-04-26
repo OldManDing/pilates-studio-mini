@@ -25,7 +25,7 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
         {data.items.map((item, index) => (
           <View key={item.key}>
             <View className='profile-menu-section__item' onClick={() => onItemClick?.(item)}>
-              <View className={`profile-menu-section__icon profile-menu-section__icon--${item.icon}`}>
+              <View className='profile-menu-section__icon'>
                 <Image className='profile-menu-section__icon-image' src={iconMap[item.icon]} mode='aspectFit' />
               </View>
 
