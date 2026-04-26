@@ -7,8 +7,8 @@
   bottom: 0;
   z-index: 999;
   background: rgba($surface, 0.98);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
 
   &__hairline {
     height: 0.5px;
@@ -17,53 +17,58 @@
 
   &__inner {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: $tabbar-height;
-    max-width: $page-max-width;
-    margin: 0 auto;
-    gap: 64px;
-    padding: 12px 0 calc(#{$tabbar-vertical-padding} + constant(safe-area-inset-bottom));
-    padding: 12px 0 calc(#{$tabbar-vertical-padding} + env(safe-area-inset-bottom));
+    align-items: stretch;
+    justify-content: space-around;
+    width: 100%;
+    padding: 8px 0 calc(28px + constant(safe-area-inset-bottom));
+    padding: 8px 0 calc(28px + env(safe-area-inset-bottom));
   }
 
   &__item {
     position: relative;
-    flex: 0 0 auto;
-    min-width: 48px;
+    width: 33.3333%;
+    flex: 0 0 33.3333%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    padding: 0;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 14px 0;
+    border: none;
+    background: transparent;
+    line-height: 1;
+    transition: transform $duration-fast $ease-in-out;
+
+    &::after {
+      border: none;
+    }
+
+    &:active {
+      transform: translateY(2px);
+    }
   }
 
   &__active-line {
     position: absolute;
-    top: -12px;
+    top: -8px;
     left: 50%;
-    width: 16px;
-    height: 1.5px;
+    width: 28px;
+    height: 3px;
     border-radius: 1px;
     background: $primary;
     transform: translateX(-50%);
   }
 
   &__icon {
-    width: 18px;
-    height: 18px;
-    color: #d8d8d8;
-    opacity: 1;
-    transition: color $duration-fast $ease-in-out;
-
-    &--active {
-      color: rgba($primary, 0.94);
-    }
+    width: 36px;
+    height: 36px;
   }
 
   &__label {
-    color: #d8d8d8;
-    font-size: 9px;
+    color: #cfcfcf;
+    font-size: 18px;
     font-weight: $font-weight-normal;
     line-height: 1.1;
     letter-spacing: $letter-spacing-wider;

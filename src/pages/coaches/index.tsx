@@ -2,18 +2,25 @@ import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
-import { AppCard, CoachCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, CoachCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
 export default function Coaches() {
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   const fetchCoaches = useCallback(async (currentPage = 1, append = false) => {
     try {
-      if (currentPage === 1) setLoading(true);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setLoadFailed(false);
+      }
 
       const res = await coachesApi.getAll({
         page: currentPage,
@@ -33,9 +40,14 @@ export default function Coaches() {
       setPage(currentPage);
     } catch (error) {
       console.error('Failed to fetch coaches:', error);
+      if (!append) {
+        setCoaches([]);
+        setLoadFailed(true);
+      }
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
       Taro.stopPullDownRefresh();
     }
   }, []);
@@ -49,7 +61,7 @@ export default function Coaches() {
   });
 
   useReachBottom(() => {
-    if (hasMore && !loading) {
+    if (hasMore && !loading && !loadingMore) {
       fetchCoaches(page + 1, true);
     }
   });
@@ -64,6 +76,7 @@ export default function Coaches() {
         title='教练团队'
         subtitle='查看教练专长与近期可预约排课'
         eyebrow='COACHES'
+        fallbackUrl='/pages/courses/index'
       />
 
       <View className='coaches-page__section'>
@@ -76,6 +89,11 @@ export default function Coaches() {
 
       {loading && page === 1 ? (
         <Loading />
+      ) : loadFailed ? (
+        <AppCard className='coaches-page__empty-card'>
+          <Empty title='教练加载失败' description='请检查网络后重试。' />
+          <AppButton size='small' variant='primary' onClick={() => fetchCoaches(1, false)}>重新加载</AppButton>
+        </AppCard>
       ) : coaches.length > 0 ? (
         <AppCard padding='none' className='coaches-page__list-card'>
           {coaches.map((coach, index) => (
@@ -96,7 +114,7 @@ export default function Coaches() {
 
         {hasMore && !loading && coaches.length > 0 ? (
           <View className='coaches-page__loading-more'>
-            <Text className='coaches-page__loading-more-text'>上拉加载更多</Text>
+            <Text className='coaches-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
           </View>
         ) : null}
 

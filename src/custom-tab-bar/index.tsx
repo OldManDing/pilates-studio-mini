@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Text } from '@tarojs/components';
-import Icon from '../components/shell/Icon';
+import { Image, View, Text } from '@tarojs/components';
 import { TAB_NAV_ITEMS, toTabPageUrl } from '../constants/navigation';
 import './index.scss';
 
@@ -21,6 +20,8 @@ function getSelectedIndex() {
 }
 
 export default class CustomTabBar extends Component<Record<string, never>, CustomTabBarState> {
+  private switching = false;
+
   state: CustomTabBarState = {
     selected: 0,
   };
@@ -37,15 +38,23 @@ export default class CustomTabBar extends Component<Record<string, never>, Custo
     this.setState({ selected });
   }
 
-  handleSwitch(index: number) {
+  async handleSwitch(index: number) {
     const item = TAB_ITEMS[index];
 
-    if (!item || index === this.state.selected) {
+    if (!item || this.switching) {
       return;
     }
 
-    this.setSelected(index);
-    Taro.switchTab({ url: toTabPageUrl(item.pagePath) });
+    this.switching = true;
+
+    try {
+      await Taro.switchTab({ url: toTabPageUrl(item.pagePath) });
+    } catch (error) {
+      this.setSelected(getSelectedIndex());
+      Taro.showToast({ title: '切换失败，请重试', icon: 'none' });
+    } finally {
+      this.switching = false;
+    }
   }
 
   render() {
@@ -57,9 +66,17 @@ export default class CustomTabBar extends Component<Record<string, never>, Custo
             const active = index === this.state.selected;
 
             return (
-              <View key={item.pagePath} className='custom-tab-bar__item' onClick={() => this.handleSwitch(index)}>
+              <View
+                key={item.pagePath}
+                className='custom-tab-bar__item'
+                onClick={() => this.handleSwitch(index)}
+              >
                 {active ? <View className='custom-tab-bar__active-line' /> : null}
-                <Icon name={item.iconName} className={`custom-tab-bar__icon ${active ? 'custom-tab-bar__icon--active' : ''}`} />
+                <Image
+                  className='custom-tab-bar__icon'
+                  src={`/${active ? item.selectedIconPath : item.iconPath}`}
+                  mode='aspectFit'
+                />
                 <Text className={`custom-tab-bar__label ${active ? 'custom-tab-bar__label--active' : ''}`}>{item.text}</Text>
               </View>
             );

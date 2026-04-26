@@ -42,7 +42,7 @@ export interface HomeTodayCourseData {
 }
 
 export interface HomeServiceItemData {
-  key: 'booking' | 'membership' | 'records' | 'courses';
+  key: 'booking' | 'coaches' | 'membership' | 'records' | 'courses';
   accent: HomeAccent;
   label: string;
   subtitle: string;

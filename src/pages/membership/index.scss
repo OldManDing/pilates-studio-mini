@@ -38,6 +38,12 @@
     align-items: center;
   }
 
+  &__activity-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 18px;
+  }
+
   &__status-top {
     justify-content: space-between;
     margin-bottom: 28px;

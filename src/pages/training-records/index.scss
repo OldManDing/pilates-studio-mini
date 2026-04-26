@@ -1,0 +1,95 @@
+@import '../../styles/variables.scss';
+
+.training-records-page {
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  &__summary-card {
+    padding: 28px 12px;
+    text-align: center;
+  }
+
+  &__summary-value {
+    color: $text-primary;
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  &__summary-unit,
+  &__summary-label {
+    display: block;
+    color: #c8c8c8;
+    font-size: 18px;
+  }
+
+  &__summary-unit {
+    margin-top: 6px;
+  }
+
+  &__summary-label {
+    margin-top: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  &__section {
+    margin-bottom: 56px;
+  }
+
+  &__empty {
+    padding: 42px 24px;
+  }
+}
+
+.training-records-list {
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 30px 36px;
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title,
+  &__meta,
+  &__duration,
+  &__status {
+    display: block;
+  }
+
+  &__title {
+    color: $text-primary;
+    font-size: 26px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 8px;
+  }
+
+  &__meta,
+  &__status {
+    color: #c8c8c8;
+    font-size: 20px;
+  }
+
+  &__side {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__duration {
+    color: $accent;
+    font-size: 24px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 6px;
+  }
+}

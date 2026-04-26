@@ -1,4 +1,4 @@
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import { AppCard, Icon } from '../../../components';
 import type { HomeStudioData } from './types';
 
@@ -26,9 +26,9 @@ export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
       <Text className='home-studio-card__address'>{data.address}</Text>
       <Text className='home-studio-card__hours'>{data.hours}</Text>
 
-      <View className='home-studio-card__action' onClick={onClick}>
+      <Button className='home-studio-card__action' hoverClass='none' onClick={onClick}>
         <Text className='home-studio-card__action-text'>{data.actionLabel}</Text>
-      </View>
+      </Button>
     </AppCard>
   );
 }

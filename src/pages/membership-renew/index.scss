@@ -1,0 +1,104 @@
+@import '../../styles/variables.scss';
+
+.membership-renew-page {
+  &__hero {
+    padding: 44px 48px;
+    margin-bottom: 42px;
+    border-radius: $figma-radius-card;
+    background: radial-gradient(circle at top right, rgba($accent, 0.16), rgba($surface, 0) 48%), $surface;
+    box-shadow: $shadow-card;
+  }
+
+  &__hero-label,
+  &__hero-title,
+  &__hero-desc {
+    display: block;
+  }
+
+  &__hero-label {
+    color: $accent;
+    font-size: 18px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.16em;
+    margin-bottom: 22px;
+  }
+
+  &__hero-title {
+    color: $text-primary;
+    font-size: 40px;
+    font-weight: 300;
+    margin-bottom: 16px;
+  }
+
+  &__hero-desc {
+    color: #ababab;
+    font-size: 22px;
+    line-height: 34px;
+  }
+
+  &__section {
+    margin-bottom: 44px;
+  }
+
+  &__empty {
+    padding: 42px 24px;
+  }
+
+  &__footer {
+    margin-bottom: 36px;
+  }
+}
+
+.membership-plan-list {
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px 38px;
+    background: $surface;
+
+    &--selected {
+      background: rgba($accent, 0.07);
+    }
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name,
+  &__desc,
+  &__price,
+  &__tag {
+    display: block;
+  }
+
+  &__name {
+    color: $text-primary;
+    font-size: 28px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 8px;
+  }
+
+  &__desc,
+  &__tag {
+    color: #c8c8c8;
+    font-size: 20px;
+  }
+
+  &__price-wrap {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__price {
+    color: $accent;
+    font-size: 32px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 6px;
+  }
+}

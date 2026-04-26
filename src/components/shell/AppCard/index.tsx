@@ -24,7 +24,7 @@ export default function AppCard({
   onClick,
 }: AppCardProps) {
   return (
-    <View className={joinClasses(['app-shell-card', `app-shell-card--${variant}`, `app-shell-card--padding-${padding}`, className])} onClick={onClick}>
+    <View className={joinClasses(['app-shell-card', `app-shell-card--${variant}`, `app-shell-card--padding-${padding}`, onClick && 'app-shell-card--clickable', className])} onClick={onClick}>
       {children}
     </View>
   );

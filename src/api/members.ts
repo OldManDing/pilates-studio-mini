@@ -1,4 +1,4 @@
-import { http } from './request';
+import { http, wrapObjectData } from './request';
 
 // Member interfaces
 export interface Member {
@@ -43,21 +43,34 @@ export interface CreateMemberData {
   startDate?: string;
 }
 
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
 // Member APIs
 export const membersApi = {
   // Get current member profile
-  getProfile: (config?: { showLoading?: boolean }) =>
-    http.get<{ member: Member }>('/members/profile', undefined, config),
+  getProfile: async (config?: { showLoading?: boolean }) =>
+    wrapObjectData(await http.get<Member | null>('/members/profile', undefined, config), 'member'),
 
   // Get member by ID
-  getById: (id: string) =>
-    http.get<{ member: Member }>(`/members/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<Member>(`/members/${id}`), 'member'),
 
   // Update member
-  update: (id: string, data: Partial<CreateMemberData>) =>
-    http.put<{ member: Member }>(`/members/${id}`, data),
+  update: async (id: string, data: Partial<CreateMemberData>) =>
+    wrapObjectData(await http.put<Member>(`/members/${id}`, data), 'member'),
 
   // Get my memberships
   getMyMemberships: (config?: { showLoading?: boolean }) =>
     http.get<{ memberships: Membership[] }>('/members/my-memberships', undefined, config),
+
+  // Submit password change request
+  changePassword: (data: ChangePasswordData) =>
+    http.post<{ submitted: boolean }>('/members/change-password', data),
+
+  // Submit account deletion request
+  requestAccountDeletion: () =>
+    http.post<{ submitted: boolean }>('/members/delete-request'),
 };

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
@@ -14,6 +14,9 @@ import type {
   ProfileSignOutData,
   ProfileStatData,
 } from './components/types';
+import { syncCustomTabBarSelected } from '../../utils/tabbar';
+import { STORAGE_KEYS } from '../../constants/storage';
+import { writeStorage } from '../../utils/storage';
 import './index.scss';
 
 function getMaskedPhone(phone?: string) {
@@ -83,23 +86,46 @@ function formatDateLabel(dateString?: string) {
   return `${date.getFullYear()}.${padNumber(date.getMonth() + 1)}.${padNumber(date.getDate())}`;
 }
 
+async function fetchAllMyBookings() {
+  const pageSize = 50;
+  const allBookings: Booking[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await bookingsApi.getMyBookings({ page: currentPage, limit: pageSize }, { showLoading: false });
+    allBookings.push(...(response.data.bookings || []));
+    totalPages = response.data.meta?.totalPages || (response.data.bookings?.length === pageSize ? currentPage + 1 : currentPage);
+    currentPage += 1;
+  } while (currentPage <= totalPages);
+
+  return allBookings;
+}
+
 export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<Member | null>(null);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
+  useDidShow(() => {
+    syncCustomTabBarSelected(2);
+  });
+
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
 
       const [profileRes, membershipsRes, bookingsRes] = await Promise.all([
-        membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
-        membersApi.getMyMemberships({ showLoading: false }).catch(() => ({ data: { memberships: [] as Membership[] } })),
-        bookingsApi.getMyBookings({ page: 1, limit: 100 }, { showLoading: false }).catch(() => ({ data: { bookings: [] as Booking[] } })),
+        membersApi.getProfile({ showLoading: false }),
+        membersApi.getMyMemberships({ showLoading: false }),
+        fetchAllMyBookings().then((items) => ({ data: { bookings: items } })),
       ]);
 
       setMember(profileRes.data.member);
+      if (profileRes.data.member) {
+        writeStorage(STORAGE_KEYS.profile, { phone: getMaskedPhone(profileRes.data.member.phone) });
+      }
       setMemberships(membershipsRes.data.memberships || profileRes.data.member?.memberships || []);
       setBookings(bookingsRes.data.bookings || []);
     } catch (error) {
@@ -159,7 +185,7 @@ export default function Profile() {
       membershipLabel: activeMembership ? 'ACTIVE MEMBERSHIP' : 'GUEST MODE',
       membershipTitle: activeMembership?.planName || '尚未开通会员',
       membershipDescription: activeMembership
-        ? `剩余 ${activeMembership.remainingCredits}/${activeMembership.totalCredits} 次 · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
+        ? `${activeMembership.totalCredits <= 0 ? '无限次权益' : `剩余 ${activeMembership.remainingCredits}/${activeMembership.totalCredits} 次`} · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
         : '登录后即可同步会员权益、课次余额与训练记录。',
       stats,
     };
@@ -182,7 +208,7 @@ export default function Profile() {
           icon: 'records',
           label: '训练记录',
           description: '历史训练数据与统计',
-          route: '/pages/my-bookings/index',
+          route: '/pages/training-records/index',
         },
         {
           key: 'membership',
@@ -229,10 +255,7 @@ export default function Profile() {
   const handleMenuClick = (item: ProfileMenuItemData) => {
     if (item.route) {
       Taro.navigateTo({ url: item.route });
-      return;
     }
-
-    Taro.showToast({ title: '功能开发中', icon: 'none' });
   };
 
   const handleSignOut = async () => {

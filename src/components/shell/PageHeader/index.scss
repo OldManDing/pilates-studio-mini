@@ -1,40 +1,24 @@
 @import '../../../styles/variables.scss';
 
 .page-header {
-  margin-bottom: $spacing-md;
+  margin-bottom: $spacing-lg;
 
-  &__row {
-    display: grid;
-    grid-template-columns: minmax(#{$spacing-3xl}, 1fr) minmax(0, 2fr) minmax(#{$spacing-3xl}, 1fr);
-    align-items: flex-start;
-    column-gap: $spacing-xs;
-  }
-
-  &__side {
-    min-width: 0;
-    min-height: $spacing-3xl;
+  &__top {
     display: flex;
-    align-items: flex-start;
-
-    &--left {
-      justify-content: flex-start;
-    }
-
-    &--right {
-      justify-content: flex-end;
-    }
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    margin-bottom: $spacing-xs;
   }
 
   &__back {
-    width: $spacing-3xl;
-    height: $spacing-3xl;
-    border: 1px solid $border-light;
-    border-radius: $radius-full;
-    background: rgba($surface, 0.96);
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: none;
+    gap: 4px;
+    min-height: 48px;
+    margin-left: -4px;
+    padding: 0 $spacing-md 0 0;
+    color: $text-primary;
 
     &--placeholder {
       visibility: hidden;
@@ -44,14 +28,21 @@
 
   &__back-icon {
     color: $text-primary;
-    width: $font-size-xs;
-    height: $font-size-xs;
+    width: 18px;
+    height: 18px;
+  }
+
+  &__back-text {
+    color: $text-muted;
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.04em;
   }
 
   &__content {
     min-width: 0;
-    padding-top: $spacing-2xs;
-    text-align: center;
+    padding-top: $spacing-xs;
+    text-align: left;
   }
 
   &__eyebrow {
@@ -66,23 +57,25 @@
   &__title {
     display: block;
     color: $text-primary;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-medium;
-    line-height: $line-height-tight;
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
   }
 
   &__subtitle {
     display: block;
     margin-top: $spacing-xs;
-    color: $text-secondary;
-    font-size: $font-size-xs;
-    line-height: $line-height-normal;
+    color: $gray-500;
+    font-size: $figma-body;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
   }
 
   &__right {
     display: inline-flex;
     align-items: center;
     justify-content: flex-end;
-    min-height: $spacing-3xl;
+    min-height: 48px;
   }
 }

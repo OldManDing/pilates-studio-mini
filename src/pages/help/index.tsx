@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import Taro from '@tarojs/taro';
 import { ScrollView, Text, Textarea, View } from '@tarojs/components';
+import { supportApi } from '../../api/support';
 import { AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
@@ -61,7 +63,7 @@ const FAQ_ITEMS: FaqItem[] = [
     id: 'f6',
     category: 'account',
     question: '如何修改绑定手机号？',
-    answer: '进入「设置 > 账户安全」，选择「修改手机号」，验证当前手机号后即可绑定新号码。',
+    answer: '当前手机号用于会员身份核验。如需变更，请在「帮助与反馈」提交说明或联系客服，由门店完成身份确认后处理。',
   },
 ];
 
@@ -70,14 +72,39 @@ export default function Help() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [feedbackStep, setFeedbackStep] = useState<FeedbackStep>('idle');
   const [feedbackText, setFeedbackText] = useState('');
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSubmitFeedback = () => {
-    if (!feedbackText.trim()) {
+  useEffect(() => {
+    return () => {
+      if (feedbackTimer.current) {
+        clearTimeout(feedbackTimer.current);
+      }
+    };
+  }, []);
+
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim() || submittingFeedback) {
       return;
     }
 
-    setFeedbackStep('sent');
-    setTimeout(() => {
+    try {
+      setSubmittingFeedback(true);
+      await supportApi.submitFeedback({ content: feedbackText.trim() });
+      setFeedbackStep('sent');
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      Taro.showToast({ title: '反馈提交失败，请稍后重试', icon: 'none' });
+      return;
+    } finally {
+      setSubmittingFeedback(false);
+    }
+
+    if (feedbackTimer.current) {
+      clearTimeout(feedbackTimer.current);
+    }
+
+    feedbackTimer.current = setTimeout(() => {
       setFeedbackStep('idle');
       setFeedbackText('');
     }, 3000);
@@ -89,13 +116,14 @@ export default function Help() {
   );
 
   const feedbackCount = feedbackText.length;
-  const feedbackDisabled = !feedbackText.trim();
+  const feedbackDisabled = !feedbackText.trim() || submittingFeedback;
 
   return (
     <PageShell className='help-page' safeAreaBottom>
       <PageHeader
         title='帮助与反馈'
         subtitle='常见问题与意见反馈'
+        fallbackUrl='/pages/profile/index'
       />
 
       <View className='help-page__section'>
@@ -203,7 +231,7 @@ export default function Help() {
                   onClick={handleSubmitFeedback}
                 >
                   <Icon name='send' className='help-feedback__submit-icon' />
-                  <Text className='help-feedback__submit-text'>提交</Text>
+                  <Text className='help-feedback__submit-text'>{submittingFeedback ? '提交中...' : '提交'}</Text>
                 </View>
               </View>
             </>
@@ -219,8 +247,17 @@ export default function Help() {
             { label: '客服热线', value: '400-888-0000', description: '工作日 09:00 – 18:00' },
             { label: '电子邮箱', value: 'support@studio.com', description: '1-3 个工作日内回复' },
           ].map((item, index) => (
-            <View key={item.label}>
-              <View className='help-contact__item'>
+              <View key={item.label}>
+              <View
+                className='help-contact__item help-contact__item--clickable'
+                onClick={() => {
+                  if (item.label === '客服热线') {
+                    Taro.makePhoneCall({ phoneNumber: item.value });
+                    return;
+                  }
+                  Taro.setClipboardData({ data: item.value });
+                }}
+              >
                 <View className='help-contact__left'>
                   <Text className='help-contact__label'>{item.label}</Text>
                   <Text className='help-contact__description'>{item.description}</Text>

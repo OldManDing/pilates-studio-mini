@@ -1,3 +1,7 @@
+const fallbackApiBaseUrl = process.env.NODE_ENV === 'production'
+  ? ''
+  : 'http://127.0.0.1:3000/api';
+
 const config = {
   projectName: 'pilates-studio-mini',
   date: '2024-4-3',
@@ -13,7 +17,8 @@ const config = {
   defineConstants: {
     API_BASE_URL: process.env.API_BASE_URL
       ? JSON.stringify(process.env.API_BASE_URL)
-      : JSON.stringify('http://127.0.0.1:3000/api')
+      : JSON.stringify(fallbackApiBaseUrl),
+    MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || '')
   },
   copy: {
     patterns: [],

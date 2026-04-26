@@ -9,6 +9,7 @@ export interface BookingDateItemData {
   key: string;
   weekday: string;
   day: string;
+  dateValue: string;
   label?: string;
   active?: boolean;
   disabled?: boolean;
@@ -23,6 +24,7 @@ export interface BookingCategoryItemData {
 
 export interface BookingCourseCardData {
   key: string;
+  courseId: string;
   title: string;
   time: string;
   duration: string;

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { transactionsApi, Transaction } from '../../api/transactions';
-import { AppCard, Divider, Empty, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
+import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
 import { TransactionStatuses, TransactionKinds } from '../../constants/enums';
 import './index.scss';
 
@@ -25,6 +25,8 @@ function formatDate(isoString?: string) {
 
 export default function Transactions() {
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -32,12 +34,17 @@ export default function Transactions() {
 
   const fetchTransactions = useCallback(async (currentPage = 1, append = false) => {
     try {
-      if (currentPage === 1) setLoading(true);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setLoadFailed(false);
+      }
 
-      const [transactionsRes, summaryRes] = await Promise.all([
-        transactionsApi.getMyTransactions({ page: currentPage, limit: 10 }),
-        transactionsApi.getMySummary(),
-      ]);
+      const transactionsRes = await transactionsApi.getMyTransactions({ page: currentPage, limit: 10 });
+      const summaryRes = currentPage === 1
+        ? await transactionsApi.getMySummary().catch(() => ({ data: { totalRevenue: 0, transactionCount: 0 } }))
+        : null;
 
       const newTransactions = transactionsRes.data.transactions || [];
       const meta = transactionsRes.data.meta;
@@ -50,12 +57,19 @@ export default function Transactions() {
 
       setHasMore(meta ? meta.page < meta.totalPages : newTransactions.length === 10);
       setPage(currentPage);
-      setSummary(summaryRes.data);
+      if (summaryRes) {
+        setSummary(summaryRes.data);
+      }
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
+      if (!append) {
+        setTransactions([]);
+        setLoadFailed(true);
+      }
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
       Taro.stopPullDownRefresh();
     }
   }, []);
@@ -69,7 +83,7 @@ export default function Transactions() {
   });
 
   useReachBottom(() => {
-    if (hasMore && !loading) {
+    if (hasMore && !loading && !loadingMore) {
       fetchTransactions(page + 1, true);
     }
   });
@@ -80,6 +94,7 @@ export default function Transactions() {
         title='消费记录'
         subtitle='查看你的历史交易与支付状态'
         eyebrow='ACTIVITY'
+        fallbackUrl='/pages/membership/index'
       />
 
       <View className='transactions-page__section'>
@@ -111,6 +126,11 @@ export default function Transactions() {
 
         {loading && page === 1 ? (
           <Loading />
+        ) : loadFailed ? (
+          <AppCard className='transactions-page__empty-card'>
+            <Empty title='消费记录加载失败' description='请检查网络后重试。' />
+            <AppButton size='small' variant='primary' onClick={() => fetchTransactions(1, false)}>重新加载</AppButton>
+          </AppCard>
         ) : transactions.length > 0 ? (
           <AppCard padding='none' className='transactions-page__ledger-card'>
             {transactions.map((transaction, index) => (
@@ -142,7 +162,7 @@ export default function Transactions() {
 
         {hasMore && !loading && transactions.length > 0 ? (
           <View className='transactions-page__loading-more'>
-            <Text className='transactions-page__loading-more-text'>上拉加载更多</Text>
+            <Text className='transactions-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
           </View>
         ) : null}
 

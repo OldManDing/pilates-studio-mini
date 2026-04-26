@@ -1,4 +1,4 @@
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import { AppCard, Icon } from '../../../components';
 import type { HomeUpcomingItemData } from './types';
 
@@ -13,7 +13,7 @@ export default function HomeUpcomingList({ data, onItemClick }: HomeUpcomingList
       <View className='home-upcoming-list__items'>
         {data.length ? (
           data.map((item, index) => (
-            <View key={item.key} className='home-upcoming-list__item' onClick={() => onItemClick?.(item)}>
+            <Button key={item.key} className='home-upcoming-list__item' hoverClass='none' onClick={() => onItemClick?.(item)}>
               <View className='home-upcoming-list__date'>
                 <Text className='home-upcoming-list__day'>{item.day}</Text>
                 <Text className='home-upcoming-list__weekday'>{item.weekday}</Text>
@@ -32,7 +32,7 @@ export default function HomeUpcomingList({ data, onItemClick }: HomeUpcomingList
               <Icon name='chevron-right' className='home-upcoming-list__item-arrow' />
 
               {index < data.length - 1 ? <View className='home-upcoming-list__line' /> : null}
-            </View>
+            </Button>
           ))
         ) : (
           <View className='home-upcoming-list__empty'>

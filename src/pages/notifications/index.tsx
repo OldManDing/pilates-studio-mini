@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from '@tarojs/components';
 import { AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
+import { STORAGE_KEYS } from '../../constants/storage';
+import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
 
 type NotificationType = 'course' | 'system' | 'member';
@@ -75,6 +77,10 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+
+  useEffect(() => {
+    setNotifications(readStorage(STORAGE_KEYS.notifications, INITIAL_NOTIFICATIONS));
+  }, []);
   const unread = useMemo(
     () => notifications.filter((notification) => notification.status === 'unread'),
     [notifications],
@@ -87,15 +93,23 @@ export default function Notifications() {
   const unreadCount = unread.length;
 
   const handleMarkAllRead = () => {
-    setNotifications((previous) => previous.map((notification) => ({ ...notification, status: 'read' })));
+    setNotifications((previous) => {
+      const next = previous.map((notification) => ({ ...notification, status: 'read' as const }));
+      writeStorage(STORAGE_KEYS.notifications, next);
+      return next;
+    });
   };
 
   const handleMarkRead = (id: string) => {
-    setNotifications((previous) => previous.map((notification) => (
-      notification.id === id
-        ? { ...notification, status: 'read' }
-        : notification
-    )));
+    setNotifications((previous) => {
+      const next = previous.map((notification) => (
+        notification.id === id
+          ? { ...notification, status: 'read' as const }
+          : notification
+      ));
+      writeStorage(STORAGE_KEYS.notifications, next);
+      return next;
+    });
   };
 
   const getIconChipClass = (type: NotificationType, isRead: boolean) => {
@@ -121,6 +135,7 @@ export default function Notifications() {
       <PageHeader
         title='消息通知'
         subtitle={unreadCount > 0 ? `${unreadCount} 条未读消息` : '所有消息已读'}
+        fallbackUrl='/pages/profile/index'
         rightSlot={unreadCount > 0 ? (
           <View className='notifications-page__header-action' onClick={handleMarkAllRead}>
             <Icon name='check' className='notifications-page__header-action-icon' />

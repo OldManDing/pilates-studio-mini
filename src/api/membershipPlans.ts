@@ -1,4 +1,4 @@
-import { http } from './request';
+import { http, wrapListData, wrapObjectData } from './request';
 
 // Membership Plan interfaces
 export interface MembershipPlan {
@@ -16,10 +16,14 @@ export interface MembershipPlan {
 // Membership Plan APIs
 export const membershipPlansApi = {
   // Get all active plans
-  getActive: () =>
-    http.get<{ plans: MembershipPlan[] }>('/membership-plans/active'),
+  getActive: async () =>
+    wrapListData(await http.get<MembershipPlan[]>('/membership-plans/active'), 'plans'),
 
   // Get plan by ID
-  getById: (id: string) =>
-    http.get<{ plan: MembershipPlan }>(`/membership-plans/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<MembershipPlan>(`/membership-plans/${id}`), 'plan'),
+
+  // Submit renewal request for selected plan
+  requestRenewal: (planId: string) =>
+    http.post<{ submitted: boolean }>('/membership-renewals', { planId }),
 };

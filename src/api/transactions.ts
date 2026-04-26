@@ -1,4 +1,4 @@
-import { http, PaginationParams } from './request';
+import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
 
 // Transaction interfaces
 export interface Transaction {
@@ -35,12 +35,12 @@ export interface TransactionSummary {
 // Transaction APIs
 export const transactionsApi = {
   // Get my transactions
-  getMyTransactions: (params?: PaginationParams) =>
-    http.get<{ transactions: Transaction[]; meta: any }>('/transactions/my', params),
+  getMyTransactions: async (params?: PaginationParams) =>
+    wrapListData(await http.get<Transaction[]>('/transactions/my', params), 'transactions'),
 
   // Get transaction by ID
-  getById: (id: string) =>
-    http.get<{ transaction: Transaction }>(`/transactions/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<Transaction>(`/transactions/${id}`), 'transaction'),
 
   // Get my transaction summary
   getMySummary: (params?: { from?: string; to?: string }) =>

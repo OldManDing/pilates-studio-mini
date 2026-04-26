@@ -4,18 +4,9 @@ import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { coursesApi, Course, CourseSession } from '../../api/courses';
 import { bookingsApi } from '../../api/bookings';
 import { membersApi, Member } from '../../api/members';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading } from '../../components';
+import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
 import { CourseLevels, CourseTypes, Weekdays, getLabelByValue } from '../../constants/enums';
 import './index.scss';
-
-const HERO_IMAGE_BY_TYPE: Record<string, string> = {
-  MAT: 'https://images.unsplash.com/photo-1649738247362-4e43a2665a77?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b2dhJTIwc3RyZXRjaGluZyUyMHdvbWFuJTIwc3R1ZGlvfGVufDF8fHx8MTc3NTQ4Mjc4Mnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  REFORMER: 'https://images.unsplash.com/photo-1717500251741-cdbc93342d5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaWxhdGVzJTIwcmVmb3JtZXIlMjBleGVyY2lzZXxlbnwxfHx8fDE3NzU0MTI0ODl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  CADILLAC: 'https://images.unsplash.com/photo-1717500251741-cdbc93342d5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaWxhdGVzJTIwcmVmb3JtZXIlMjBleGVyY2lzZXxlbnwxfHx8fDE3NzU0MTI0ODl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  CHAIR: 'https://images.unsplash.com/photo-1761034114091-6d30447e25aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b2dhJTIwY2xhc3MlMjBzdHVkaW8lMjBncm91cHxlbnwxfHx8fDE3NzU0ODI3ODF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  BARREL: 'https://images.unsplash.com/photo-1761034114091-6d30447e25aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b2dhJTIwY2xhc3MlMjBzdHVkaW8lMjBncm91cHxlbnwxfHx8fDE3NzU0ODI3ODF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  PRIVATE: 'https://images.unsplash.com/photo-1682278763548-f349e3c73793?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpdGF0aW9uJTIwemVuJTIwbWluZGZ1bG5lc3N8ZW58MXx8fHwxNzc1NDgyNzgyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-};
 
 const HERO_IMAGE_FALLBACK_BY_TYPE: Record<string, string> = {
   MAT: '/assets/ui/booking-yoga.svg',
@@ -134,6 +125,7 @@ export default function CourseDetail() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [booked, setBooked] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
+  const [profileLoadFailed, setProfileLoadFailed] = useState(false);
   const [heroImageSrc, setHeroImageSrc] = useState('');
 
   const fetchData = useCallback(async (id: string) => {
@@ -142,16 +134,19 @@ export default function CourseDetail() {
       const [courseRes, sessionsRes, profileRes] = await Promise.all([
         coursesApi.getById(id),
         coursesApi.getSessions(id, { upcoming: true }),
-        membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
+        membersApi.getProfile({ showLoading: false })
+          .then((response) => ({ response, failed: false }))
+          .catch(() => ({ response: { data: { member: null as Member | null } }, failed: true })),
       ]);
       setCourse(courseRes.data.course);
       setSessions(sessionsRes.data.sessions || []);
-      setMember(profileRes.data.member || null);
-      const nextHero = HERO_IMAGE_BY_TYPE[courseRes.data.course.type] || HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg';
+      setMember(profileRes.response.data.member || null);
+      setProfileLoadFailed(profileRes.failed);
+      const nextHero = HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg';
       setHeroImageSrc(nextHero);
     } catch (error) {
       console.error('Failed to fetch course detail:', error);
-      Taro.showToast({ title: '加载失败', icon: 'none' });
+      Taro.showToast({ title: '课程加载失败', icon: 'none' });
     } finally {
       setLoading(false);
     }
@@ -186,6 +181,11 @@ export default function CourseDetail() {
       return;
     }
 
+    if (profileLoadFailed) {
+      Taro.showToast({ title: '会员信息加载失败，请下拉重试', icon: 'none' });
+      return;
+    }
+
     if (!member?.id) {
       Taro.showToast({ title: '请先登录会员账号', icon: 'none' });
       return;
@@ -199,6 +199,7 @@ export default function CourseDetail() {
       fetchData(course.id);
     } catch (error) {
       console.error('Booking failed:', error);
+      Taro.showToast({ title: '预约失败，请稍后重试', icon: 'none' });
     } finally {
       setBookingLoading(false);
     }
@@ -209,7 +210,14 @@ export default function CourseDetail() {
   }
 
   if (!course) {
-    return <Empty title='课程不存在' />;
+    return (
+      <PageShell safeAreaBottom>
+        <PageHeader title='课程不存在' subtitle='该课程可能已下架或链接已失效' fallbackUrl='/pages/courses/index' />
+        <AppCard>
+          <Empty title='课程不存在' description='请返回课程列表重新选择。' />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   const subtitle = TYPE_SUBTITLE_MAP[course.type] || getLabelByValue(CourseTypes, course.type);
@@ -325,7 +333,7 @@ export default function CourseDetail() {
               <View className='course-detail-page__tags'>
                 {tags.map((tag, index) => (
                   <Text
-                    key={tag}
+                    key={`${tag}-${index}`}
                     className={`course-detail-page__tag ${index === tags.length - 1 ? 'course-detail-page__tag--gold' : ''}`}
                   >
                     {tag}

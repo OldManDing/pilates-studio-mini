@@ -3,7 +3,7 @@ import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
 import { CourseSession } from '../../api/courses';
-import { AppCard, Divider, Empty, Icon, Loading, SectionTitle } from '../../components';
+import { AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { getLabelByValue, CourseTypes, Weekdays } from '../../constants/enums';
 import './index.scss';
 
@@ -113,7 +113,14 @@ export default function CoachDetail() {
   }
 
   if (!coach) {
-    return <Empty title='教练不存在' />;
+    return (
+      <PageShell safeAreaBottom>
+        <PageHeader title='教练不存在' subtitle='该教练可能已下架或链接已失效' fallbackUrl='/pages/coaches/index' />
+        <AppCard>
+          <Empty title='教练不存在' description='请返回教练列表重新选择。' />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   const heroImage = coach.avatar || '/assets/ui/booking-dark.svg';
@@ -207,8 +214,8 @@ export default function CoachDetail() {
           <AppCard>
             {certifications.length > 0 ? (
               <View className='coach-detail-page__qualification-list'>
-                {certifications.map((certification) => (
-                  <View key={certification} className='coach-detail-page__qualification-item'>
+                {certifications.map((certification, index) => (
+                  <View key={`${certification}-${index}`} className='coach-detail-page__qualification-item'>
                     <Text className='coach-detail-page__qualification-dot' />
                     <Text className='coach-detail-page__qualification-text'>{certification}</Text>
                   </View>
@@ -222,8 +229,8 @@ export default function CoachDetail() {
               <View className='coach-detail-page__tag-groups'>
                 {specialties.length > 0 ? (
                   <View className='coach-detail-page__tag-row'>
-                    {specialties.map((specialty) => (
-                      <Text key={specialty} className='coach-detail-page__tag'>
+                    {specialties.map((specialty, index) => (
+                      <Text key={`${specialty}-${index}`} className='coach-detail-page__tag'>
                         {specialty}
                       </Text>
                     ))}
@@ -232,8 +239,8 @@ export default function CoachDetail() {
 
                 {trainingTypeTags.length > 0 ? (
                   <View className='coach-detail-page__tag-row'>
-                    {trainingTypeTags.map((tag) => (
-                      <Text key={tag} className='coach-detail-page__tag coach-detail-page__tag--muted'>
+                    {trainingTypeTags.map((tag, index) => (
+                      <Text key={`${tag}-${index}`} className='coach-detail-page__tag coach-detail-page__tag--muted'>
                         {tag}
                       </Text>
                     ))}

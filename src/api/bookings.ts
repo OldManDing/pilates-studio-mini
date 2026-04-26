@@ -1,4 +1,4 @@
-import { http, PaginationParams } from './request';
+import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
 
 // Booking interfaces
 export interface Booking {
@@ -50,26 +50,26 @@ export interface BookingFilter {
 // Booking APIs
 export const bookingsApi = {
   // Get all bookings
-  getAll: (params?: PaginationParams & BookingFilter) =>
-    http.get<{ bookings: Booking[]; meta: any }>('/bookings', params),
+  getAll: async (params?: PaginationParams & BookingFilter) =>
+    wrapListData(await http.get<Booking[]>('/bookings', params), 'bookings'),
 
   // Get my bookings
-  getMyBookings: (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) =>
-    http.get<{ bookings: Booking[]; meta: any }>('/bookings/my', params, config),
+  getMyBookings: async (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) =>
+    wrapListData(await http.get<Booking[]>('/bookings/my', params, config), 'bookings'),
 
   // Get booking by ID
-  getById: (id: string) =>
-    http.get<{ booking: Booking }>(`/bookings/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<Booking>(`/bookings/${id}`), 'booking'),
 
   // Create booking
-  create: (data: CreateBookingData) =>
-    http.post<{ booking: Booking }>('/bookings', data),
+  create: async (data: CreateBookingData) =>
+    wrapObjectData(await http.post<Booking>('/bookings', data), 'booking'),
 
   // Cancel booking
-  cancel: (id: string, reason?: string) =>
-    http.patch<{ booking: Booking }>(`/bookings/${id}/cancel`, { reason }),
+  cancel: async (id: string, reason?: string) =>
+    wrapObjectData(await http.patch<Booking>(`/bookings/${id}/cancel`, { reason }), 'booking'),
 
   // Check in
-  checkIn: (id: string) =>
-    http.patch<{ booking: Booking }>(`/bookings/${id}/checkin`),
+  checkIn: async (id: string) =>
+    wrapObjectData(await http.patch<Booking>(`/bookings/${id}/checkin`), 'booking'),
 };

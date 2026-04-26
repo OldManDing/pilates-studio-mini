@@ -104,6 +104,8 @@ function mergeBookings(first: Booking[], second: Booking[]) {
 
 export default function MyBookings() {
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -112,7 +114,12 @@ export default function MyBookings() {
 
   const fetchBookings = useCallback(async (currentPage = 1, append = false) => {
     try {
-      if (currentPage === 1) setLoading(true);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setLoadFailed(false);
+      }
 
       const params: { page: number; limit: number; status?: Booking['status'] } = { page: currentPage, limit: 10 };
       if (activeTab === 'upcoming') {
@@ -121,7 +128,12 @@ export default function MyBookings() {
         params.status = 'COMPLETED';
       }
 
-      const response = activeTab === 'cancelled'
+      const response = activeTab === 'upcoming'
+        ? await Promise.all([
+          bookingsApi.getMyBookings({ ...params, status: 'PENDING' }),
+          bookingsApi.getMyBookings({ ...params, status: 'CONFIRMED' }),
+        ])
+        : activeTab === 'cancelled'
         ? await Promise.all([
           bookingsApi.getMyBookings({ ...params, status: 'CANCELLED' }),
           bookingsApi.getMyBookings({ ...params, status: 'NO_SHOW' }),
@@ -155,9 +167,14 @@ export default function MyBookings() {
       setPage(currentPage);
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
+      if (!append) {
+        setBookings([]);
+        setLoadFailed(true);
+      }
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
       Taro.stopPullDownRefresh();
     }
   }, [activeTab]);
@@ -171,10 +188,10 @@ export default function MyBookings() {
   });
 
   const handleLoadMore = useCallback(() => {
-    if (hasMore && !loading) {
+    if (hasMore && !loading && !loadingMore) {
       fetchBookings(page + 1, true);
     }
-  }, [fetchBookings, hasMore, loading, page]);
+  }, [fetchBookings, hasMore, loading, loadingMore, page]);
 
   const handleTabChange = (tab: BookingTab) => {
     if (tab === activeTab) {
@@ -203,6 +220,7 @@ export default function MyBookings() {
             fetchBookings(1, false);
           } catch (error) {
             console.error('Cancel failed:', error);
+            Taro.showToast({ title: '取消失败，请稍后重试', icon: 'none' });
           }
         }
       },
@@ -217,6 +235,7 @@ export default function MyBookings() {
         title='我的预约'
         subtitle='管理你的课程安排'
         showBack
+        fallbackUrl='/pages/profile/index'
       />
 
       <View className='my-bookings-page__tab-shell'>
@@ -243,7 +262,14 @@ export default function MyBookings() {
           <Loading />
         ) : (
           <View className='my-bookings-page__list-inner'>
-            {bookings.length > 0 ? (
+            {loadFailed ? (
+              <AppCard className='my-bookings-page__empty-card'>
+                <Empty title='预约加载失败' description='请检查网络后重试。' />
+                <View className='my-bookings-page__empty-action'>
+                  <AppButton size='small' variant='primary' onClick={() => fetchBookings(1, false)}>重新加载</AppButton>
+                </View>
+              </AppCard>
+            ) : bookings.length > 0 ? (
               <AppCard padding='none' className='my-bookings-page__card'>
                 {bookings.map((booking, index) => {
                   const dateMeta = formatDateMeta(booking.session?.startsAt);
@@ -305,7 +331,7 @@ export default function MyBookings() {
 
             {hasMore && !loading && bookings.length > 0 ? (
               <View className='my-bookings-page__loading-more'>
-                <Text className='my-bookings-page__loading-more-text'>上拉加载更多</Text>
+                <Text className='my-bookings-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
               </View>
             ) : null}
 

@@ -96,7 +96,7 @@ function isMembershipUsable(membership: MembershipType) {
     return false;
   }
 
-  return membership.remainingCredits > 0;
+  return membership.totalCredits <= 0 || membership.remainingCredits > 0;
 }
 
 function getMembershipStatusLabel(membership: MembershipType) {
@@ -110,7 +110,7 @@ function getMembershipStatusLabel(membership: MembershipType) {
     return '已过期';
   }
 
-  if (membership.remainingCredits <= 0) {
+  if (membership.totalCredits > 0 && membership.remainingCredits <= 0) {
     return '次数用尽';
   }
 
@@ -132,8 +132,8 @@ export default function Membership() {
       setLoading(true);
       setLoadFailed(false);
       const [membershipsRes, plansRes] = await Promise.all([
-        membersApi.getMyMemberships().catch(() => ({ data: { memberships: [] as MembershipType[] } })),
-        membershipPlansApi.getActive().catch(() => ({ data: { plans: [] as MembershipPlan[] } })),
+        membersApi.getMyMemberships(),
+        membershipPlansApi.getActive(),
       ]);
 
       const membershipsData = membershipsRes.data.memberships || [];
@@ -141,11 +141,6 @@ export default function Membership() {
 
       setMemberships(membershipsData);
       setPlans(plansData);
-
-      if (membershipsData.length === 0 && plansData.length === 0) {
-        setLoadFailed(true);
-        Taro.showToast({ title: '暂无会员数据，请稍后重试', icon: 'none' });
-      }
     } catch (error) {
       console.error('Failed to fetch membership data:', error);
       Taro.showToast({ title: '加载失败', icon: 'none' });
@@ -198,7 +193,7 @@ export default function Membership() {
   }, [memberships]);
 
   const totalUsedCredits = memberships.reduce(
-    (sum, membership) => sum + Math.max(0, membership.totalCredits - membership.remainingCredits),
+    (sum, membership) => sum + (membership.totalCredits > 0 ? Math.max(0, membership.totalCredits - membership.remainingCredits) : 0),
     0,
   );
 
@@ -265,7 +260,7 @@ export default function Membership() {
       rows.push({
         id: `${membership.id}-credits`,
         date: membership.endDate || membership.startDate,
-        title: `${name} 剩余 ${membership.remainingCredits}/${membership.totalCredits} 次`,
+        title: membership.totalCredits <= 0 ? `${name} 权益无限次` : `${name} 剩余 ${membership.remainingCredits}/${membership.totalCredits} 次`,
         type: 'consume',
       });
     });
@@ -288,7 +283,7 @@ export default function Membership() {
   return (
     <PageShell className='membership-page' safeAreaBottom>
       <View className='membership-page__content'>
-        <PageHeader title='会员中心' subtitle='管理你的会员权益与服务' />
+        <PageHeader title='会员中心' subtitle='管理你的会员权益与服务' fallbackUrl='/pages/profile/index' />
 
         <View className='membership-page__section'>
           <AppCard className='membership-page__status-card' padding='none'>
@@ -324,7 +319,7 @@ export default function Membership() {
                 <View className='membership-page__status-right'>
                   <Text className='membership-page__status-stat-label'>课程权益</Text>
                   <Text className='membership-page__status-stat-value'>
-                    {currentMembership ? '无限次' : '--'}
+                    {currentMembership ? (currentMembership.totalCredits <= 0 ? '无限次' : `${currentMembership.remainingCredits}/${currentMembership.totalCredits}次`) : '--'}
                   </Text>
                 </View>
               </View>
@@ -342,7 +337,7 @@ export default function Membership() {
             <Divider spacing='none' />
 
             <View className='membership-page__renew'>
-                <AppButton size='large' variant='primary' onClick={() => Taro.navigateTo({ url: '/pages/transactions/index' })}>
+                <AppButton size='large' variant='primary' onClick={() => Taro.navigateTo({ url: '/pages/membership-renew/index' })}>
                   续费会员
                 </AppButton>
             </View>
@@ -412,6 +407,11 @@ export default function Membership() {
           <View className='membership-page__section-title'>
             <Text className='membership-page__section-name'>近期记录</Text>
             <Text className='membership-page__section-en'>ACTIVITY</Text>
+          </View>
+          <View className='membership-page__activity-action'>
+            <AppButton size='small' variant='outline' onClick={() => Taro.navigateTo({ url: '/pages/transactions/index' })}>
+              查看消费记录
+            </AppButton>
           </View>
           <AppCard padding='none'>
             {activityItems.length > 0 ? activityItems.map((item, index) => (

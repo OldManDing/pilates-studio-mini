@@ -1,4 +1,4 @@
-import { http, PaginationParams, ApiResponse } from './request';
+import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
 
 // Course interfaces
 export interface Course {
@@ -54,27 +54,27 @@ export interface CourseFilter {
 // Course APIs
 export const coursesApi = {
   // Get all courses
-  getAll: (params?: PaginationParams & CourseFilter, config?: { showLoading?: boolean }) =>
-    http.get<{ courses: Course[]; meta: any }>('/courses', params, config),
+  getAll: async (params?: PaginationParams & CourseFilter, config?: { showLoading?: boolean }) =>
+    wrapListData(await http.get<Course[]>('/courses', params, config), 'courses'),
 
   // Get course by ID
-  getById: (id: string) =>
-    http.get<{ course: Course }>(`/courses/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<Course>(`/courses/${id}`), 'course'),
 
   // Get course sessions
-  getSessions: (courseId: string, params?: { upcoming?: boolean; from?: string; to?: string }) =>
-    http.get<{ sessions: CourseSession[] }>(`/courses/${courseId}/sessions`, params),
+  getSessions: async (courseId: string, params?: { upcoming?: boolean; from?: string; to?: string }) =>
+    wrapListData(await http.get<CourseSession[]>(`/courses/${courseId}/sessions`, params), 'sessions'),
 };
 
 // Course Session APIs
 export const courseSessionsApi = {
   // Get all upcoming sessions
-  getUpcoming: (params?: PaginationParams) =>
-    http.get<{ sessions: CourseSession[]; meta: any }>('/course-sessions/upcoming', params),
+  getUpcoming: async (params?: PaginationParams) =>
+    wrapListData(await http.get<CourseSession[]>('/course-sessions/upcoming', params), 'sessions'),
 
   // Get session by ID
-  getById: (id: string) =>
-    http.get<{ session: CourseSession }>(`/course-sessions/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<CourseSession>(`/course-sessions/${id}`), 'session'),
 
   // Get available seats
   getAvailableSeats: (id: string) =>

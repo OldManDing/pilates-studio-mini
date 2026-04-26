@@ -1,4 +1,4 @@
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import { AppButton, AppCard, Icon } from '../../../components';
 import type { HomeMembershipData } from './types';
 
@@ -9,7 +9,7 @@ interface HomeMembershipCardProps {
 }
 
 export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick }: HomeMembershipCardProps) {
-  const progressWidth = `${Math.max(10, Math.min(100, data.progressPercent))}%`;
+  const progressWidth = `${Math.max(0, Math.min(100, data.progressPercent))}%`;
 
   return (
     <AppCard className='home-membership-card' padding='none'>
@@ -18,10 +18,10 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick
           <Text className='home-membership-card__label'>{data.label}</Text>
           {data.planName ? <Text className='home-membership-card__title'>{data.planName}</Text> : null}
         </View>
-        <View className='home-membership-card__status' onClick={onDetailClick}>
+        <Button className='home-membership-card__status' hoverClass='none' onClick={onDetailClick}>
           <Text className='home-membership-card__status-text'>{data.status}</Text>
           <Icon name='chevron-right' className='home-membership-card__status-icon' />
-        </View>
+        </Button>
       </View>
 
       <View className='home-membership-card__metrics'>

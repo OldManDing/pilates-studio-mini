@@ -1,18 +1,31 @@
 @import '../../../styles/common.scss';
 
 .app-shell-card {
-  @extend .app-card;
+  background: $surface;
+  border: none;
+  border-radius: $figma-radius-card;
+  box-shadow: none;
 
   &--default {
-    @extend .app-card;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.06);
   }
 
   &--elevated {
-    @extend .app-card--elevated;
+    box-shadow: $shadow-soft;
   }
 
   &--flat {
-    @extend .app-card--flat;
+    background: rgba($surface, 0.94);
+    box-shadow: none;
+  }
+
+  &--clickable {
+    transition: transform $duration-fast $ease-in-out, box-shadow $duration-fast $ease-in-out;
+
+    &:active {
+      transform: translateY(2px);
+      box-shadow: $shadow-sm;
+    }
   }
 
   &--padding-none {

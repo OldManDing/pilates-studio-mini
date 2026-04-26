@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import Taro from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { getDefaultTabPageUrl } from '../../../constants/navigation';
+import { getDefaultTabPageUrl, TAB_NAV_ITEMS, toTabPageUrl } from '../../../constants/navigation';
 import Icon from '../Icon';
 import './index.scss';
 
@@ -10,8 +10,13 @@ interface PageHeaderProps extends PropsWithChildren {
   subtitle?: string;
   eyebrow?: string;
   showBack?: boolean;
+  fallbackUrl?: string;
   onBack?: () => void;
   rightSlot?: ReactNode;
+}
+
+function isTabPageUrl(url: string) {
+  return TAB_NAV_ITEMS.some((item) => toTabPageUrl(item.pagePath) === url);
 }
 
 export default function PageHeader({
@@ -19,6 +24,7 @@ export default function PageHeader({
   subtitle,
   eyebrow,
   showBack = true,
+  fallbackUrl,
   onBack,
   rightSlot,
   children,
@@ -31,7 +37,7 @@ export default function PageHeader({
       return;
     }
 
-    const fallbackUrl = getDefaultTabPageUrl();
+    const safeFallbackUrl = fallbackUrl || getDefaultTabPageUrl();
     const pages = Taro.getCurrentPages();
 
     if (pages.length > 1) {
@@ -43,40 +49,41 @@ export default function PageHeader({
       }
     }
 
-    try {
-      await Taro.switchTab({ url: fallbackUrl });
-    } catch (error) {
-      console.warn('PageHeader switchTab fallback failed, relaunching default tab.', error);
-      await Taro.reLaunch({ url: fallbackUrl });
+    if (isTabPageUrl(safeFallbackUrl)) {
+      try {
+        await Taro.switchTab({ url: safeFallbackUrl });
+        return;
+      } catch (error) {
+        console.warn('PageHeader switchTab fallback failed, relaunching fallback page.', error);
+      }
     }
+
+    await Taro.reLaunch({ url: safeFallbackUrl });
   };
 
   return (
     <View className='page-header'>
-      <View className='page-header__row'>
-        <View className='page-header__side page-header__side--left'>
-          {showBack ? (
-            <View className='page-header__back' onClick={handleBack}>
-              <Icon name='chevron-left' className='page-header__back-icon' />
-            </View>
-          ) : (
-            <View className='page-header__back page-header__back--placeholder' />
-          )}
-        </View>
+      <View className='page-header__top'>
+        {showBack ? (
+          <View className='page-header__back' onClick={handleBack}>
+            <Icon name='chevron-left' className='page-header__back-icon' />
+            <Text className='page-header__back-text'>返回</Text>
+          </View>
+        ) : (
+          <View className='page-header__back page-header__back--placeholder' />
+        )}
 
-        <View className='page-header__content'>
-          {eyebrow ? <Text className='page-header__eyebrow'>{eyebrow}</Text> : null}
-          <Text className='page-header__title'>{title}</Text>
-          {subtitle ? <Text className='page-header__subtitle'>{subtitle}</Text> : null}
-        </View>
+        {rightContent ? (
+          <View className='page-header__right'>
+            {rightContent}
+          </View>
+        ) : null}
+      </View>
 
-        <View className='page-header__side page-header__side--right'>
-          {rightContent ? (
-            <View className='page-header__right'>
-              {rightContent}
-            </View>
-          ) : null}
-        </View>
+      <View className='page-header__content'>
+        {eyebrow ? <Text className='page-header__eyebrow'>{eyebrow}</Text> : null}
+        <Text className='page-header__title'>{title}</Text>
+        {subtitle ? <Text className='page-header__subtitle'>{subtitle}</Text> : null}
       </View>
     </View>
   );

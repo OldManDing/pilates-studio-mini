@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Image, Text, View } from '@tarojs/components';
 import { AppCard, Divider, Icon, PageHeader, PageShell } from '../../components';
+import { membersApi } from '../../api/members';
+import { STORAGE_KEYS } from '../../constants/storage';
+import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
 
 interface SettingRow {
@@ -11,6 +14,7 @@ interface SettingRow {
   type: 'toggle' | 'value' | 'navigate';
   value?: string;
   toggleKey?: ToggleKey;
+  route?: string;
 }
 
 interface SettingSection {
@@ -19,6 +23,8 @@ interface SettingSection {
 }
 
 type ToggleKey = 'courseReminder' | 'systemNotification' | 'darkMode' | 'biometric';
+
+const CACHE_KEYS = ['taro-cache', 'pilates:page-cache'];
 
 const SECTIONS: SettingSection[] = [
   {
@@ -29,13 +35,14 @@ const SECTIONS: SettingSection[] = [
         title: '手机号',
         description: '',
         type: 'value',
-        value: '138****6688',
+        value: '登录后同步',
       },
       {
         icon: '/assets/ui/icon-support.svg',
         title: '修改密码',
         description: '定期修改保障账户安全',
         type: 'navigate',
+        route: '/pages/account-security/index',
       },
       {
         icon: '/assets/ui/icon-settings.svg',
@@ -91,8 +98,9 @@ const SECTIONS: SettingSection[] = [
         icon: '/assets/ui/icon-settings.svg',
         title: '清除缓存',
         description: '',
-        type: 'value',
-        value: '12.3 MB',
+        type: 'navigate',
+        value: '点击清理',
+        route: 'clear-cache',
       },
     ],
   },
@@ -111,16 +119,19 @@ const ABOUT_ROWS: SettingRow[] = [
     title: '用户协议',
     description: '',
     type: 'navigate',
+    route: '/pages/agreement/index',
   },
   {
     icon: '/assets/ui/icon-support.svg',
     title: '隐私政策',
     description: '',
     type: 'navigate',
+    route: '/pages/privacy/index',
   },
 ];
 
 export default function Settings() {
+  const profile = readStorage<{ phone?: string }>(STORAGE_KEYS.profile, {});
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
     courseReminder: true,
     systemNotification: true,
@@ -129,13 +140,56 @@ export default function Settings() {
   });
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+
+  useEffect(() => {
+    setToggles(readStorage(STORAGE_KEYS.settings, toggles));
+  }, []);
 
   const handleToggle = (key: ToggleKey) => {
-    setToggles((previous) => ({ ...previous, [key]: !previous[key] }));
+    setToggles((previous) => {
+      const next = { ...previous, [key]: !previous[key] };
+      writeStorage(STORAGE_KEYS.settings, next);
+      if (key === 'darkMode') {
+        Taro.setNavigationBarColor({
+          frontColor: next.darkMode ? '#ffffff' : '#000000',
+          backgroundColor: next.darkMode ? '#1A1A1A' : '#FFFDF9',
+        });
+        Taro.setBackgroundColor({
+          backgroundColor: next.darkMode ? '#1A1A1A' : '#FFFDF9',
+        });
+      }
+      return next;
+    });
   };
 
-  const handleNavigateRow = (title: string) => {
-    Taro.showToast({ title: `${title} 功能整理中`, icon: 'none' });
+  const handleClearCache = () => {
+    CACHE_KEYS.forEach((key) => Taro.removeStorageSync(key));
+    Taro.showToast({ title: '缓存已清理', icon: 'success' });
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deletingAccount) {
+      return;
+    }
+
+    try {
+      setDeletingAccount(true);
+      await membersApi.requestAccountDeletion();
+      setShowDeleteConfirm(false);
+      Taro.showToast({ title: '注销申请已提交', icon: 'success' });
+    } catch (error) {
+      console.error('Failed to request account deletion:', error);
+      Taro.showToast({ title: '注销申请提交失败', icon: 'none' });
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
+  const handleNavigateRow = (item: SettingRow) => {
+    if (item.route) {
+      Taro.navigateTo({ url: item.route });
+    }
   };
 
   const renderRow = (item: SettingRow, index: number, total: number) => (
@@ -148,8 +202,13 @@ export default function Settings() {
             return;
           }
 
+          if (item.route === 'clear-cache') {
+            handleClearCache();
+            return;
+          }
+
           if (item.type === 'navigate') {
-            handleNavigateRow(item.title);
+            handleNavigateRow(item);
           }
         }}
       >
@@ -168,7 +227,7 @@ export default function Settings() {
           </View>
         ) : null}
 
-        {item.type === 'value' ? <Text className='settings-row__value'>{item.value}</Text> : null}
+        {item.type === 'value' ? <Text className='settings-row__value'>{item.title === '手机号' ? profile.phone || '登录后同步' : item.value}</Text> : null}
 
         {item.type === 'navigate' ? <Icon name='chevron-right' className='settings-row__arrow' /> : null}
       </View>
@@ -182,7 +241,7 @@ export default function Settings() {
         className={`settings-about-row ${item.type === 'navigate' ? 'settings-about-row--clickable' : ''}`}
         onClick={() => {
           if (item.type === 'navigate') {
-            handleNavigateRow(item.title);
+              handleNavigateRow(item);
           }
         }}
       >
@@ -199,6 +258,7 @@ export default function Settings() {
       <PageHeader
         title='设置'
         subtitle='账户安全与偏好设置'
+        fallbackUrl='/pages/profile/index'
       />
 
       {SECTIONS.map((section) => (
@@ -235,6 +295,7 @@ export default function Settings() {
                 className='danger-confirm__button danger-confirm__button--confirm'
                 onClick={() => {
                   setShowLogoutConfirm(false);
+                  Taro.removeStorageSync('token');
                   Taro.switchTab({ url: '/pages/index/index' });
                 }}
               >
@@ -259,11 +320,10 @@ export default function Settings() {
               <View
                 className='danger-confirm__button danger-confirm__button--danger'
                 onClick={() => {
-                  setShowDeleteConfirm(false);
-                  Taro.showToast({ title: '已进入注销流程（演示）', icon: 'none' });
+                  handleDeleteAccount();
                 }}
               >
-                <Text className='danger-confirm__button-text'>确认注销</Text>
+                <Text className='danger-confirm__button-text'>{deletingAccount ? '提交中...' : '确认注销'}</Text>
               </View>
             </View>
           </AppCard>

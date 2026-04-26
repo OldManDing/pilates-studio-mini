@@ -1,4 +1,4 @@
-import { http, PaginationParams } from './request';
+import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
 
 // Coach interfaces
 export interface Coach {
@@ -26,14 +26,14 @@ export interface CoachFilter {
 // Coach APIs
 export const coachesApi = {
   // Get all coaches
-  getAll: (params?: PaginationParams & CoachFilter) =>
-    http.get<{ coaches: Coach[]; meta: any }>('/coaches', params),
+  getAll: async (params?: PaginationParams & CoachFilter) =>
+    wrapListData(await http.get<Coach[]>('/coaches', params), 'coaches'),
 
   // Get coach by ID
-  getById: (id: string) =>
-    http.get<{ coach: Coach }>(`/coaches/${id}`),
+  getById: async (id: string) =>
+    wrapObjectData(await http.get<Coach>(`/coaches/${id}`), 'coach'),
 
   // Get coach schedule
-  getSchedule: (id: string, params?: { from?: string; to?: string }) =>
-    http.get<{ sessions: any[] }>(`/coaches/${id}/schedule`, params),
+  getSchedule: async (id: string, params?: { from?: string; to?: string }) =>
+    wrapListData(await http.get<import('./courses').CourseSession[]>(`/coaches/${id}/schedule`, params), 'sessions'),
 };

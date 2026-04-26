@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Taro, { usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
+import Taro, { useDidShow, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import { Loading, PageShell, SectionTitle } from '../../components';
 import { bookingsApi, type Booking } from '../../api/bookings';
@@ -23,6 +23,7 @@ import type {
   HomeTodayCourseData,
   HomeUpcomingItemData,
 } from './components/types';
+import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import './index.scss';
 
 const WEEKDAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
@@ -78,6 +79,16 @@ function formatDateLabel(dateString?: string) {
   return `${date.getFullYear()}.${padNumber(date.getMonth() + 1)}.${padNumber(date.getDate())}`;
 }
 
+function isSameDay(left: Date, right: Date) {
+  return left.getFullYear() === right.getFullYear()
+    && left.getMonth() === right.getMonth()
+    && left.getDate() === right.getDate();
+}
+
+function isSameMonth(left: Date, right: Date) {
+  return left.getFullYear() === right.getFullYear() && left.getMonth() === right.getMonth();
+}
+
 function formatClock(dateString?: string) {
   if (!dateString) return '--:--';
   const date = new Date(dateString);
@@ -98,6 +109,60 @@ function calculateMinutes(start?: string, end?: string) {
   return Math.round(diff / (1000 * 60));
 }
 
+function formatDurationLabel(start?: string, end?: string, fallback = '--min') {
+  const duration = calculateMinutes(start, end);
+  return duration > 0 ? `${duration}min` : fallback;
+}
+
+function formatRelativeDayLabel(dateString?: string) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return '今日';
+  if (diffDays === 1) return '明日';
+  return '';
+}
+
+function getUpcomingDay(dateString?: string) {
+  if (!dateString) return '--';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '--';
+  return padNumber(date.getDate());
+}
+
+function getUpcomingWeekday(dateString?: string) {
+  if (!dateString) return '--';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '--';
+  return WEEKDAY_LABELS[date.getDay()];
+}
+
+function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemData {
+  const startsAt = booking.session?.startsAt;
+  const endsAt = booking.session?.endsAt;
+  const duration = calculateMinutes(startsAt, endsAt);
+  const courseId = booking.session?.course?.id;
+
+  return {
+    key: booking.id || `booking-${index}`,
+    day: getUpcomingDay(startsAt),
+    weekday: getUpcomingWeekday(startsAt),
+    label: formatRelativeDayLabel(startsAt),
+    title: booking.session?.course?.name || '课程安排',
+    description: '',
+    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${duration > 0 ? duration : '--'}min`,
+    routeUrl: courseId ? `/pages/course-detail/index?id=${courseId}` : undefined,
+  };
+}
+
 function getRemainingRatio(startDate?: string, endDate?: string) {
   if (!startDate || !endDate) return '0%';
   const start = new Date(startDate).getTime();
@@ -114,7 +179,40 @@ function getMembershipStatus(membership?: Membership | null) {
 
 function getMembershipDescription(membership?: Membership | null) {
   if (!membership) return '当前还没有已生效会员卡，可先保留视觉卡位等待后续接入。';
+  if (membership.totalCredits <= 0) return `${membership.planName || '会员卡'} 当前权益为无限次，可继续安排训练。`;
   return `${membership.planName || '会员卡'} 当前剩余 ${membership.remainingCredits}/${membership.totalCredits} 次，可继续安排训练。`;
+}
+
+function getMembershipCreditsText(membership?: Membership | null) {
+  if (!membership) return '--';
+  if (membership.totalCredits <= 0) return '无限次';
+  return `${membership.remainingCredits}/${membership.totalCredits}次`;
+}
+
+function getMembershipProgressPercent(membership?: Membership | null) {
+  if (!membership) return 75;
+  const ratio = Number.parseInt(getRemainingRatio(membership.startDate, membership.endDate), 10);
+  return Number.isNaN(ratio) ? 0 : ratio;
+}
+
+function getBookingDisplayName(booking?: Booking | null) {
+  return booking?.session?.course?.name || '今天还没有预约课程';
+}
+
+function getBookingDisplayMeta(booking?: Booking | null) {
+  if (!booking?.session) return '可前往课程页选择适合的训练';
+  return `${booking.session.coach?.name || '教练待定'} · 朝阳门店`;
+}
+
+function getCourseDisplayMeta(course?: Course | null) {
+  if (!course) return '课程内容更新中';
+  return `${course.coach?.name || '教练待定'} · 朝阳门店`;
+}
+
+function getCourseCaption(course?: Course | null) {
+  if (!course) return 'COURSE UPDATE';
+  const duration = course.durationMinutes > 0 ? `${course.durationMinutes}min` : '时长待定';
+  return `${course.level || '适合你的训练'} · ${duration}`;
 }
 
 function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: Membership | null) {
@@ -152,6 +250,22 @@ function isUpcomingBooking(booking: Booking) {
   return ACTIVE_BOOKING_STATUSES.includes(booking.status) && new Date(booking.session.startsAt).getTime() >= Date.now();
 }
 
+async function fetchAllMyBookings() {
+  const pageSize = 50;
+  const allBookings: Booking[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await bookingsApi.getMyBookings({ page: currentPage, limit: pageSize }, { showLoading: false });
+    allBookings.push(...(response.data.bookings || []));
+    totalPages = response.data.meta?.totalPages || (response.data.bookings?.length === pageSize ? currentPage + 1 : currentPage);
+    currentPage += 1;
+  } while (currentPage <= totalPages);
+
+  return allBookings;
+}
+
 export default function Index() {
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<Member | null>(null);
@@ -164,13 +278,17 @@ export default function Index() {
     path: '/pages/index/index',
   }));
 
+  useDidShow(() => {
+    syncCustomTabBarSelected(0);
+  });
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [profileRes, membershipsRes, bookingsRes, coursesRes] = await Promise.all([
         membersApi.getProfile({ showLoading: false }).catch(() => ({ data: { member: null as Member | null } })),
         membersApi.getMyMemberships({ showLoading: false }).catch(() => ({ data: { memberships: [] as Membership[] } })),
-        bookingsApi.getMyBookings({ page: 1, limit: 20 }, { showLoading: false }).catch(() => ({ data: { bookings: [] as Booking[] } })),
+        fetchAllMyBookings().then((items) => ({ data: { bookings: items } })).catch(() => ({ data: { bookings: [] as Booking[] } })),
         coursesApi.getAll({ page: 1, limit: 6, isActive: true }, { showLoading: false }).catch(() => ({ data: { courses: [] as Course[] } })),
       ]);
 
@@ -211,11 +329,11 @@ export default function Index() {
       description: '查看近期安排',
     },
     {
-      key: 'membership',
+      key: 'coaches',
       accent: 'orange',
       label: '我的教练',
       subtitle: 'COACH',
-      description: '查看会员与教练信息',
+      description: '查看常用教练',
     },
     {
       key: 'courses',
@@ -226,62 +344,81 @@ export default function Index() {
     },
   ];
 
-  const now = new Date('2026-01-06T09:00:00');
+  const now = new Date();
   const activeMembership = memberships.find((membership) => membership.isActive) || null;
   const upcomingBookings = bookings
     .filter((booking) => isUpcomingBooking(booking) && booking.session)
-    .sort((left, right) => new Date(left.session!.startsAt).getTime() - new Date(right.session!.startsAt).getTime());
+    .sort((left, right) => new Date(left.session?.startsAt || '').getTime() - new Date(right.session?.startsAt || '').getTime());
+  const todayBooking = upcomingBookings.find((booking) => {
+    const startsAt = booking.session?.startsAt;
+    if (!startsAt) return false;
+    const startsAtDate = new Date(startsAt);
+    if (Number.isNaN(startsAtDate.getTime())) return false;
+    return isSameDay(startsAtDate, now);
+  }) || null;
+  const completedThisMonth = bookings.filter((booking) => {
+    const startsAt = booking.session?.startsAt;
+    if (booking.status !== 'COMPLETED' || !startsAt) return false;
+    const startsAtDate = new Date(startsAt);
+    if (Number.isNaN(startsAtDate.getTime())) return false;
+    return isSameMonth(startsAtDate, now);
+  });
+  const completedMinutes = completedThisMonth.reduce((total, booking) => total + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0);
+  const monthlySessions = completedThisMonth.length;
+  const monthlyHours = Math.round(completedMinutes / 60);
+  const monthlyGoalPercent = Math.min(100, Math.round((monthlySessions / 16) * 100));
   const curatedCourse = courses[0] || null;
+  const todayCourseSummary = getTodayCourseSummary(todayBooking, activeMembership);
 
   const heroData: HomeHeroData = {
-    dateLabel: '2026 · 01 · 06 MON',
+    dateLabel: formatShellDate(now),
     badgeLabel: 'GOLD',
     badgeTone: 'accent',
-    title: '早安，林女士',
-    subtitle: '今日已安排 1 节课程',
+    title: `${getGreeting(now)}，${getDisplayMemberName(member?.name)}`,
+    subtitle: todayCourseSummary.heroSubtitle,
   };
 
   const membershipData: HomeMembershipData = {
     label: 'MEMBERSHIP',
-    status: '详情',
-    planName: '',
-    description: '查看当前会员权益、有效期与课程使用进度',
+    status: activeMembership ? '详情' : getMembershipStatus(activeMembership),
+    planName: activeMembership?.planName || '',
+    description: getMembershipDescription(activeMembership),
     primaryMetricLabel: '有效期至',
-    primaryMetricValue: '2026.12.31',
+    primaryMetricValue: activeMembership ? formatDateLabel(activeMembership.endDate) : '--.--.--',
     secondaryMetricLabel: '课程权益',
-    secondaryMetricValue: '无限次',
+    secondaryMetricValue: getMembershipCreditsText(activeMembership),
     progressLabel: '',
-    progressValue: '271天',
-    progressPercent: 75,
+    progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '--天',
+    progressPercent: getMembershipProgressPercent(activeMembership),
     primaryAction: '立即预约课程',
     secondaryAction: '改约',
   };
 
   const todayCourseData: HomeTodayCourseData = {
-    label: '',
+    label: todayBooking ? todayCourseSummary.courseLabel : '',
     status: '',
-    headerStatus: '已预约',
-    subtitle: '',
-    timeRange: '14:00 – 15:30',
-    duration: '90min',
-    title: '流瑜伽进阶',
-    meta: '林静怡教练 · 朝阳门店',
-    note: '',
+    headerStatus: todayCourseSummary.courseStatus,
+    subtitle: todayBooking ? todayCourseSummary.courseSubtitle : '',
+    timeRange: todayBooking ? formatTimeRange(todayBooking.session?.startsAt, todayBooking.session?.endsAt) : '--:-- – --:--',
+    duration: todayBooking ? formatDurationLabel(todayBooking.session?.startsAt, todayBooking.session?.endsAt) : '待安排',
+    title: getBookingDisplayName(todayBooking),
+    meta: getBookingDisplayMeta(todayBooking),
+    note: todayBooking ? todayCourseSummary.note : '',
     primaryAction: '查看详情',
     secondaryAction: '改约',
   };
 
   const monthlySummaryData: HomeMonthlySummaryData = {
     label: 'SESSIONS',
-    value: '12',
+    value: String(monthlySessions),
     unit: '次',
     description: '本月训练概览',
-    progressText: '月度目标完成 75%',
+    progressText: `月度目标完成 ${monthlyGoalPercent}%`,
     sideItems: [
       {
         key: 'duration',
         label: '时长',
-        value: '18',
+        value: String(monthlyHours),
         unit: 'h',
         detail: '',
       },
@@ -297,38 +434,17 @@ export default function Index() {
 
   const curatedData: HomeCuratedData = {
     eyebrow: 'CURATED',
-    caption: '明日 18:30 · 50min',
-    title: '普拉提塑形 · 核心进阶',
+    caption: getCourseCaption(curatedCourse),
+    title: curatedCourse?.name || '暂无推荐课程',
     description: '',
-    meta: '陈思雨教练 · 朝阳门店',
+    meta: getCourseDisplayMeta(curatedCourse),
     cta: '预约',
     monogram: '',
-    imageUrl: 'https://images.unsplash.com/photo-1771270786606-f5a0e57db762?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaWxhdGVzJTIwc3R1ZGlvJTIwbWluaW1hbHxlbnwxfHx8fDE3NzUzNzczNjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    imageUrl: '/assets/ui/booking-pilates.svg',
     fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
-  const upcomingItems: HomeUpcomingItemData[] = [
-    {
-      key: 'booking-1',
-      day: '07',
-      weekday: 'TUE',
-      label: '明日',
-      title: '哈他瑜伽',
-      description: '',
-      meta: '王梦瑶 · 16:00 · 60min',
-      routeUrl: '/pages/course-detail/index?id=3',
-    },
-    {
-      key: 'booking-2',
-      day: '08',
-      weekday: 'WED',
-      label: '',
-      title: '冥想疗愈',
-      description: '',
-      meta: '张悦欣 · 19:30 · 45min',
-      routeUrl: '/pages/course-detail/index?id=4',
-    },
-  ];
+  const upcomingItems = upcomingBookings.slice(0, 2).map(toHomeUpcomingItem);
 
   const studioData: HomeStudioData = {
     label: 'YOUR STUDIO',
@@ -360,8 +476,11 @@ export default function Index() {
       case 'membership':
         handleMembershipPrimary();
         break;
+      case 'coaches':
+        Taro.navigateTo({ url: '/pages/my-coaches/index' });
+        break;
       case 'records':
-        handleBookingsEntry();
+        Taro.navigateTo({ url: '/pages/training-records/index' });
         break;
       default:
         break;
@@ -369,7 +488,13 @@ export default function Index() {
   };
 
   const handleStudioClick = () => {
-    Taro.showToast({ title: '静态壳阶段，地图稍后接入', icon: 'none' });
+    Taro.openLocation({
+      latitude: 39.9242,
+      longitude: 116.4335,
+      name: 'Pilates Studio 朝阳门店',
+      address: '北京市朝阳区朝阳门外大街 88 号',
+      scale: 16,
+    });
   };
 
   const handleUpcomingItemClick = (item: HomeUpcomingItemData) => {

@@ -1,0 +1,140 @@
+import { useCallback, useEffect, useState } from 'react';
+import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import { Text, View } from '@tarojs/components';
+import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
+import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import './index.scss';
+
+function formatPrice(cents: number) {
+  return `¥${(cents / 100).toFixed(2)}`;
+}
+
+function getPlanCredits(plan: MembershipPlan) {
+  return plan.totalCredits > 0 ? `${plan.totalCredits} 次` : '不限次';
+}
+
+export default function MembershipRenew() {
+  const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState('');
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadFailed(false);
+      const response = await membershipPlansApi.getActive();
+      const activePlans = response.data.plans || [];
+      setPlans(activePlans);
+      setSelectedPlanId((previous) => previous || activePlans[0]?.id || '');
+    } catch (error) {
+      console.error('Failed to fetch membership plans:', error);
+      setPlans([]);
+      setLoadFailed(true);
+      Taro.showToast({ title: '会员方案加载失败', icon: 'none' });
+    } finally {
+      setLoading(false);
+      Taro.stopPullDownRefresh();
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
+
+  usePullDownRefresh(() => {
+    fetchPlans();
+  });
+
+  const selectedPlan = plans.find((plan) => plan.id === selectedPlanId) || null;
+
+  const handleSubmitRenew = async () => {
+    if (!selectedPlan) {
+      Taro.showToast({ title: '请选择会员方案', icon: 'none' });
+      return;
+    }
+
+    const result = await Taro.showModal({
+      title: '确认续费',
+      content: `${selectedPlan.name} · ${formatPrice(selectedPlan.priceCents)}`,
+      confirmText: '确认',
+      confirmColor: '#C4A574',
+    });
+
+    if (result.confirm) {
+      try {
+        setSubmitting(true);
+        await membershipPlansApi.requestRenewal(selectedPlan.id);
+        Taro.showToast({ title: '续费申请已提交', icon: 'success' });
+      } catch (error) {
+        console.error('Failed to submit renewal request:', error);
+        Taro.showToast({ title: '续费提交失败，请稍后重试', icon: 'none' });
+      } finally {
+        setSubmitting(false);
+      }
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  return (
+    <PageShell className='membership-renew-page' safeAreaBottom>
+      <PageHeader title='续费会员' subtitle='选择适合你的会员方案' fallbackUrl='/pages/membership/index' />
+
+      <View className='membership-renew-page__hero'>
+        <Text className='membership-renew-page__hero-label'>MEMBERSHIP PLAN</Text>
+        <Text className='membership-renew-page__hero-title'>{selectedPlan?.name || '会员方案'}</Text>
+        <Text className='membership-renew-page__hero-desc'>{selectedPlan?.description || '提前续费不影响当前有效期，新周期将自动顺延。'}</Text>
+      </View>
+
+      <View className='membership-renew-page__section'>
+        <SectionTitle title='可选方案' actionLabel='PLANS' actionTone='muted' />
+        {loadFailed ? (
+          <AppCard className='membership-renew-page__empty'>
+            <Empty title='会员方案加载失败' description='请检查网络后重试。' />
+            <AppButton size='small' variant='primary' onClick={fetchPlans}>重新加载</AppButton>
+          </AppCard>
+        ) : plans.length > 0 ? (
+          <AppCard padding='none' className='membership-plan-list'>
+            {plans.map((plan, index) => {
+              const selected = plan.id === selectedPlanId;
+              return (
+                <View key={plan.id || plan.planCode}>
+                  <View className={`membership-plan-list__item ${selected ? 'membership-plan-list__item--selected' : ''}`} onClick={() => setSelectedPlanId(plan.id)}>
+                    <View className='membership-plan-list__main'>
+                      <Text className='membership-plan-list__name'>{plan.name}</Text>
+                      <Text className='membership-plan-list__desc'>{getPlanCredits(plan)} · 有效 {plan.validityDays} 天</Text>
+                    </View>
+                    <View className='membership-plan-list__price-wrap'>
+                      <Text className='membership-plan-list__price'>{formatPrice(plan.priceCents)}</Text>
+                      <Text className='membership-plan-list__tag'>{selected ? '已选择' : '选择'}</Text>
+                    </View>
+                  </View>
+                  {index < plans.length - 1 ? <Divider spacing='none' /> : null}
+                </View>
+              );
+            })}
+          </AppCard>
+        ) : (
+          <AppCard className='membership-renew-page__empty'>
+            <Empty title='暂无可购买方案' description='会员方案正在整理，请稍后再试。' />
+          </AppCard>
+        )}
+      </View>
+
+      <View className='membership-renew-page__footer'>
+        <AppButton
+          size='large'
+          variant='primary'
+          disabled={!selectedPlan || submitting}
+          onClick={handleSubmitRenew}
+        >
+          {submitting ? '提交中...' : '确认续费'}
+        </AppButton>
+      </View>
+    </PageShell>
+  );
+}

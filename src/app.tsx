@@ -1,17 +1,15 @@
 import React, { useEffect } from 'react';
-import Taro from '@tarojs/taro';
+import { ensureMiniProgramAuth } from './api/auth';
 import './app.scss';
 
 function App(props: { children?: React.ReactNode }) {
   useEffect(() => {
-    const token = Taro.getStorageSync('token');
-    if (!token) {
-      // Optionally navigate to login page
-      // Taro.navigateTo({ url: '/pages/login/index' });
-    }
+    ensureMiniProgramAuth().catch((error) => {
+      console.error('Failed to initialize mini program auth:', error);
+    });
   }, []);
 
-  return props.children as any;
+  return <>{props.children}</>;
 }
 
 export default App;

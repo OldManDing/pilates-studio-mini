@@ -1,0 +1,119 @@
+@import '../../styles/variables.scss';
+
+.my-coaches-page {
+  &__hero {
+    padding: 42px 48px;
+    margin-bottom: 42px;
+    border-radius: $figma-radius-card;
+    background: linear-gradient(135deg, rgba($accent, 0.12), rgba($surface, 0.98));
+    box-shadow: $shadow-card;
+  }
+
+  &__hero-label,
+  &__hero-value,
+  &__hero-desc {
+    display: block;
+  }
+
+  &__hero-label {
+    color: $accent;
+    font-size: 18px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.16em;
+    margin-bottom: 20px;
+  }
+
+  &__hero-value {
+    color: $text-primary;
+    font-size: 64px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  &__hero-desc {
+    margin-top: 18px;
+    color: #ababab;
+    font-size: 22px;
+    line-height: 34px;
+  }
+
+  &__section {
+    margin-bottom: 56px;
+  }
+
+  &__empty {
+    padding: 42px 24px;
+  }
+
+  &__empty-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+}
+
+.my-coaches-list {
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 30px 36px;
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 82px;
+    height: 82px;
+    border-radius: $radius-full;
+    background: rgba($accent, 0.1);
+    border: 1px solid rgba($accent, 0.22);
+    flex-shrink: 0;
+  }
+
+  &__avatar-text {
+    color: $accent;
+    font-size: 30px;
+    font-weight: 300;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name,
+  &__desc,
+  &__count,
+  &__count-label {
+    display: block;
+  }
+
+  &__name {
+    color: $text-primary;
+    font-size: 28px;
+    font-weight: $font-weight-medium;
+    margin-bottom: 8px;
+  }
+
+  &__desc,
+  &__count-label {
+    color: #c8c8c8;
+    font-size: 20px;
+  }
+
+  &__side {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__count {
+    color: $text-primary;
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 4px;
+  }
+}

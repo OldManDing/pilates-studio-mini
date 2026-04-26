@@ -357,6 +357,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     justify-content: space-between;
     gap: 21px;
     padding: 35px 49px;
+
+    &--clickable:active {
+      background: $support-surface-muted;
+    }
   }
 
   &__left {

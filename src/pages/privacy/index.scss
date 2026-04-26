@@ -1,0 +1,51 @@
+@import '../../styles/variables.scss';
+
+.privacy-page {
+  &__section {
+    margin-bottom: 42px;
+  }
+}
+
+.privacy-hero {
+  padding: 42px 48px;
+  margin-bottom: 44px;
+  background: linear-gradient(135deg, rgba($accent, 0.1), rgba($surface, 0.98));
+
+  &__label,
+  &__title,
+  &__desc {
+    display: block;
+  }
+
+  &__label {
+    color: $accent;
+    font-size: 18px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.16em;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    color: $text-primary;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 46px;
+    margin-bottom: 14px;
+  }
+
+  &__desc {
+    color: #ababab;
+    font-size: 20px;
+  }
+}
+
+.privacy-content {
+  padding: 36px 42px;
+
+  &__text {
+    display: block;
+    color: #7a7a7a;
+    font-size: 24px;
+    line-height: 40px;
+  }
+}

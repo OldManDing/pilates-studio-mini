@@ -21,11 +21,17 @@
 - 课程详情 `pages/course-detail`
 - 教练列表/详情 `pages/coaches` / `pages/coach-detail`
 - 会员中心 `pages/membership`
+- 会员续费 `pages/membership-renew`
 - 我的预约 `pages/my-bookings`
+- 训练记录 `pages/training-records`
+- 我的教练 `pages/my-coaches`
 - 我的页 `pages/profile`
 - 通知 `pages/notifications`
 - 帮助 `pages/help`
 - 设置 `pages/settings`
+- 账户安全 `pages/account-security`
+- 用户协议 `pages/agreement`
+- 隐私政策 `pages/privacy`
 - 交易记录 `pages/transactions`
 
 ## 目录结构
@@ -79,7 +85,8 @@ npm run verify
 `verify` 当前会执行：
 
 1. TypeScript 类型检查
-2. 微信小程序构建
+2. 轻量 smoke 回归检查
+3. 微信小程序构建
 
 ## 环境配置
 

@@ -10,7 +10,10 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run build:weapp",
+    "test": "npm run verify",
+    "test:smoke": "node scripts/smoke-tests.cjs",
+    "test:api": "node scripts/api-smoke.cjs",
+    "verify": "npm run typecheck && npm run test:smoke && npm run build:weapp",
     "build:weapp": "taro build --type weapp",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
