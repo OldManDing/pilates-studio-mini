@@ -121,17 +121,17 @@ $shadow-soft: 0 12px 28px rgba(26, 26, 26, 0.05);
    Typography
    ======================================== */
 
-$font-size-3xs: 10px;
-$font-size-2xs: 12px;
-$font-size-xs: 14px;
-$font-size-sm: 16px;
-$font-size-base: 18px;
-$font-size-md: 22px;
-$font-size-lg: 26px;
-$font-size-xl: 30px;
-$font-size-2xl: 34px;
-$font-size-3xl: 46px;
-$font-size-4xl: 56px;
+$font-size-3xs: 12px;
+$font-size-2xs: 14px;
+$font-size-xs: 16px;
+$font-size-sm: 18px;
+$font-size-base: 20px;
+$font-size-md: 24px;
+$font-size-lg: 28px;
+$font-size-xl: 32px;
+$font-size-2xl: 38px;
+$font-size-3xl: 50px;
+$font-size-4xl: 60px;
 
 $font-weight-normal: 400;
 $font-weight-medium: 500;
@@ -162,7 +162,8 @@ $ease-in: cubic-bezier(0.4, 0, 1, 1);
    Layout
    ======================================== */
 
-$tabbar-height: 64px;
+$tabbar-height: 128px;
+$tabbar-reserved-height: 144px;
 $tabbar-vertical-padding: $spacing-sm;
 $navbar-height: 88px;
 $page-max-width: 430px;
@@ -171,19 +172,19 @@ $page-max-width: 430px;
    Figma 430px canvas → Taro 750rpx scale
    ======================================== */
 
-$figma-micro: 14px;          // 8px
-$figma-caption: 17px;        // 10px
-$figma-small: 19px;          // 11px
-$figma-body: 21px;           // 12px
-$figma-body-lg: 24px;        // 14px
-$figma-section-title: 30px;  // 17px
-$figma-title-sm: 35px;       // 20px
-$figma-title: 45px;          // 26px
+$figma-micro: 16px;          // 8px
+$figma-caption: 19px;        // 10px
+$figma-small: 21px;          // 11px
+$figma-body: 23px;           // 12px
+$figma-body-lg: 26px;        // 14px
+$figma-section-title: 32px;  // 17px
+$figma-title-sm: 38px;       // 20px
+$figma-title: 48px;          // 26px
 $figma-number-lg: 70px;      // 40px
 
-$figma-page-x: 49px;         // 28px
-$figma-card-x: 56px;         // 32px
-$figma-card-y: 49px;         // 28px
+$figma-page-x: 40px;         // adaptive page gutter
+$figma-card-x: 44px;         // adaptive card gutter
+$figma-card-y: 44px;         // adaptive card padding
 $figma-section-gap: 70px;    // 40px
 $figma-section-title-gap: 28px; // 16px
 $figma-button-sm-y: 17px;    // 10px

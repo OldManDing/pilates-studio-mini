@@ -6,6 +6,7 @@
 
 .page-container {
   width: 100%;
+  max-width: 100%;
   padding: $spacing-md;
   padding-bottom: calc(#{$spacing-xl} + constant(safe-area-inset-bottom));
   padding-bottom: calc(#{$spacing-xl} + env(safe-area-inset-bottom));
@@ -87,7 +88,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
+  min-height: 80px;
   padding: 0 $spacing-md;
   border-radius: $radius-md;
   font-size: $font-size-base;
@@ -130,13 +131,13 @@
   }
 
   &-small {
-    height: 56px;
+    min-height: 60px;
     padding: 0 $spacing-sm;
     font-size: $font-size-sm;
   }
 
   &-large {
-    height: 88px;
+    min-height: 92px;
     font-size: $font-size-md;
   }
 }
@@ -148,7 +149,7 @@
   min-height: 40px;
   padding: 0 $spacing-sm;
   border-radius: $radius-full;
-  font-size: $font-size-2xs;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   line-height: 1;
 
@@ -232,8 +233,8 @@
     }
 
     &__icon {
-      width: 64px;
-      height: 64px;
+      width: 68px;
+      height: 68px;
       margin-right: $spacing-sm;
       border-radius: $radius-md;
       display: flex;
@@ -254,7 +255,7 @@
 
     &__title {
       color: $text-primary;
-      font-size: $font-size-sm;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
       line-height: $line-height-snug;
     }
@@ -262,14 +263,14 @@
     &__desc {
       margin-top: $spacing-xs;
       color: $text-secondary;
-      font-size: $font-size-xs;
+      font-size: $font-size-sm;
       line-height: $line-height-normal;
     }
 
     &__extra {
       margin-left: $spacing-md;
       color: $text-muted;
-      font-size: $font-size-2xs;
+      font-size: $font-size-xs;
     }
   }
 }
@@ -333,7 +334,7 @@
   &__title {
     margin-top: $spacing-md;
     color: $text-primary;
-    font-size: $font-size-sm;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
   }
 
