@@ -129,9 +129,14 @@
   }
 
   &__actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     gap: 18px;
     margin-top: 8px;
+
+    .app-button {
+      flex: 1 1 220px;
+      min-width: 0;
+    }
   }
 }

@@ -119,6 +119,14 @@ export default function Help() {
 
   const feedbackCount = feedbackText.length;
   const feedbackDisabled = !feedbackText.trim() || submittingFeedback;
+  const contactItems = [
+    SUPPORT_PHONE
+      ? { label: '客服热线', value: SUPPORT_PHONE, displayValue: SUPPORT_PHONE, description: '工作日 09:00 – 18:00', icon: 'info' as const }
+      : null,
+    SUPPORT_EMAIL
+      ? { label: '电子邮箱', value: SUPPORT_EMAIL, displayValue: SUPPORT_EMAIL, description: '1-3 个工作日内回复', icon: 'mail' as const }
+      : null,
+  ].filter((item): item is { label: string; value: string; displayValue: string; description: string; icon: 'info' | 'mail' } => Boolean(item));
 
   return (
     <PageShell className='help-page' safeAreaBottom>
@@ -249,24 +257,18 @@ export default function Help() {
         <SectionTitle title='联系我们' actionLabel='CONTACT' actionTone='muted' />
 
         <AppCard className='help-contact' padding='none'>
-          {[
-            { label: '客服热线', value: SUPPORT_PHONE, displayValue: SUPPORT_PHONE || '热线待配置', description: SUPPORT_PHONE ? '工作日 09:00 – 18:00' : '请联系门店获取最新电话', icon: 'info' as const },
-            { label: '电子邮箱', value: SUPPORT_EMAIL, displayValue: SUPPORT_EMAIL || '邮箱待配置', description: SUPPORT_EMAIL ? '1-3 个工作日内回复' : '请联系门店获取最新邮箱', icon: 'mail' as const },
-          ].map((item, index) => (
+          {contactItems.length === 0 ? (
+            <View className='help-contact__empty'>
+              <Text className='help-contact__empty-title'>联系方式待配置</Text>
+              <Text className='help-contact__empty-description'>请联系门店工作人员获取最新客服方式。</Text>
+            </View>
+          ) : contactItems.map((item, index) => (
               <View key={item.label}>
                 <View
                 className='help-contact__item help-contact__item--clickable'
                 onClick={() => {
                   if (item.label === '客服热线') {
-                    if (!item.value) {
-                      Taro.showToast({ title: '客服热线暂未配置', icon: 'none' });
-                      return;
-                    }
                     Taro.makePhoneCall({ phoneNumber: item.value });
-                    return;
-                  }
-                  if (!item.value) {
-                    Taro.showToast({ title: '客服邮箱暂未配置', icon: 'none' });
                     return;
                   }
                   Taro.setClipboardData({ data: item.value });
@@ -285,7 +287,7 @@ export default function Help() {
                   <Icon name='chevron-right' className='help-contact__arrow' />
                 </View>
               </View>
-              {index < 1 ? <Divider spacing='none' className='help-contact__divider' /> : null}
+              {index < contactItems.length - 1 ? <Divider spacing='none' className='help-contact__divider' /> : null}
             </View>
           ))}
         </AppCard>

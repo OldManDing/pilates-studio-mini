@@ -430,7 +430,16 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__right {
     gap: 10px;
-    flex-shrink: 0;
+    flex: 0 1 48%;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+
+  &__value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
 
   &__arrow {
@@ -440,6 +449,29 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__divider {
-    margin: 0 49px;
+    margin: 0 $figma-card-x;
+  }
+
+  &__empty {
+    padding: 72px $figma-card-x;
+    text-align: center;
+  }
+
+  &__empty-title,
+  &__empty-description {
+    display: block;
+  }
+
+  &__empty-title {
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    margin-bottom: 10px;
+  }
+
+  &__empty-description {
+    color: $support-muted-3;
+    font-size: $figma-body;
+    line-height: 1.5;
   }
 }
