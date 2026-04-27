@@ -92,6 +92,10 @@
     font-weight: $font-weight-medium;
     color: $text-primary;
     line-height: $line-height-tight;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__state {

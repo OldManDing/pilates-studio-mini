@@ -120,6 +120,11 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body;
     font-weight: $font-weight-normal;
     flex-shrink: 0;
+    max-width: 42%;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__arrow {
@@ -156,6 +161,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__title {
+    min-width: 0;
+    flex: 1;
     color: $text-primary;
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
@@ -167,6 +174,11 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body;
     font-weight: $font-weight-normal;
     line-height: 1.25;
+    max-width: 48%;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__arrow {
