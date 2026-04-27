@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
 import './index.scss';
 
@@ -167,7 +167,7 @@ export default function Notifications() {
         rightSlot={unreadCount > 0 ? (
           <View className={`notifications-page__header-action ${markingAllRead ? 'notifications-page__header-action--disabled' : ''}`} onClick={handleMarkAllRead}>
             <Icon name='check' className='notifications-page__header-action-icon' />
-            <Text className='notifications-page__header-action-text'>{markingAllRead ? '处理中' : '全部已读'}</Text>
+            <Text className='notifications-page__header-action-text'>{markingAllRead ? '标记中' : '一键设为已读'}</Text>
           </View>
         ) : undefined}
       />
@@ -175,10 +175,7 @@ export default function Notifications() {
       {loadFailed ? (
         <View className='notifications-page__section'>
           <AppCard className='notifications-list notifications-list--empty'>
-            <Empty title='消息加载失败' description='请检查网络后重试。' />
-            <View className='notifications-list__empty-action'>
-              <AppButton size='small' variant='primary' onClick={fetchNotifications}>重新加载</AppButton>
-            </View>
+            <Empty title='消息加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchNotifications} />
           </AppCard>
         </View>
       ) : unread.length > 0 ? (
@@ -211,20 +208,20 @@ export default function Notifications() {
         </View>
       ) : null}
 
-      {!loadFailed ? <View className='notifications-page__section'>
-        <SectionTitle title='已读' actionLabel='EARLIER' actionTone='muted' />
-        <AppCard className='notifications-list' padding='none'>
-          {read.length === 0 && unread.length === 0 ? (
-            <View className='notifications-list__empty'>
-              <Text className='notifications-list__empty-title'>暂无消息</Text>
-              <Text className='notifications-list__empty-description'>新的通知将会显示在这里</Text>
-            </View>
-          ) : read.length === 0 ? (
-            <View className='notifications-list__empty'>
-              <Text className='notifications-list__empty-title'>暂无已读消息</Text>
-              <Text className='notifications-list__empty-description'>点击未读消息后会归档到这里</Text>
-            </View>
-          ) : (
+        {!loadFailed ? <View className='notifications-page__section'>
+          <SectionTitle title='已读' actionLabel='EARLIER' actionTone='muted' />
+          <AppCard className='notifications-list' padding='none'>
+            {read.length === 0 && unread.length === 0 ? (
+              <View className='notifications-list__empty'>
+                <Text className='notifications-list__empty-title'>暂无消息</Text>
+                <Text className='notifications-list__empty-description'>新的通知会在这里显示，记得先查看未读消息。</Text>
+              </View>
+            ) : read.length === 0 ? (
+              <View className='notifications-list__empty'>
+                <Text className='notifications-list__empty-title'>暂无已读消息</Text>
+                <Text className='notifications-list__empty-description'>点开未读消息后会自动归档到这里。</Text>
+              </View>
+            ) : (
             read.map((notification, index) => (
               <View key={notification.id}>
                 <View className='notifications-list__item notifications-list__item--read'>

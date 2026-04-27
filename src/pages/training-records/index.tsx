@@ -48,7 +48,7 @@ export default function TrainingRecords() {
     } catch {
       setRecords([]);
       setLoadFailed(true);
-      Taro.showToast({ title: '训练记录加载失败', icon: 'none' });
+      Taro.showToast({ title: '训练记录加载失败，请重试', icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -96,11 +96,15 @@ export default function TrainingRecords() {
       </View>
 
       <View className='training-records-page__section'>
-        <SectionTitle title='近期训练' actionLabel='RECORDS' actionTone='muted' />
+        <SectionTitle title='近期训练' actionLabel='TRAINING' actionTone='muted' />
         {loadFailed ? (
           <AppCard className='training-records-page__empty'>
-            <Empty title='训练记录加载失败' description='请检查网络后重试。' />
-            <AppButton size='small' variant='primary' onClick={fetchRecords}>重新加载</AppButton>
+            <Empty
+              title='训练记录加载失败'
+              description='请检查网络后重试，或返回课程页继续安排训练。'
+              actionLabel='重新加载'
+              onActionClick={fetchRecords}
+            />
           </AppCard>
         ) : records.length > 0 ? (
           <AppCard padding='none' className='training-records-list'>
@@ -122,7 +126,12 @@ export default function TrainingRecords() {
           </AppCard>
         ) : (
           <AppCard className='training-records-page__empty'>
-            <Empty title='暂无训练记录' description='完成课程后，这里会展示你的训练统计与历史记录。' />
+            <Empty
+              title='暂无训练记录'
+              description='完成课程后，这里会展示你的训练统计与历史记录。'
+              actionLabel='去预约课程'
+              onActionClick={() => Taro.switchTab({ url: '/pages/courses/index' })}
+            />
           </AppCard>
         )}
       </View>

@@ -43,7 +43,7 @@ export default function Transactions() {
 
       const transactionsRes = await transactionsApi.getMyTransactions({ page: currentPage, limit: 10 });
       const summaryRes = currentPage === 1
-        ? await transactionsApi.getMySummary().catch(() => ({ data: { totalRevenue: 0, transactionCount: 0 } }))
+        ? await transactionsApi.getMySummary().catch(() => null)
         : null;
 
       const newTransactions = transactionsRes.data.transactions || [];
@@ -65,7 +65,7 @@ export default function Transactions() {
         setTransactions([]);
         setLoadFailed(true);
       }
-      Taro.showToast({ title: '加载失败', icon: 'none' });
+      Taro.showToast({ title: '交易记录加载失败，请重试', icon: 'none' });
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -100,11 +100,11 @@ export default function Transactions() {
         <SectionTitle
           eyebrow='SUMMARY'
           title='消费总览'
-          subtitle='会员中心累计账单'
+          subtitle='会员中心累计账单总览'
         />
 
         <AppCard className='transactions-page__summary-card'>
-          <Text className='transactions-page__summary-label'>累计消费</Text>
+          <Text className='transactions-page__summary-label'>累计消费金额</Text>
           <View className='transactions-page__summary-amount'>
             <Price amount={summary.totalRevenue} size='xl' variant='default' />
           </View>
@@ -127,8 +127,12 @@ export default function Transactions() {
           <Loading />
         ) : loadFailed ? (
           <AppCard className='transactions-page__empty-card'>
-            <Empty title='消费记录加载失败' description='请检查网络后重试。' />
-            <AppButton size='small' variant='primary' onClick={() => fetchTransactions(1, false)}>重新加载</AppButton>
+            <Empty
+              title='消费记录加载失败'
+              description='请检查网络后重试，或返回会员中心查看权益。'
+              actionLabel='重新加载'
+              onActionClick={() => fetchTransactions(1, false)}
+            />
           </AppCard>
         ) : transactions.length > 0 ? (
           <AppCard padding='none' className='transactions-page__ledger-card'>
@@ -155,7 +159,12 @@ export default function Transactions() {
           </AppCard>
         ) : (
           <AppCard className='transactions-page__empty-card'>
-            <Empty title='暂无消费记录' description='去购买会员卡或预约课程吧' />
+            <Empty
+              title='暂无消费记录'
+              description='先去看看会员方案，或预约课程开始使用。'
+              actionLabel='查看会员方案'
+              onActionClick={() => Taro.navigateTo({ url: '/pages/membership/index' })}
+            />
           </AppCard>
         )}
 
