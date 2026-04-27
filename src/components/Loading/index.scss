@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .loading {
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -21,15 +22,15 @@
     }
 
     .loading__spinner {
-      width: 48px;
-      height: 48px;
+      width: 56px;
+      height: 56px;
       margin-bottom: $spacing-sm;
     }
   }
 
   &__panel {
     width: 100%;
-    max-width: 420px;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -53,13 +54,13 @@
 
   &__title {
     margin-bottom: $spacing-xs;
-    font-size: 17px;
+    font-size: $font-size-md;
     font-weight: $font-weight-medium;
     color: $text-primary;
   }
 
   &__text {
-    font-size: 12px;
+    font-size: $font-size-base;
     color: $text-secondary;
     text-align: center;
     line-height: $line-height-normal;
