@@ -3,6 +3,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
+import { getApiErrorMessage } from '../../api/request';
 import './index.scss';
 
 type NotificationType = 'course' | 'system' | 'member';
@@ -69,6 +70,7 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [markingAllRead, setMarkingAllRead] = useState(false);
+  const [markingReadIds, setMarkingReadIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const fetchNotifications = useCallback(async () => {
@@ -77,10 +79,9 @@ export default function Notifications() {
       setLoadFailed(false);
       const response = await notificationsApi.getMy({ page: 1, limit: 50 }, { showLoading: false });
       setNotifications((response.data.notifications || []).map(toNotificationItem));
-    } catch {
-      setNotifications([]);
+    } catch (error) {
       setLoadFailed(true);
-      Taro.showToast({ title: '消息加载失败', icon: 'none' });
+      Taro.showToast({ title: getApiErrorMessage(error, '消息加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -114,25 +115,45 @@ export default function Notifications() {
 
     try {
       setMarkingAllRead(true);
-      await Promise.all(unreadIds.map((id) => notificationsApi.markMyAsRead(id)));
-      setNotifications((previous) => previous.map((notification) => ({ ...notification, status: 'read' as const })));
-    } catch {
-      Taro.showToast({ title: '标记失败，请稍后重试', icon: 'none' });
+      const results = await Promise.allSettled(unreadIds.map((id) => notificationsApi.markMyAsRead(id).then(() => id)));
+      const succeededIds = results
+        .filter((result): result is PromiseFulfilledResult<string> => result.status === 'fulfilled')
+        .map((result) => result.value);
+
+      if (succeededIds.length > 0) {
+        setNotifications((previous) => previous.map((notification) => (
+          succeededIds.includes(notification.id) ? { ...notification, status: 'read' as const } : notification
+        )));
+      }
+
+      if (succeededIds.length < unreadIds.length) {
+        const firstRejected = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+        Taro.showToast({ title: getApiErrorMessage(firstRejected?.reason, succeededIds.length > 0 ? '部分消息标记失败' : '标记失败，请稍后重试'), icon: 'none' });
+      }
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '标记失败，请稍后重试'), icon: 'none' });
     } finally {
       setMarkingAllRead(false);
     }
   };
 
   const handleMarkRead = async (id: string) => {
+    if (markingReadIds.includes(id)) {
+      return;
+    }
+
     try {
+      setMarkingReadIds((previous) => [...previous, id]);
       await notificationsApi.markMyAsRead(id);
       setNotifications((previous) => previous.map((notification) => (
         notification.id === id
           ? { ...notification, status: 'read' as const }
           : notification
       )));
-    } catch {
-      Taro.showToast({ title: '标记失败，请稍后重试', icon: 'none' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '标记失败，请稍后重试'), icon: 'none' });
+    } finally {
+      setMarkingReadIds((previous) => previous.filter((item) => item !== id));
     }
   };
 
@@ -179,7 +200,7 @@ export default function Notifications() {
         ) : undefined}
       />
 
-      {loadFailed ? (
+      {loadFailed && notifications.length === 0 ? (
         <View className='notifications-page__section'>
           <AppCard className='notifications-list notifications-list--empty'>
             <Empty title='消息加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchNotifications} />
@@ -191,7 +212,7 @@ export default function Notifications() {
           <AppCard className='notifications-list' padding='none'>
             {unread.map((notification, index) => (
               <View key={notification.id}>
-                <View className='notifications-list__item' onClick={() => handleMarkRead(notification.id)}>
+                <View className={`notifications-list__item ${markingReadIds.includes(notification.id) ? 'notifications-list__item--pending' : ''}`} onClick={() => handleMarkRead(notification.id)}>
                   <View className={getIconChipClass(notification.type, false)}>
                     <Icon name={getIconName(notification.type)} className='notifications-list__icon-image' />
                   </View>
@@ -215,7 +236,7 @@ export default function Notifications() {
         </View>
       ) : null}
 
-        {!loadFailed ? <View className='notifications-page__section'>
+        {!(loadFailed && notifications.length === 0) ? <View className='notifications-page__section'>
           <SectionTitle title='已读' actionLabel='EARLIER' actionTone='muted' />
           <AppCard className='notifications-list' padding='none'>
             {read.length === 0 && unread.length === 0 ? (

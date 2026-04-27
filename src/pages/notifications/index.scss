@@ -113,6 +113,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
         color: $support-muted-1;
       }
     }
+
+    &--pending {
+      opacity: 0.58;
+    }
   }
 
   &__icon {
@@ -174,6 +178,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__title {
     flex: 1;
+    min-width: 0;
     color: $text-primary;
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
@@ -182,10 +187,14 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__description {
+    overflow: hidden;
     color: $support-muted-1;
     font-size: $figma-body;
     line-height: 31px;
     letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   &__time {
@@ -218,7 +227,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__divider {
-    margin-left: 140px;
+    margin-left: calc(49px + 63px + 28px);
     margin-right: 49px;
   }
 
