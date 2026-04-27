@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text, ScrollView } from '@tarojs/components';
 import { bookingsApi, Booking } from '../../api/bookings';
-import { isUnauthorizedApiError } from '../../api/request';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageShell, PageHeader } from '../../components';
 import './index.scss';
 
@@ -113,8 +113,12 @@ export default function MyBookings() {
   const [hasMore, setHasMore] = useState(true);
   const [activeTab, setActiveTab] = useState<BookingTab>('upcoming');
   const [displayCount, setDisplayCount] = useState(0);
+  const [cancellingBookingId, setCancellingBookingId] = useState('');
+  const requestSeqRef = useRef(0);
 
   const fetchBookings = useCallback(async (currentPage = 1, append = false) => {
+    const requestSeq = requestSeqRef.current + 1;
+    requestSeqRef.current = requestSeq;
     try {
       if (append) {
         setLoadingMore(true);
@@ -147,6 +151,10 @@ export default function MyBookings() {
         return mergeBookings(result, current.data.bookings || []);
       }, []);
 
+      if (requestSeq !== requestSeqRef.current) {
+        return;
+      }
+
       const hasMorePages = response.some((current) => {
         const meta = current.data.meta;
         const items = current.data.bookings || [];
@@ -169,16 +177,22 @@ export default function MyBookings() {
       setHasMore(hasMorePages);
       setPage(currentPage);
     } catch (error) {
+      if (requestSeq !== requestSeqRef.current) {
+        return;
+      }
+
       if (!append) {
         setBookings([]);
         setLoadFailed(true);
         setAuthRequired(isUnauthorizedApiError(error));
       }
-      Taro.showToast({ title: '加载失败', icon: 'none' });
+      Taro.showToast({ title: getApiErrorMessage(error, '加载失败'), icon: 'none' });
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
-      Taro.stopPullDownRefresh();
+      if (requestSeq === requestSeqRef.current) {
+        setLoading(false);
+        setLoadingMore(false);
+        Taro.stopPullDownRefresh();
+      }
     }
   }, [activeTab]);
 
@@ -209,6 +223,11 @@ export default function MyBookings() {
   };
 
   const handleBookingClick = (booking: Booking) => {
+    if (cancellingBookingId) {
+      Taro.showToast({ title: '正在处理上一条预约', icon: 'none' });
+      return;
+    }
+
     Taro.showModal({
       title: '预约详情',
       content: `预约编号: ${booking.bookingCode}\n状态: ${booking.status}`,
@@ -218,11 +237,14 @@ export default function MyBookings() {
       success: async (res) => {
         if (res.cancel) {
           try {
+            setCancellingBookingId(booking.id);
             await bookingsApi.cancel(booking.id);
             Taro.showToast({ title: '已取消', icon: 'success' });
-            fetchBookings(1, false);
-          } catch {
-            Taro.showToast({ title: '取消失败，请稍后重试', icon: 'none' });
+            await fetchBookings(1, false);
+          } catch (error) {
+            Taro.showToast({ title: getApiErrorMessage(error, '取消失败，请稍后重试'), icon: 'none' });
+          } finally {
+            setCancellingBookingId('');
           }
         }
       },

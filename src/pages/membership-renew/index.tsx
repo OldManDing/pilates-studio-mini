@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
+import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
@@ -27,11 +28,10 @@ export default function MembershipRenew() {
       const response = await membershipPlansApi.getActive();
       const activePlans = response.data.plans || [];
       setPlans(activePlans);
-      setSelectedPlanId((previous) => previous || activePlans[0]?.id || '');
-    } catch {
-      setPlans([]);
+      setSelectedPlanId((previous) => activePlans.some((plan) => plan.id === previous) ? previous : activePlans[0]?.id || '');
+    } catch (error) {
       setLoadFailed(true);
-      Taro.showToast({ title: '会员方案加载失败', icon: 'none' });
+      Taro.showToast({ title: getApiErrorMessage(error, '会员方案加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -66,8 +66,8 @@ export default function MembershipRenew() {
         setSubmitting(true);
         await membershipPlansApi.requestRenewal(selectedPlan.id);
         Taro.showToast({ title: '续费申请已提交', icon: 'success' });
-      } catch {
-        Taro.showToast({ title: '续费提交失败，请稍后重试', icon: 'none' });
+      } catch (error) {
+        Taro.showToast({ title: getApiErrorMessage(error, '续费提交失败，请稍后重试'), icon: 'none' });
       } finally {
         setSubmitting(false);
       }
@@ -97,12 +97,18 @@ export default function MembershipRenew() {
 
       <View className='membership-renew-page__section'>
         <SectionTitle title='可选方案' actionLabel='PLANS' actionTone='muted' />
-        {loadFailed ? (
+        {loadFailed && plans.length === 0 ? (
           <AppCard className='membership-renew-page__empty'>
             <Empty title='会员方案加载失败' description='请检查网络后重试。' />
             <AppButton size='small' variant='primary' onClick={fetchPlans}>重新加载</AppButton>
           </AppCard>
         ) : plans.length > 0 ? (
+          <>
+          {loadFailed ? (
+            <AppCard className='membership-renew-page__empty'>
+              <Empty title='方案同步失败' description='已保留上次成功加载的会员方案，可稍后重试刷新。' actionLabel='重新同步' onActionClick={fetchPlans} />
+            </AppCard>
+          ) : null}
           <AppCard padding='none' className='membership-plan-list'>
             {plans.map((plan, index) => {
               const selected = plan.id === selectedPlanId;
@@ -123,6 +129,7 @@ export default function MembershipRenew() {
               );
             })}
           </AppCard>
+          </>
         ) : (
           <AppCard className='membership-renew-page__empty'>
             <Empty title='暂无可购买方案' description='会员方案正在整理，请稍后再试。' />
