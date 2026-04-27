@@ -56,8 +56,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 .settings-row {
   display: flex;
   align-items: center;
-  gap: 28px;
-  padding: 31px 49px;
+    gap: 24px;
+    padding: 32px $figma-card-x;
 
   &--clickable {
     transition: background $duration-fast $ease-in-out;
@@ -68,8 +68,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__icon-wrap {
-    width: 63px;
-    height: 63px;
+    width: 68px;
+    height: 68px;
     border-radius: 21px;
     background: $support-surface-1;
     display: flex;
@@ -79,8 +79,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__icon {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     opacity: 0.5;
   }
 
@@ -130,7 +130,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__divider {
-    margin: 0 49px;
+    margin: 0 $figma-card-x;
   }
 }
 
@@ -139,7 +139,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   align-items: center;
   justify-content: space-between;
   gap: 21px;
-  padding: 28px 49px;
+    padding: 32px $figma-card-x;
 
   &--clickable {
     transition: background $duration-fast $ease-in-out;
@@ -177,7 +177,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__divider {
-    margin: 0 49px;
+    margin: 0 $figma-card-x;
   }
 }
 

@@ -42,8 +42,8 @@ const SECTIONS: SettingSection[] = [
       },
       {
         icon: '/assets/ui/icon-support.svg',
-        title: '修改密码',
-        description: '定期修改保障账户安全',
+        title: '账户安全',
+        description: '管理密码与登录保护',
         type: 'navigate',
         route: '/pages/account-security/index',
       },
@@ -100,9 +100,9 @@ const SECTIONS: SettingSection[] = [
       {
         icon: '/assets/ui/icon-settings.svg',
         title: '清除缓存',
-        description: '',
+        description: '释放本地缓存数据',
         type: 'navigate',
-        value: '点击清理',
+        value: '立即清理',
         action: 'clear-cache',
       },
     ],
@@ -168,7 +168,7 @@ export default function Settings() {
 
   const handleClearCache = () => {
     CACHE_KEYS.forEach((key) => Taro.removeStorageSync(key));
-    Taro.showToast({ title: '缓存已清理', icon: 'success' });
+    Taro.showToast({ title: '缓存清理完成', icon: 'success' });
   };
 
   const handleDeleteAccount = async () => {
@@ -288,7 +288,7 @@ export default function Settings() {
         ) : (
           <AppCard className='danger-confirm' padding='none'>
             <Text className='danger-confirm__title'>确认退出登录？</Text>
-            <Text className='danger-confirm__description'>退出后需要重新验证手机号登录</Text>
+            <Text className='danger-confirm__description'>退出后需要重新登录才能继续使用。</Text>
             <View className='danger-confirm__actions'>
               <View className='danger-confirm__button danger-confirm__button--cancel' onClick={() => setShowLogoutConfirm(false)}>
                 <Text className='danger-confirm__button-text danger-confirm__button-text--cancel'>取消</Text>
@@ -298,6 +298,7 @@ export default function Settings() {
                 onClick={() => {
                   setShowLogoutConfirm(false);
                   Taro.removeStorageSync('token');
+                  Taro.removeStorageSync(STORAGE_KEYS.profile);
                   Taro.switchTab({ url: '/pages/index/index' });
                 }}
               >
@@ -309,11 +310,11 @@ export default function Settings() {
 
         {!showDeleteConfirm ? (
           <View className='danger-link' onClick={() => setShowDeleteConfirm(true)}>
-            <Text className='danger-link__text'>注销账户</Text>
+            <Text className='danger-link__text'>申请注销账户</Text>
           </View>
         ) : (
           <AppCard className='danger-confirm' padding='none'>
-            <Text className='danger-confirm__title'>确认注销账户？</Text>
+            <Text className='danger-confirm__title'>确认申请注销账户？</Text>
             <Text className='danger-confirm__description'>注销后所有数据将被永久删除且无法恢复，包括会员权益、训练记录等。</Text>
             <View className='danger-confirm__actions'>
               <View
@@ -332,7 +333,7 @@ export default function Settings() {
                   handleDeleteAccount();
                 }}
               >
-                <Text className='danger-confirm__button-text'>{deletingAccount ? '提交中...' : '确认注销'}</Text>
+                <Text className='danger-confirm__button-text'>{deletingAccount ? '提交中...' : '确认申请'}</Text>
               </View>
             </View>
           </AppCard>

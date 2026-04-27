@@ -102,7 +102,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   box-shadow: $support-card-shadow;
 
   &__item {
-    padding: 35px 49px;
+    padding: 36px $figma-card-x;
   }
 
   &__item-row {
@@ -416,6 +416,15 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-feature-settings: 'tnum';
     text-align: right;
     line-height: 1.25;
+  }
+
+  &__action-text {
+    display: block;
+    color: #cdcdcd;
+    font-size: $figma-caption;
+    font-weight: $font-weight-normal;
+    line-height: 1;
+    letter-spacing: 0.04em;
   }
 
   &__right {

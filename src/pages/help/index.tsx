@@ -250,7 +250,7 @@ export default function Help() {
             { label: '电子邮箱', value: SUPPORT_EMAIL, displayValue: SUPPORT_EMAIL || '邮箱待配置', description: SUPPORT_EMAIL ? '1-3 个工作日内回复' : '请联系门店获取最新邮箱', icon: 'mail' as const },
           ].map((item, index) => (
               <View key={item.label}>
-              <View
+                <View
                 className='help-contact__item help-contact__item--clickable'
                 onClick={() => {
                   if (item.label === '客服热线') {
@@ -277,6 +277,7 @@ export default function Help() {
                 </View>
                 <View className='help-contact__right'>
                   <Text className='help-contact__value'>{item.displayValue}</Text>
+                  <Text className='help-contact__action-text'>{item.label === '客服热线' ? '拨打电话' : '复制邮箱地址'}</Text>
                   <Icon name='chevron-right' className='help-contact__arrow' />
                 </View>
               </View>
