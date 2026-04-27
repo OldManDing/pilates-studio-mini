@@ -4,13 +4,17 @@ import { Input, Text, View } from '@tarojs/components';
 import { membersApi } from '../../api/members';
 import { AppButton, AppCard, Divider, PageHeader, PageShell, SectionTitle } from '../../components';
 import { STORAGE_KEYS } from '../../constants/storage';
-import { readStorage } from '../../utils/storage';
+import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
+
+interface SettingsStorage {
+  biometric?: boolean;
+}
 
 export default function AccountSecurity() {
   const profile = readStorage<{ phone?: string; hasBoundPhone?: boolean }>(STORAGE_KEYS.profile, {});
   const hasBoundPhone = profile.hasBoundPhone === true;
-  const [biometricEnabled, setBiometricEnabled] = useState(() => Boolean(Taro.getStorageSync('biometricEnabled')));
+  const [biometricEnabled, setBiometricEnabled] = useState(() => readStorage<SettingsStorage>(STORAGE_KEYS.settings, { biometric: true }).biometric === true);
   const [loginProtectionEnabled, setLoginProtectionEnabled] = useState(() => Taro.getStorageSync('loginProtectionEnabled') !== false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -60,7 +64,8 @@ export default function AccountSecurity() {
   const toggleBiometric = () => {
     setBiometricEnabled((value) => {
       const nextValue = !value;
-      Taro.setStorageSync('biometricEnabled', nextValue);
+      const settings = readStorage<SettingsStorage>(STORAGE_KEYS.settings, {});
+      writeStorage(STORAGE_KEYS.settings, { ...settings, biometric: nextValue });
       return nextValue;
     });
   };
@@ -146,7 +151,7 @@ export default function AccountSecurity() {
           <View className='security-row security-row--clickable' onClick={toggleBiometric}>
             <View className='security-row__main'>
               <Text className='security-row__title'>面容/指纹解锁</Text>
-              <Text className='security-row__desc'>使用生物识别快速登录</Text>
+              <Text className='security-row__desc'>与设置页保持同步的本机登录偏好</Text>
             </View>
             <View className={`security-toggle ${biometricEnabled ? 'security-toggle--on' : ''}`}>
               <View className='security-toggle__dot' />

@@ -100,9 +100,9 @@ const SECTIONS: SettingSection[] = [
       {
         icon: '/assets/ui/icon-settings.svg',
         title: '清除缓存',
-        description: '释放本地缓存数据',
+        description: '清理页面缓存，不影响登录和偏好',
         type: 'navigate',
-        value: '立即清理',
+        value: '清理页面缓存',
         action: 'clear-cache',
       },
     ],
