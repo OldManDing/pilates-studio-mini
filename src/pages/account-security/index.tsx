@@ -8,9 +8,10 @@ import { readStorage } from '../../utils/storage';
 import './index.scss';
 
 export default function AccountSecurity() {
-  const profile = readStorage<{ phone?: string }>(STORAGE_KEYS.profile, {});
-  const [biometricEnabled, setBiometricEnabled] = useState(true);
-  const [loginProtectionEnabled, setLoginProtectionEnabled] = useState(true);
+  const profile = readStorage<{ phone?: string; hasBoundPhone?: boolean }>(STORAGE_KEYS.profile, {});
+  const hasBoundPhone = profile.hasBoundPhone === true;
+  const [biometricEnabled, setBiometricEnabled] = useState(() => Boolean(Taro.getStorageSync('biometricEnabled')));
+  const [loginProtectionEnabled, setLoginProtectionEnabled] = useState(() => Taro.getStorageSync('loginProtectionEnabled') !== false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -56,6 +57,22 @@ export default function AccountSecurity() {
     }
   };
 
+  const toggleBiometric = () => {
+    setBiometricEnabled((value) => {
+      const nextValue = !value;
+      Taro.setStorageSync('biometricEnabled', nextValue);
+      return nextValue;
+    });
+  };
+
+  const toggleLoginProtection = () => {
+    setLoginProtectionEnabled((value) => {
+      const nextValue = !value;
+      Taro.setStorageSync('loginProtectionEnabled', nextValue);
+      return nextValue;
+    });
+  };
+
   return (
     <PageShell className='account-security-page' safeAreaBottom>
       <PageHeader title='账户安全' subtitle='手机号、密码与登录保护' fallbackUrl='/pages/settings/index' />
@@ -68,7 +85,7 @@ export default function AccountSecurity() {
               <Text className='security-row__title'>绑定手机号</Text>
               <Text className='security-row__desc'>{profile.phone || '登录后同步手机号'}</Text>
             </View>
-            <Text className='security-row__value'>已绑定</Text>
+            <Text className='security-row__value'>{hasBoundPhone ? '已绑定' : '未同步'}</Text>
           </View>
           <Divider spacing='none' />
           <View className='security-row security-row--clickable' onClick={handlePasswordChange}>
@@ -126,7 +143,7 @@ export default function AccountSecurity() {
       <View className='account-security-page__section'>
         <SectionTitle title='安全保护' actionLabel='PROTECT' actionTone='muted' />
         <AppCard padding='none' className='security-group'>
-          <View className='security-row security-row--clickable' onClick={() => setBiometricEnabled((value) => !value)}>
+          <View className='security-row security-row--clickable' onClick={toggleBiometric}>
             <View className='security-row__main'>
               <Text className='security-row__title'>面容/指纹解锁</Text>
               <Text className='security-row__desc'>使用生物识别快速登录</Text>
@@ -136,7 +153,7 @@ export default function AccountSecurity() {
             </View>
           </View>
           <Divider spacing='none' />
-          <View className='security-row security-row--clickable' onClick={() => setLoginProtectionEnabled((value) => !value)}>
+          <View className='security-row security-row--clickable' onClick={toggleLoginProtection}>
             <View className='security-row__main'>
               <Text className='security-row__title'>异地登录提醒</Text>
               <Text className='security-row__desc'>检测异常登录时发送提醒</Text>

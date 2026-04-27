@@ -4,7 +4,7 @@ import { View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
 import { ensureMiniProgramAuth } from '../../api/auth';
-import { AppButton, Loading, PageShell } from '../../components';
+import { AppButton, Empty, Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
 import ProfileMenuSection from './components/ProfileMenuSection';
 import ProfileSignOutButton from './components/ProfileSignOutButton';
@@ -113,6 +113,7 @@ export default function Profile() {
   const [member, setMember] = useState<Member | null>(null);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [profileLoadFailed, setProfileLoadFailed] = useState(false);
 
   useDidShow(() => {
     syncCustomTabBarSelected(2);
@@ -122,19 +123,28 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      const [profileRes, membershipsRes, bookingsRes] = await Promise.all([
-        membersApi.getProfile({ showLoading: false }),
-        membersApi.getMyMemberships({ showLoading: false }),
-        fetchAllMyBookings().then((items) => ({ data: { bookings: items } })),
+      const profileRes = await membersApi.getProfile({ showLoading: false });
+      const nextMember = profileRes.data.member;
+
+      setMember(nextMember);
+      setProfileLoadFailed(false);
+      if (nextMember) {
+        writeStorage(STORAGE_KEYS.profile, {
+          phone: getMaskedPhone(nextMember.phone),
+          hasBoundPhone: Boolean(nextMember.phone),
+        });
+      }
+
+      const [membershipsRes, bookingItems] = await Promise.all([
+        membersApi.getMyMemberships({ showLoading: false })
+          .catch(() => ({ data: { memberships: nextMember?.memberships || [] } })),
+        fetchAllMyBookings().catch(() => []),
       ]);
 
-      setMember(profileRes.data.member);
-      if (profileRes.data.member) {
-        writeStorage(STORAGE_KEYS.profile, { phone: getMaskedPhone(profileRes.data.member.phone) });
-      }
-      setMemberships(membershipsRes.data.memberships || profileRes.data.member?.memberships || []);
-      setBookings(bookingsRes.data.bookings || []);
+      setMemberships(membershipsRes.data.memberships || nextMember?.memberships || []);
+      setBookings(bookingItems);
     } catch {
+      setProfileLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
       if (options.throwOnError) {
         throw new Error('个人资料同步失败');
@@ -303,9 +313,11 @@ export default function Profile() {
     }
 
     Taro.removeStorageSync('token');
+    Taro.removeStorageSync(STORAGE_KEYS.profile);
     setMember(null);
     setMemberships([]);
     setBookings([]);
+    setProfileLoadFailed(false);
     Taro.showToast({ title: '已退出登录', icon: 'success' });
     Taro.switchTab({ url: '/pages/index/index' });
   };
@@ -323,7 +335,16 @@ export default function Profile() {
 
         <ProfileAccountCard data={accountCardData} />
 
-        {!member ? (
+        {profileLoadFailed ? (
+          <View className='profile-page__login-panel'>
+            <Empty
+              title='资料同步失败'
+              description='当前网络或登录状态异常，请重新同步会员资料。'
+              actionLabel='重新同步'
+              onActionClick={() => fetchProfile()}
+            />
+          </View>
+        ) : !member ? (
           <View className='profile-page__login-panel'>
             <Text className='profile-page__login-title'>登录同步会员资料</Text>
             <Text className='profile-page__login-desc'>使用微信登录后，可同步会员权益、预约记录和训练数据。</Text>
