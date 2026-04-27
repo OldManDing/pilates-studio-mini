@@ -17,7 +17,7 @@ import type {
 } from './components/types';
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { STORAGE_KEYS } from '../../constants/storage';
-import { writeStorage } from '../../utils/storage';
+import { clearAuthState, writeStorage } from '../../utils/storage';
 import './index.scss';
 
 function getMaskedPhone(phone?: string) {
@@ -312,8 +312,7 @@ export default function Profile() {
       return;
     }
 
-    Taro.removeStorageSync('token');
-    Taro.removeStorageSync(STORAGE_KEYS.profile);
+    clearAuthState();
     setMember(null);
     setMemberships([]);
     setBookings([]);

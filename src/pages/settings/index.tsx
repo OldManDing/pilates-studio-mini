@@ -4,7 +4,7 @@ import { Image, Text, View } from '@tarojs/components';
 import { AppCard, Divider, Icon, PageHeader, PageShell } from '../../components';
 import { membersApi } from '../../api/members';
 import { STORAGE_KEYS } from '../../constants/storage';
-import { readStorage, writeStorage } from '../../utils/storage';
+import { clearAuthState, readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
 
 declare const APP_VERSION: string;
@@ -180,7 +180,9 @@ export default function Settings() {
       setDeletingAccount(true);
       await membersApi.requestAccountDeletion();
       setShowDeleteConfirm(false);
+      clearAuthState();
       Taro.showToast({ title: '注销申请已提交', icon: 'success' });
+      Taro.switchTab({ url: '/pages/index/index' });
     } catch {
       Taro.showToast({ title: '注销申请提交失败', icon: 'none' });
     } finally {
@@ -297,8 +299,7 @@ export default function Settings() {
                 className='danger-confirm__button danger-confirm__button--confirm'
                 onClick={() => {
                   setShowLogoutConfirm(false);
-                  Taro.removeStorageSync('token');
-                  Taro.removeStorageSync(STORAGE_KEYS.profile);
+                  clearAuthState();
                   Taro.switchTab({ url: '/pages/index/index' });
                 }}
               >

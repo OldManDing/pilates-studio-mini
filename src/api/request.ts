@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro';
 import { ensureMiniProgramAuth } from './auth';
+import { clearAuthState } from '../utils/storage';
 
 declare const API_BASE_URL: string;
 
@@ -47,6 +48,10 @@ export class ApiBusinessError extends Error {
 
 export function isUnauthorizedApiError(error: unknown) {
   return error instanceof ApiBusinessError && error.code === 'UNAUTHORIZED';
+}
+
+export function getApiErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
 }
 
 function getToken(): string | null {
@@ -142,7 +147,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
       const errorMsg = result.error?.message || '请求失败';
 
       if (result.error?.code === 'UNAUTHORIZED' || response.statusCode === 401) {
-        Taro.removeStorageSync('token');
+        clearAuthState();
         Taro.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
       }
 

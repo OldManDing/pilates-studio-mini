@@ -68,8 +68,9 @@ assertIncludes('src/constants/navigation.ts', "pagePath: 'pages/profile/index'")
   'pages/transactions/index',
 ].forEach((pagePath) => assert(appConfig.includes(pagePath), `app.config.ts 未注册 ${pagePath}`));
 
-assertIncludes('src/pages/settings/index.tsx', "Taro.removeStorageSync('token')");
-assertIncludes('src/api/request.ts', "Taro.removeStorageSync('token')");
+assertIncludes('src/pages/settings/index.tsx', 'clearAuthState');
+assertIncludes('src/api/request.ts', 'clearAuthState');
+assertIncludes('src/utils/storage.ts', "Taro.removeStorageSync('token')");
 assertIncludes('src/api/request.ts', '登录已过期，请重新登录');
 assertIncludes('src/pages/settings/index.tsx', 'membersApi.requestAccountDeletion');
 assertIncludes('src/pages/settings/index.tsx', 'Taro.setNavigationBarColor');
