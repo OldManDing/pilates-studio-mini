@@ -38,7 +38,7 @@ export interface HomeTodayCourseData {
   meta: string;
   note: string;
   primaryAction: string;
-  secondaryAction: string;
+  secondaryAction?: string;
 }
 
 export interface HomeServiceItemData {

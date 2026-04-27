@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { useDidShow, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { Loading, PageShell, SectionTitle } from '../../components';
+import { AppButton, Loading, PageShell, SectionTitle } from '../../components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { coursesApi, type Course } from '../../api/courses';
 import { membersApi, type Member, type Membership } from '../../api/members';
@@ -408,8 +408,8 @@ export default function Index() {
     title: getBookingDisplayName(todayBooking),
     meta: getBookingDisplayMeta(todayBooking),
     note: todayBooking ? todayCourseSummary.note : '',
-    primaryAction: '查看详情',
-    secondaryAction: '改约',
+    primaryAction: todayBooking ? '查看详情' : '去预约课程',
+    secondaryAction: todayBooking ? '改约' : activeMembership ? '查看全部课程' : '查看会员方案',
   };
 
   const monthlySummaryData: HomeMonthlySummaryData = {
@@ -517,6 +517,9 @@ export default function Index() {
         {loadFailed ? (
           <View className='home-page__notice'>
             <Text className='home-page__notice-text'>部分数据暂时加载失败，下拉刷新可重新同步。</Text>
+            <View className='home-page__notice-action'>
+              <AppButton size='small' variant='outline' onClick={fetchData}>重新同步</AppButton>
+            </View>
           </View>
         ) : null}
 
@@ -540,8 +543,8 @@ export default function Index() {
           </View>
           <HomeTodayCourseCard
             data={todayCourseData}
-            onPrimaryClick={handleBookingsEntry}
-            onSecondaryClick={handleCoursesEntry}
+            onPrimaryClick={todayBooking ? handleBookingsEntry : handleCoursesEntry}
+            onSecondaryClick={todayBooking ? handleCoursesEntry : activeMembership ? handleCoursesEntry : handleMembershipPrimary}
           />
         </View>
 

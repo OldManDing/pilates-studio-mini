@@ -33,9 +33,11 @@ export default function HomeTodayCourseCard({ data, onPrimaryClick, onSecondaryC
         <AppButton className='home-today-course-card__button' variant='primary' size='small' onClick={onPrimaryClick}>
           {data.primaryAction}
         </AppButton>
-        <AppButton className='home-today-course-card__button' variant='outline' size='small' onClick={onSecondaryClick}>
-          {data.secondaryAction}
-        </AppButton>
+        {data.secondaryAction ? (
+          <AppButton className='home-today-course-card__button' variant='outline' size='small' onClick={onSecondaryClick}>
+            {data.secondaryAction}
+          </AppButton>
+        ) : null}
       </View>
     </AppCard>
   );

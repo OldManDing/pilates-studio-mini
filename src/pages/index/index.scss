@@ -24,6 +24,15 @@
     background: rgba($accent-soft, 0.48);
   }
 
+  &__notice-action {
+    margin-top: $spacing-sm;
+
+    .app-button {
+      width: auto;
+      min-width: 168px;
+    }
+  }
+
   &__notice-text {
     display: block;
     color: $accent-strong;
@@ -854,7 +863,7 @@
   }
 
   &__date {
-    width: 40px;
+    min-width: 46px;
     margin-right: 14px;
     padding: 0;
     border-radius: 0;
@@ -874,7 +883,7 @@
 
   &__day {
     color: $text-primary;
-    font-size: 22px;
+    font-size: $font-size-xl;
     font-weight: $font-weight-normal;
     line-height: $line-height-tight;
     letter-spacing: -0.02em;
@@ -925,7 +934,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 20px;
+    min-height: 30px;
     padding: 0 8px;
     border-radius: $radius-full;
     background: rgba($accent-soft, 0.62);
@@ -949,8 +958,8 @@
 
   &__item-arrow {
     color: rgba($gray-400, 0.9);
-    width: 12px;
-    height: 12px;
+    width: 18px;
+    height: 18px;
   }
 
   &__line {
@@ -983,7 +992,7 @@
   background: #202020;
   box-shadow: none;
   border-radius: $figma-radius-card;
-  padding: 24px;
+  padding: $figma-card-y $figma-card-x;
 
   &__top,
   &__pin,
@@ -1024,16 +1033,16 @@
 
   &__pin-ring {
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: $radius-full;
     background: rgba($white, 0.06);
     border: 1px solid rgba($white, 0.09);
   }
 
   &__pin-icon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     color: rgba($white, 0.5);
   }
 
