@@ -262,10 +262,12 @@ export default function MyBookings() {
           <View className='my-bookings-page__list-inner'>
             {loadFailed ? (
               <AppCard className='my-bookings-page__empty-card'>
-                <Empty title='预约加载失败' description='请检查网络后重试。' />
-                <View className='my-bookings-page__empty-action'>
-                  <AppButton size='small' variant='primary' onClick={() => fetchBookings(1, false)}>重新加载</AppButton>
-                </View>
+                <Empty
+                  title='预约加载失败'
+                  description='请检查网络后重试，或返回课程页继续查看。'
+                  actionLabel='重新加载'
+                  onActionClick={() => fetchBookings(1, false)}
+                />
               </AppCard>
             ) : bookings.length > 0 ? (
               <AppCard padding='none' className='my-bookings-page__card'>
@@ -316,14 +318,12 @@ export default function MyBookings() {
               </AppCard>
             ) : (
               <AppCard className='my-bookings-page__empty-card'>
-                <Empty title={activeTabMeta.emptyTitle} description={activeTabMeta.emptyDesc} />
-                {activeTab === 'upcoming' ? (
-                  <View className='my-bookings-page__empty-action'>
-                    <AppButton size='small' variant='primary' onClick={() => Taro.switchTab({ url: '/pages/courses/index' })}>
-                      去预约
-                    </AppButton>
-                  </View>
-                ) : null}
+                <Empty
+                  title={activeTabMeta.emptyTitle}
+                  description={activeTabMeta.emptyDesc}
+                  actionLabel={activeTab === 'upcoming' ? '去预约课程' : '查看课程页'}
+                  onActionClick={() => Taro.switchTab({ url: '/pages/courses/index' })}
+                />
               </AppCard>
             )}
 
