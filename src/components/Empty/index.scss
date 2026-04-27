@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .empty {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,7 +43,7 @@
   }
 
   &__title {
-    font-size: $font-size-sm;
+    font-size: $font-size-base;
     color: $text-primary;
     margin-bottom: $spacing-xs;
     font-weight: $font-weight-medium;
@@ -50,10 +51,16 @@
   }
 
   &__desc {
-    max-width: 420px;
-    font-size: $font-size-xs;
+    max-width: 100%;
+    font-size: $font-size-sm;
     color: $text-muted;
     line-height: $line-height-normal;
     text-align: center;
+  }
+
+  &__action {
+    margin-top: $spacing-lg;
+    display: flex;
+    justify-content: center;
   }
 }
