@@ -89,8 +89,24 @@ export default function MyCoaches() {
 
   const summaries = useMemo(() => buildCoachSummaries(coaches, bookings), [bookings, coaches]);
 
+  const handleCoachClick = (coach: Coach) => {
+    if (!coach.id) {
+      Taro.showToast({ title: '教练信息暂未同步', icon: 'none' });
+      return;
+    }
+
+    Taro.navigateTo({ url: `/pages/coach-detail/index?id=${coach.id}` });
+  };
+
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='my-coaches-page' safeAreaBottom>
+        <PageHeader title='我的教练' subtitle='正在同步教练资料' fallbackUrl='/pages/profile/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   return (
@@ -120,7 +136,7 @@ export default function MyCoaches() {
               <View key={item.coach.id || item.coach.coachCode}>
                 <View
                   className='my-coaches-list__item'
-                  onClick={() => Taro.navigateTo({ url: `/pages/coach-detail/index?id=${item.coach.id}` })}
+                  onClick={() => handleCoachClick(item.coach)}
                 >
                   <View className='my-coaches-list__avatar'>
                     <Text className='my-coaches-list__avatar-text'>{item.coach.name.slice(0, 1)}</Text>

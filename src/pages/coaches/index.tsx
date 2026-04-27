@@ -66,6 +66,11 @@ export default function Coaches() {
   });
 
   const handleCoachClick = (coach: Coach) => {
+    if (!coach.id) {
+      Taro.showToast({ title: '教练信息暂未同步', icon: 'none' });
+      return;
+    }
+
     Taro.navigateTo({ url: `/pages/coach-detail/index?id=${coach.id}` });
   };
 
@@ -87,7 +92,7 @@ export default function Coaches() {
       </View>
 
       {loading && page === 1 ? (
-        <Loading />
+        <Loading compact />
       ) : loadFailed ? (
         <AppCard className='coaches-page__empty-card'>
           <Empty title='教练加载失败' description='请检查网络后重试。' />
@@ -107,7 +112,12 @@ export default function Coaches() {
         </AppCard>
       ) : (
         <AppCard className='coaches-page__empty-card'>
-          <Empty title='暂无教练' description='敬请期待' />
+          <Empty
+            title='暂无教练'
+            description='当前暂无可预约教练，可先查看课程安排。'
+            actionLabel='查看课程'
+            onActionClick={() => Taro.switchTab({ url: '/pages/courses/index' })}
+          />
         </AppCard>
       )}
 

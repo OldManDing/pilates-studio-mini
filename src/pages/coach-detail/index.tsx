@@ -113,7 +113,14 @@ export default function CoachDetail() {
   }, [schedule]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell safeAreaBottom>
+        <PageHeader title='教练详情' subtitle='正在同步教练资料' fallbackUrl='/pages/coaches/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   if (!coach) {
@@ -313,7 +320,12 @@ export default function CoachDetail() {
               })
             ) : (
               <View className='coach-detail-page__empty-wrap'>
-                <Empty title='暂无排课' description='敬请期待' />
+                <Empty
+                  title='暂无排课'
+                  description='这位教练近期暂未开放排课，可返回课程页查看其他可约课程。'
+                  actionLabel='查看课程'
+                  onActionClick={() => Taro.switchTab({ url: '/pages/courses/index' })}
+                />
               </View>
             )}
           </AppCard>
