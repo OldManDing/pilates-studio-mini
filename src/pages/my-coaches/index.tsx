@@ -107,12 +107,12 @@ export default function MyCoaches() {
         <SectionTitle title='常用教练' actionLabel='FAVORITES' actionTone='muted' />
         {loadFailed ? (
           <AppCard className='my-coaches-page__empty'>
-            <Empty title='教练信息加载失败' description='请检查网络后重试。' />
-            <View className='my-coaches-page__empty-action'>
-              <AppButton size='small' variant='primary' onClick={fetchData}>
-                重新加载
-              </AppButton>
-            </View>
+            <Empty
+              title='教练信息加载失败'
+              description='请检查网络后重试，或返回课程页查看可预约教练。'
+              actionLabel='重新加载'
+              onActionClick={fetchData}
+            />
           </AppCard>
         ) : summaries.length > 0 ? (
           <AppCard padding='none' className='my-coaches-list'>
@@ -140,12 +140,12 @@ export default function MyCoaches() {
           </AppCard>
         ) : (
           <AppCard className='my-coaches-page__empty'>
-            <Empty title='暂无常用教练' description='预约并完成课程后，这里会沉淀你的常用教练。' />
-            <View className='my-coaches-page__empty-action'>
-              <AppButton size='small' variant='primary' onClick={() => Taro.navigateTo({ url: '/pages/coaches/index' })}>
-                查看教练团队
-              </AppButton>
-            </View>
+            <Empty
+              title='暂无常用教练'
+              description='预约并完成课程后，这里会沉淀你的常用教练。'
+              actionLabel='查看教练团队'
+              onActionClick={() => Taro.navigateTo({ url: '/pages/coaches/index' })}
+            />
           </AppCard>
         )}
       </View>

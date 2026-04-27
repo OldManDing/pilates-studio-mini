@@ -117,7 +117,7 @@ export default function AccountSecurity() {
             </View>
             <View className='password-form__actions'>
               <AppButton variant='outline' onClick={resetPasswordForm}>取消</AppButton>
-              <AppButton variant='primary' disabled={submitting} onClick={handlePasswordSubmit}>{submitting ? '提交中...' : '提交'}</AppButton>
+              <AppButton variant='primary' disabled={submitting} onClick={handlePasswordSubmit}>{submitting ? '更新中...' : '确认修改'}</AppButton>
             </View>
           </AppCard>
         </View>
@@ -150,7 +150,7 @@ export default function AccountSecurity() {
 
       <AppCard className='account-security-page__notice'>
         <Text className='account-security-page__notice-title'>安全提示</Text>
-        <Text className='account-security-page__notice-desc'>请勿向他人透露验证码、密码或会员账户信息。如发现异常，请及时联系客服处理。</Text>
+        <Text className='account-security-page__notice-desc'>请勿向他人透露验证码、密码或会员账户信息。如发现异常，请及时联系客服并尽快修改密码。</Text>
       </AppCard>
     </PageShell>
   );
