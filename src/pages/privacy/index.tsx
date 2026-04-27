@@ -2,10 +2,19 @@ import { Text, View } from '@tarojs/components';
 import { AppCard, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
+declare const SUPPORT_PHONE: string;
+declare const SUPPORT_EMAIL: string;
+
+const supportContact = [SUPPORT_PHONE, SUPPORT_EMAIL].filter(Boolean).join(' / ') || '帮助与反馈页';
+
 const SECTIONS = [
   {
     title: '信息收集',
     content: '为提供预约、会员和通知服务，我们可能收集你的昵称、手机号、会员状态、预约记录、训练记录及设备基础信息。',
+  },
+  {
+    title: '服务主体',
+    content: '本政策适用于 Pilates Studio 小程序提供的课程预约、会员服务、训练记录、消息通知与客服反馈功能。',
   },
   {
     title: '信息使用',
@@ -18,6 +27,14 @@ const SECTIONS = [
   {
     title: '你的权利',
     content: '你可以通过设置、客服或门店渠道查询、更正或申请删除个人信息。注销账户后，相关数据将按法律法规要求处理。',
+  },
+  {
+    title: '保存期限',
+    content: '我们仅在实现服务目的和法律法规要求的期限内保存个人信息；超过必要期限后，将删除或匿名化处理。',
+  },
+  {
+    title: '联系我们',
+    content: `如需查询、更正、删除个人信息或撤回授权，请通过 ${supportContact} 联系我们处理。`,
   },
 ];
 

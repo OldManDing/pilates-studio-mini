@@ -2,6 +2,11 @@ import { Text, View } from '@tarojs/components';
 import { AppCard, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
+declare const SUPPORT_PHONE: string;
+declare const SUPPORT_EMAIL: string;
+
+const supportContact = [SUPPORT_PHONE, SUPPORT_EMAIL].filter(Boolean).join(' / ') || '帮助与反馈页';
+
 const SECTIONS = [
   {
     title: '服务说明',
@@ -18,6 +23,14 @@ const SECTIONS = [
   {
     title: '账户责任',
     content: '请妥善保管账户、手机号和验证码。因个人原因导致账户信息泄露或权益被使用的，请及时联系门店客服处理。',
+  },
+  {
+    title: '费用与退款',
+    content: '会员续费、课次购买、退款或权益调整以订单记录、门店公示规则及双方确认结果为准。',
+  },
+  {
+    title: '争议与联系',
+    content: `如对服务、订单或账户处理有疑问，请通过 ${supportContact} 联系我们；我们会在合理期限内核实并反馈。`,
   },
 ];
 
