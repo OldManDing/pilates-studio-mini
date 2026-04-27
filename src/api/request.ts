@@ -35,11 +35,18 @@ export interface ApiResponse<T = unknown> {
   };
 }
 
-class ApiBusinessError extends Error {
-  constructor(message: string) {
+export class ApiBusinessError extends Error {
+  code?: string;
+
+  constructor(message: string, code?: string) {
     super(message);
     this.name = 'ApiBusinessError';
+    this.code = code;
   }
+}
+
+export function isUnauthorizedApiError(error: unknown) {
+  return error instanceof ApiBusinessError && error.code === 'UNAUTHORIZED';
 }
 
 function getToken(): string | null {
@@ -139,7 +146,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
         Taro.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
       }
 
-      throw new ApiBusinessError(errorMsg);
+      throw new ApiBusinessError(errorMsg, result.error?.code);
     }
 
       return {
