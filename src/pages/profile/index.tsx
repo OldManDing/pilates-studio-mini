@@ -220,6 +220,7 @@ export default function Profile() {
           label: '我的预约',
           description: '查看与管理课程预约',
           route: '/pages/my-bookings/index',
+          requiresLogin: !member,
         },
         {
           key: 'records',
@@ -227,6 +228,7 @@ export default function Profile() {
           label: '训练记录',
           description: '历史训练数据与统计',
           route: '/pages/training-records/index',
+          requiresLogin: !member,
         },
         {
           key: 'membership',
@@ -234,6 +236,7 @@ export default function Profile() {
           label: '会员中心',
           description: '权益、续费与账户管理',
           route: '/pages/membership/index',
+          requiresLogin: !member,
         },
       ],
     },
@@ -247,6 +250,7 @@ export default function Profile() {
           label: '消息通知',
           description: '课程提醒与系统通知',
           route: '/pages/notifications/index',
+          requiresLogin: !member,
         },
         {
           key: 'support',
@@ -264,13 +268,18 @@ export default function Profile() {
         },
       ],
     },
-  ], []);
+  ], [member]);
 
   const signOutData: ProfileSignOutData = {
     label: '退出登录',
   };
 
   const handleMenuClick = (item: ProfileMenuItemData) => {
+    if (item.requiresLogin) {
+      Taro.showToast({ title: '请先微信登录', icon: 'none' });
+      return;
+    }
+
     if (item.route) {
       Taro.navigateTo({ url: item.route });
     }

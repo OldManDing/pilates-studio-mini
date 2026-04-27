@@ -28,6 +28,7 @@ export interface ProfileMenuItemData {
   label: string;
   description: string;
   route?: string;
+  requiresLogin?: boolean;
 }
 
 /** Future mapping: account navigation groups */

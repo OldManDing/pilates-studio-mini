@@ -24,7 +24,7 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
       <AppCard className='profile-menu-section__card' padding='none'>
         {data.items.map((item, index) => (
           <View key={item.key}>
-            <View className='profile-menu-section__item' onClick={() => onItemClick?.(item)}>
+            <View className={`profile-menu-section__item ${item.requiresLogin ? 'profile-menu-section__item--login-required' : ''}`} onClick={() => onItemClick?.(item)}>
               <View className='profile-menu-section__icon'>
                 <Image className='profile-menu-section__icon-image' src={iconMap[item.icon]} mode='aspectFit' />
               </View>
@@ -34,7 +34,11 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
                 <Text className='profile-menu-section__description'>{item.description}</Text>
               </View>
 
-              <Icon name='chevron-right' className='profile-menu-section__arrow' />
+              {item.requiresLogin ? (
+                <Text className='profile-menu-section__login-hint'>登录后查看</Text>
+              ) : (
+                <Icon name='chevron-right' className='profile-menu-section__arrow' />
+              )}
             </View>
 
             {index < data.items.length - 1 ? <View className='profile-menu-section__divider' /> : null}

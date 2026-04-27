@@ -298,6 +298,13 @@
     &:active {
       background: #fdfdfd;
     }
+
+    &--login-required {
+      .profile-menu-section__title,
+      .profile-menu-section__description {
+        color: #d4d4d4;
+      }
+    }
   }
 
   &__icon {
@@ -344,6 +351,13 @@
     height: 24px;
     color: #e5e5e5;
     flex-shrink: 0;
+  }
+
+  &__login-hint {
+    flex-shrink: 0;
+    color: $accent;
+    font-size: $figma-caption;
+    line-height: 1;
   }
 
   &__divider {
