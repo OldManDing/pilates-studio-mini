@@ -136,6 +136,11 @@ export default function Courses() {
     setSelectedCategoryKey(key);
   };
 
+  const handleResetFilters = () => {
+    setSelectedDateKey('date-0');
+    setSelectedCategoryKey('all');
+  };
+
   const courseItems: BookingCourseCardData[] = useMemo(() => sessions.map((session) => {
     const course = session.course;
     const startsAt = session.startsAt ? new Date(session.startsAt) : null;
@@ -171,6 +176,8 @@ export default function Courses() {
     });
   }, [courseItems, sessions, dateItems, selectedCategoryKey, selectedDateKey]);
 
+  const hasActiveFilters = selectedDateKey !== 'date-0' || selectedCategoryKey !== 'all';
+
   return (
     <PageShell className='booking-page' reserveTabBarSpace>
       <View className='booking-page__content'>
@@ -184,8 +191,9 @@ export default function Courses() {
         <View className='booking-page__section'>
           <SectionTitle
             title='可预约课程'
-            actionLabel={`${filteredCourseItems.length} 节`}
+            actionLabel={hasActiveFilters ? '重置筛选' : `${filteredCourseItems.length} 节`}
             actionTone='muted'
+            onActionClick={hasActiveFilters ? handleResetFilters : undefined}
           />
 
           <View className='booking-page__list'>
@@ -202,7 +210,7 @@ export default function Courses() {
               ))
             ) : (
               <AppCard className='booking-page__empty-card'>
-                <Empty title='暂无课程' description='当前日期和分类暂无可预约课程，请切换条件再试。' />
+                <Empty title='暂无课程' description='当前日期和分类暂无可预约课程，请切换条件再试。' actionLabel='重置筛选' onActionClick={handleResetFilters} />
               </AppCard>
             )}
           </View>
