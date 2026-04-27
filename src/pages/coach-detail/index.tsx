@@ -149,6 +149,24 @@ export default function CoachDetail() {
 
   const trainingTypeTags = Array.from(new Set((coach.courses || []).map((course) => getLabelByValue(CourseTypes, course.type))));
 
+  const handlePhoneClick = () => {
+    if (!coach.phone) {
+      Taro.showToast({ title: '暂无联系电话', icon: 'none' });
+      return;
+    }
+
+    Taro.makePhoneCall({ phoneNumber: coach.phone });
+  };
+
+  const handleEmailClick = () => {
+    if (!coach.email) {
+      Taro.showToast({ title: '暂无邮箱', icon: 'none' });
+      return;
+    }
+
+    Taro.setClipboardData({ data: coach.email });
+  };
+
   return (
     <View className='coach-detail-page'>
       <View className='coach-detail-page__hero'>
@@ -196,16 +214,16 @@ export default function CoachDetail() {
 
           <Divider spacing='none' />
 
-          <View className='coach-detail-page__meta-row'>
+          <View className='coach-detail-page__meta-row coach-detail-page__meta-row--clickable' onClick={handlePhoneClick}>
             <Text className='coach-detail-page__meta-label'>电话</Text>
-            <Text className='coach-detail-page__meta-value'>{coach.phone || '--'}</Text>
+            <Text className='coach-detail-page__meta-value'>{coach.phone || '暂无联系电话'}</Text>
           </View>
 
           <Divider spacing='none' />
 
-          <View className='coach-detail-page__meta-row'>
+          <View className='coach-detail-page__meta-row coach-detail-page__meta-row--clickable' onClick={handleEmailClick}>
             <Text className='coach-detail-page__meta-label'>邮箱</Text>
-            <Text className='coach-detail-page__meta-value'>{coach.email || '--'}</Text>
+            <Text className='coach-detail-page__meta-value'>{coach.email || '暂无邮箱'}</Text>
           </View>
         </AppCard>
 

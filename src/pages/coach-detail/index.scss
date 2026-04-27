@@ -151,6 +151,10 @@
     align-items: center;
     gap: $spacing-md;
     padding: $spacing-md 0;
+
+    &--clickable:active {
+      opacity: 0.82;
+    }
   }
 
   &__meta-label {

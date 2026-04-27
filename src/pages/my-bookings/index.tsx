@@ -230,7 +230,7 @@ export default function MyBookings() {
 
     Taro.showModal({
       title: '预约详情',
-      content: `预约编号: ${booking.bookingCode}\n状态: ${booking.status}`,
+      content: `${getCourseName(booking)}\n${getInstructorAndTime(booking)}\n预约编号: ${booking.bookingCode}\n状态: ${booking.status}`,
       showCancel: booking.status === 'CONFIRMED' || booking.status === 'PENDING',
       cancelText: '取消预约',
       confirmText: '确定',
