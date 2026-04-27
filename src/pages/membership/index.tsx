@@ -280,7 +280,16 @@ export default function Membership() {
   }, [memberships]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='membership-page' safeAreaBottom>
+        <View className='membership-page__content'>
+          <PageHeader title='会员中心' subtitle='正在同步会员权益' fallbackUrl='/pages/profile/index' />
+          <AppCard>
+            <Loading compact />
+          </AppCard>
+        </View>
+      </PageShell>
+    );
   }
 
   return (

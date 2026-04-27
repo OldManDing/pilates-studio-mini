@@ -508,7 +508,13 @@ export default function Index() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='home-page' reserveTabBarSpace>
+        <View className='home-page__content'>
+          <Loading compact />
+        </View>
+      </PageShell>
+    );
   }
 
   return (

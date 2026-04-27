@@ -124,7 +124,9 @@ export default function Transactions() {
         />
 
         {loading && page === 1 ? (
-          <Loading />
+          <AppCard className='transactions-page__empty-card'>
+            <Loading compact />
+          </AppCard>
         ) : loadFailed ? (
           <AppCard className='transactions-page__empty-card'>
             <Empty

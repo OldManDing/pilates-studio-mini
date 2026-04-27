@@ -75,7 +75,14 @@ export default function MembershipRenew() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='membership-renew-page' safeAreaBottom>
+        <PageHeader title='续费会员' subtitle='正在同步会员方案' fallbackUrl='/pages/membership/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   return (

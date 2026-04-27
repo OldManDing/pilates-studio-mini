@@ -74,7 +74,14 @@ export default function TrainingRecords() {
   }, [records]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='training-records-page' safeAreaBottom>
+        <PageHeader title='训练记录' subtitle='正在同步历史训练数据' fallbackUrl='/pages/profile/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   return (
