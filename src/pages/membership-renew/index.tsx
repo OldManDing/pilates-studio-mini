@@ -18,6 +18,7 @@ export default function MembershipRenew() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submittedPlanId, setSubmittedPlanId] = useState('');
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState('');
 
@@ -65,6 +66,7 @@ export default function MembershipRenew() {
       try {
         setSubmitting(true);
         await membershipPlansApi.requestRenewal(selectedPlan.id);
+        setSubmittedPlanId(selectedPlan.id);
         Taro.showToast({ title: '续费申请已提交', icon: 'success' });
       } catch (error) {
         Taro.showToast({ title: getApiErrorMessage(error, '续费提交失败，请稍后重试'), icon: 'none' });
@@ -141,10 +143,10 @@ export default function MembershipRenew() {
         <AppButton
           size='large'
           variant='primary'
-          disabled={!selectedPlan || submitting}
+          disabled={!selectedPlan || submitting || submittedPlanId === selectedPlan?.id}
           onClick={handleSubmitRenew}
         >
-          {submitting ? '提交中...' : '确认续费'}
+          {submitting ? '提交中...' : submittedPlanId === selectedPlan?.id ? '已提交，等待处理' : '确认续费'}
         </AppButton>
       </View>
     </PageShell>

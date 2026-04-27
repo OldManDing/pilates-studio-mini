@@ -182,6 +182,7 @@ export default function Courses() {
   }, [courseItems, sessions, dateItems, selectedCategoryKey, selectedDateKey]);
 
   const hasActiveFilters = selectedDateKey !== 'date-0' || selectedCategoryKey !== 'all';
+  const courseCountLabel = `${filteredCourseItems.length} 节${hasActiveFilters ? ' · 可重置' : ''}`;
 
   return (
     <PageShell className='booking-page' reserveTabBarSpace>
@@ -196,7 +197,7 @@ export default function Courses() {
         <View className='booking-page__section'>
           <SectionTitle
             title='可预约课程'
-            actionLabel={hasActiveFilters ? '重置筛选' : `${filteredCourseItems.length} 节`}
+            actionLabel={courseCountLabel}
             actionTone='muted'
             onActionClick={hasActiveFilters ? handleResetFilters : undefined}
           />

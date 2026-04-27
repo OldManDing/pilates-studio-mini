@@ -28,6 +28,9 @@
     font-size: 40px;
     font-weight: $font-weight-medium;
     margin-bottom: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__hero-desc {
@@ -82,6 +85,15 @@
     font-size: 28px;
     font-weight: $font-weight-medium;
     margin-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__desc,
