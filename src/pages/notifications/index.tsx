@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
 import './index.scss';
 
@@ -155,7 +155,14 @@ export default function Notifications() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='notifications-page' safeAreaBottom>
+        <PageHeader title='消息通知' subtitle='正在同步消息' fallbackUrl='/pages/profile/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   return (
@@ -165,10 +172,10 @@ export default function Notifications() {
         subtitle={unreadCount > 0 ? `${unreadCount} 条未读消息` : '所有消息已读'}
         fallbackUrl='/pages/profile/index'
         rightSlot={unreadCount > 0 ? (
-          <View className={`notifications-page__header-action ${markingAllRead ? 'notifications-page__header-action--disabled' : ''}`} onClick={handleMarkAllRead}>
+          <AppButton className='notifications-page__header-action' size='small' variant='outline' disabled={markingAllRead} loading={markingAllRead} onClick={handleMarkAllRead}>
             <Icon name='check' className='notifications-page__header-action-icon' />
             <Text className='notifications-page__header-action-text'>{markingAllRead ? '标记中' : '一键设为已读'}</Text>
-          </View>
+          </AppButton>
         ) : undefined}
       />
 

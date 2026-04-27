@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { ScrollView, Text, Textarea, View } from '@tarojs/components';
 import { supportApi } from '../../api/support';
-import { AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
 declare const SUPPORT_PHONE: string;
@@ -228,13 +228,17 @@ export default function Help() {
 
               <View className='help-feedback__footer'>
                 <Text className='help-feedback__count'>{feedbackCount}/500</Text>
-                <View
-                  className={`help-feedback__submit ${feedbackDisabled ? 'help-feedback__submit--disabled' : ''}`}
+                <AppButton
+                  className='help-feedback__submit'
+                  size='small'
+                  variant='primary'
+                  disabled={feedbackDisabled}
+                  loading={submittingFeedback}
                   onClick={handleSubmitFeedback}
                 >
                   <Icon name='send' className='help-feedback__submit-icon' />
                   <Text className='help-feedback__submit-text'>{submittingFeedback ? '提交中...' : '提交'}</Text>
-                </View>
+                </AppButton>
               </View>
             </>
           )}

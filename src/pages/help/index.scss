@@ -312,6 +312,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__submit {
+    width: auto;
     min-height: 56px;
     padding: 17px 38px;
     border-radius: $figma-radius-button;
@@ -322,11 +323,11 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     justify-content: center;
     gap: 14px;
 
-    &--disabled {
+    &--disabled,
+    &.app-button--disabled {
       opacity: 1;
       background: $support-disabled;
       box-shadow: none;
-      pointer-events: none;
     }
   }
 
