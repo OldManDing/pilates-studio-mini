@@ -125,6 +125,11 @@ export default function Courses() {
   };
 
   const handleCourseItemClick = (item: BookingCourseCardData) => {
+    if (!item.courseId) {
+      Taro.showToast({ title: '课程信息暂未同步', icon: 'none' });
+      return;
+    }
+
     Taro.navigateTo({ url: `/pages/course-detail/index?id=${item.courseId}` });
   };
 
@@ -151,7 +156,7 @@ export default function Courses() {
 
     return {
       key: session.id,
-      courseId: session.courseId || course?.id || session.id,
+      courseId: session.courseId || course?.id,
       title: course?.name || '未命名课程',
       time: startsAt && !Number.isNaN(startsAt.getTime()) ? `${String(startsAt.getHours()).padStart(2, '0')}:${String(startsAt.getMinutes()).padStart(2, '0')}` : '--:--',
       duration: durationMinutes > 0 ? `${durationMinutes}min` : '待定',
