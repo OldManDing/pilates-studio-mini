@@ -20,7 +20,7 @@
   }
 
   &__status-main {
-    padding: 32px 32px 24px;
+    padding: $figma-card-y $figma-card-x 32px;
   }
 
   &__status-top,
@@ -55,11 +55,15 @@
 
   &__status-badge {
     gap: 5px;
-    min-height: 22px;
+    min-height: 30px;
     padding: 3px 10px;
     border-radius: $radius-full;
     border: 0.5px solid rgba($accent, 0.3);
     background: transparent;
+
+    &--guest {
+      border-color: rgba($gray-500, 0.26);
+    }
   }
 
   &__status-dot {
@@ -67,11 +71,15 @@
     height: 4px;
     border-radius: $radius-full;
     background: $accent;
+
+    &--guest {
+      background: $gray-500;
+    }
   }
 
   &__status-name {
     color: $gray-600;
-    font-size: 12px;
+    font-size: $font-size-xs;
     font-weight: $font-weight-normal;
   }
 
@@ -86,13 +94,19 @@
   &__activity-tag,
   &__activity-date,
   &__benefit-desc {
-    font-size: 10px;
+    font-size: $font-size-2xs;
   }
 
   &__status-badge-text,
   &__progress-text,
   &__activity-tag--renew {
     color: $accent;
+  }
+
+  &__status-badge-text {
+    &--guest {
+      color: $gray-600;
+    }
   }
 
   &__status-badge-text,
@@ -133,7 +147,7 @@
   &__status-code {
     margin-bottom: 24px;
     color: $text-primary;
-    font-size: 20px;
+    font-size: $font-size-md;
     font-weight: $font-weight-medium;
     letter-spacing: 0.04em;
     line-height: 1;
@@ -142,7 +156,7 @@
   &__status-plan {
     margin-bottom: 24px;
     color: $text-secondary;
-    font-size: 12px;
+    font-size: $font-size-sm;
   }
 
   &__status-stats {
@@ -168,7 +182,7 @@
 
   &__status-stat-value {
     color: $text-primary;
-    font-size: 26px;
+    font-size: $font-size-xl;
     font-weight: $font-weight-medium;
     line-height: 1;
     letter-spacing: 0.01em;
@@ -204,7 +218,7 @@
 
   &__section-name {
     color: $text-primary;
-    font-size: 17px;
+    font-size: $font-size-base;
     font-weight: $font-weight-semibold;
     line-height: $line-height-tight;
   }
@@ -212,7 +226,7 @@
   &__benefit {
     align-items: flex-start;
     gap: 16px;
-    padding: 20px 32px;
+    padding: 24px $figma-card-x;
   }
 
   &__benefit-icon {
@@ -241,14 +255,14 @@
   &__activity-title {
     display: block;
     color: $text-primary;
-    font-size: 14px;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
     margin-bottom: 2px;
   }
 
   &__benefit-desc {
     color: $gray-500;
-    font-size: 11px;
+    font-size: $font-size-xs;
     line-height: $line-height-normal;
     letter-spacing: 0;
   }
@@ -256,7 +270,7 @@
   &__overview {
     align-items: flex-end;
     gap: 20px;
-    padding: 28px 32px;
+    padding: 32px $figma-card-x;
   }
 
   &__overview-main {
@@ -285,7 +299,7 @@
   &__overview-side-unit {
     margin-bottom: 2px;
     color: #c0c0c0;
-    font-size: 10px;
+    font-size: $font-size-2xs;
   }
 
   &__overview-divider {
@@ -305,7 +319,7 @@
 
   &__overview-side-value {
     color: $text-primary;
-    font-size: 22px;
+    font-size: $font-size-lg;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
@@ -313,7 +327,7 @@
   &__activity {
     justify-content: space-between;
     gap: 16px;
-    padding: 15px 32px;
+    padding: 20px $figma-card-x;
   }
 
   &__activity-content {
@@ -322,7 +336,7 @@
   }
 
   &__activity-tag {
-    font-size: 10px;
+    font-size: $font-size-2xs;
     font-weight: $font-weight-normal;
     letter-spacing: 0.04em;
     flex-shrink: 0;

@@ -118,7 +118,7 @@ function getMembershipStatusLabel(membership: MembershipType) {
 }
 
 function getMembershipDisplayName(membership: MembershipType | null) {
-  return membership?.planName || '年度金卡会员';
+  return membership?.planName || '尚未开通会员';
 }
 
 export default function Membership() {
@@ -200,6 +200,10 @@ export default function Membership() {
   const progressRatio = currentMembership ? getRemainingRatio(currentMembership.startDate, currentMembership.endDate) : 0;
   const membershipMonths = earliestMembership ? getDurationMonths(earliestMembership.startDate) : 0;
   const estimatedHours = totalUsedCredits > 0 ? Math.round(totalUsedCredits * 1.5) : 0;
+  const hasMemberships = memberships.length > 0;
+  const statusBadgeLabel = currentMembership ? 'GOLD' : 'GUEST';
+  const statusFlag = currentMembership ? getMembershipStatusLabel(currentMembership) : '待开通';
+  const renewActionLabel = currentMembership ? '续费会员' : '查看会员方案';
 
   const membershipCode = useMemo(() => {
     if (!currentMembership) {
@@ -289,22 +293,22 @@ export default function Membership() {
             <View className='membership-page__status-main'>
               <View className='membership-page__status-top'>
                 <View className='membership-page__status-badge-group'>
-                  <View className='membership-page__status-badge'>
-                    <View className='membership-page__status-dot' />
-                    <Text className='membership-page__status-badge-text'>GOLD</Text>
+                  <View className={`membership-page__status-badge ${currentMembership ? '' : 'membership-page__status-badge--guest'}`}>
+                    <View className={`membership-page__status-dot ${currentMembership ? '' : 'membership-page__status-dot--guest'}`} />
+                    <Text className={`membership-page__status-badge-text ${currentMembership ? '' : 'membership-page__status-badge-text--guest'}`}>{statusBadgeLabel}</Text>
                   </View>
                   <Text className='membership-page__status-name'>
                     {getMembershipDisplayName(currentMembership)}
                   </Text>
                 </View>
-                <Text className='membership-page__status-flag'>{currentMembership ? 'ACTIVE' : 'PENDING'}</Text>
+                <Text className='membership-page__status-flag'>{statusFlag}</Text>
               </View>
 
               <Text className='membership-page__status-label'>会员编号</Text>
               <Text className='membership-page__status-code'>{membershipCode}</Text>
               {!currentMembership || loadFailed ? (
                 <Text className='membership-page__status-plan'>
-                  {loadFailed ? '数据加载中断，请稍后下拉重试' : '尚未开通会员'}
+                    {loadFailed ? '数据加载中断，请稍后重试或查看会员方案。' : '尚未开通会员，开通后即可同步权益与训练记录。'}
                 </Text>
               ) : null}
 
@@ -328,7 +332,7 @@ export default function Membership() {
                   <View className='membership-page__progress-fill' style={{ width: `${progressRatio}%` }} />
                 </View>
                 <Text className='membership-page__progress-text'>
-                  {currentMembership ? `${remainingDays}天` : '--天'}
+                    {currentMembership ? `${remainingDays}天` : '去开通'}
                 </Text>
               </View>
             </View>
@@ -337,7 +341,7 @@ export default function Membership() {
 
             <View className='membership-page__renew'>
                 <AppButton size='large' variant='primary' onClick={() => Taro.navigateTo({ url: '/pages/membership-renew/index' })}>
-                  续费会员
+                  {renewActionLabel}
                 </AppButton>
             </View>
           </AppCard>
@@ -427,9 +431,14 @@ export default function Membership() {
                 {index < activityItems.length - 1 ? <Divider spacing='none' /> : null}
               </View>
             )) : (
-              <View className='membership-page__empty-wrap'>
-                <Empty title='暂无会员动态' description='开通会员后，这里会显示你的会员开通与权益变化。' />
-              </View>
+            <View className='membership-page__empty-wrap'>
+              <Empty
+                title={hasMemberships ? '暂无会员动态' : '尚未开通会员'}
+                description={hasMemberships ? '近期没有新的权益变化记录。' : '开通会员后，这里会显示你的会员开通与权益变化。'}
+                actionLabel='查看会员方案'
+                onActionClick={() => Taro.navigateTo({ url: '/pages/membership-renew/index' })}
+              />
+            </View>
             )}
           </AppCard>
         </View>
