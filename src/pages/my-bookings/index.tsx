@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text, ScrollView } from '@tarojs/components';
 import { bookingsApi, Booking } from '../../api/bookings';
+import { isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageShell, PageHeader } from '../../components';
 import './index.scss';
 
@@ -106,6 +107,7 @@ export default function MyBookings() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -119,6 +121,7 @@ export default function MyBookings() {
       } else {
         setLoading(true);
         setLoadFailed(false);
+        setAuthRequired(false);
       }
 
       const params: { page: number; limit: number; status?: Booking['status'] } = { page: currentPage, limit: 10 };
@@ -165,10 +168,11 @@ export default function MyBookings() {
       });
       setHasMore(hasMorePages);
       setPage(currentPage);
-    } catch {
+    } catch (error) {
       if (!append) {
         setBookings([]);
         setLoadFailed(true);
+        setAuthRequired(isUnauthorizedApiError(error));
       }
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
@@ -263,10 +267,10 @@ export default function MyBookings() {
             {loadFailed ? (
               <AppCard className='my-bookings-page__empty-card'>
                 <Empty
-                  title='预约加载失败'
-                  description='请检查网络后重试，或返回课程页继续查看。'
-                  actionLabel='重新加载'
-                  onActionClick={() => fetchBookings(1, false)}
+                  title={authRequired ? '请先登录' : '预约加载失败'}
+                  description={authRequired ? '登录后即可同步预约、取消和上课记录。' : '请检查网络后重试，或返回课程页继续查看。'}
+                  actionLabel={authRequired ? '去登录' : '重新加载'}
+                  onActionClick={authRequired ? () => Taro.switchTab({ url: '/pages/profile/index' }) : () => fetchBookings(1, false)}
                 />
               </AppCard>
             ) : bookings.length > 0 ? (

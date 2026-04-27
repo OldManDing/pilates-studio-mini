@@ -213,7 +213,14 @@ export default function CourseDetail() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell safeAreaBottom>
+        <PageHeader title='课程详情' subtitle='正在同步课程资料' fallbackUrl='/pages/courses/index' />
+        <AppCard>
+          <Loading compact />
+        </AppCard>
+      </PageShell>
+    );
   }
 
   if (!course) {
@@ -251,8 +258,8 @@ export default function CourseDetail() {
     `${course.durationMinutes}min`,
   ];
   const shouldGuideLogin = !profileLoadFailed && !member?.id;
-  const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin;
-  const ctaLabel = bookingLoading ? '预约中...' : booked ? '已预约成功' : !featuredSession ? '查看全部课程' : profileLoadFailed ? '资料同步失败' : shouldGuideLogin ? '登录后预约' : isFull ? '已约满' : '立即预约';
+  const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin && !profileLoadFailed;
+  const ctaLabel = bookingLoading ? '预约中...' : booked ? '已预约成功' : !featuredSession ? '查看全部课程' : profileLoadFailed ? '重新同步资料' : shouldGuideLogin ? '登录后预约' : isFull ? '已约满' : '立即预约';
 
   return (
     <View className='course-detail-page'>
@@ -365,7 +372,12 @@ export default function CourseDetail() {
           {!featuredSession ? (
             <View className='course-detail-page__section'>
               <AppCard>
-                <Empty title='暂无课程安排' description='敬请期待' />
+                <Empty
+                  title='暂无课程安排'
+                  description='当前课程暂未开放可预约场次，可返回课程列表继续浏览。'
+                  actionLabel='返回课程列表'
+                  onActionClick={() => Taro.switchTab({ url: '/pages/courses/index' })}
+                />
               </AppCard>
             </View>
           ) : null}
@@ -391,6 +403,11 @@ export default function CourseDetail() {
               onClick={() => {
                 if (!featuredSession) {
                   Taro.switchTab({ url: '/pages/courses/index' });
+                  return;
+                }
+
+                if (profileLoadFailed) {
+                  fetchData(course.id);
                   return;
                 }
 
