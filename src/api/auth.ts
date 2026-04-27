@@ -33,8 +33,8 @@ async function loginWithMiniProgram(): Promise<string | null> {
     throw new Error('API_BASE_URL 未配置，无法完成小程序登录');
   }
 
-  const loginResult = await Taro.login();
-  const code = loginResult.code;
+  const loginResult = await Taro.login().catch(() => null);
+  const code = loginResult?.code;
 
   const payload = code
     ? { code }
