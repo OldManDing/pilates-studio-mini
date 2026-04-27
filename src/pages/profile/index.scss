@@ -20,6 +20,41 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
+
+  &__login-panel {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-top: $spacing-lg;
+    padding: $figma-card-y $figma-card-x;
+    border: 1px solid rgba($accent, 0.16);
+    border-radius: $figma-radius-card;
+    background: linear-gradient(180deg, rgba($accent-soft, 0.72) 0%, rgba($surface, 0.98) 100%);
+    box-shadow: $shadow-xs;
+  }
+
+  &__login-title,
+  &__login-desc {
+    display: block;
+  }
+
+  &__login-title {
+    color: $text-primary;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-snug;
+  }
+
+  &__login-desc {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    line-height: $line-height-relaxed;
+  }
+
+  &__login-button {
+    margin-top: $spacing-xs;
+    width: 100%;
+  }
 }
 
 .profile-account-card {

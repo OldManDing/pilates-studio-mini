@@ -3,7 +3,8 @@ import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
-import { Loading, PageShell } from '../../components';
+import { ensureMiniProgramAuth } from '../../api/auth';
+import { AppButton, Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
 import ProfileMenuSection from './components/ProfileMenuSection';
 import ProfileSignOutButton from './components/ProfileSignOutButton';
@@ -86,6 +87,10 @@ function formatDateLabel(dateString?: string) {
   return `${date.getFullYear()}.${padNumber(date.getMonth() + 1)}.${padNumber(date.getDate())}`;
 }
 
+interface FetchProfileOptions {
+  throwOnError?: boolean;
+}
+
 async function fetchAllMyBookings() {
   const pageSize = 50;
   const allBookings: Booking[] = [];
@@ -104,6 +109,7 @@ async function fetchAllMyBookings() {
 
 export default function Profile() {
   const [loading, setLoading] = useState(true);
+  const [loggingIn, setLoggingIn] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -112,7 +118,7 @@ export default function Profile() {
     syncCustomTabBarSelected(2);
   });
 
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (options: FetchProfileOptions = {}) => {
     try {
       setLoading(true);
 
@@ -130,6 +136,9 @@ export default function Profile() {
       setBookings(bookingsRes.data.bookings || []);
     } catch {
       Taro.showToast({ title: '加载失败', icon: 'none' });
+      if (options.throwOnError) {
+        throw new Error('个人资料同步失败');
+      }
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -257,6 +266,23 @@ export default function Profile() {
     }
   };
 
+  const handleLogin = async () => {
+    if (loggingIn) {
+      return;
+    }
+
+    try {
+      setLoggingIn(true);
+      await ensureMiniProgramAuth();
+      await fetchProfile({ throwOnError: true });
+      Taro.showToast({ title: '登录成功', icon: 'success' });
+    } catch {
+      Taro.showToast({ title: '登录失败，请稍后重试', icon: 'none' });
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
   const handleSignOut = async () => {
     const hasToken = Boolean(Taro.getStorageSync('token'));
 
@@ -297,11 +323,21 @@ export default function Profile() {
 
         <ProfileAccountCard data={accountCardData} />
 
+        {!member ? (
+          <View className='profile-page__login-panel'>
+            <Text className='profile-page__login-title'>登录同步会员资料</Text>
+            <Text className='profile-page__login-desc'>使用微信登录后，可同步会员权益、预约记录和训练数据。</Text>
+            <AppButton className='profile-page__login-button' size='large' loading={loggingIn} disabled={loggingIn} onClick={handleLogin}>
+              {loggingIn ? '登录中...' : '微信登录'}
+            </AppButton>
+          </View>
+        ) : null}
+
         {menuSections.map((section) => (
           <ProfileMenuSection key={section.key} data={section} onItemClick={handleMenuClick} />
         ))}
 
-        <ProfileSignOutButton data={signOutData} onClick={handleSignOut} />
+        {member ? <ProfileSignOutButton data={signOutData} onClick={handleSignOut} /> : null}
       </View>
     </PageShell>
   );
