@@ -195,7 +195,7 @@ export default function CourseDetail() {
     }
 
     if (!member?.id) {
-      Taro.showToast({ title: '请先登录会员账号', icon: 'none' });
+      Taro.switchTab({ url: '/pages/profile/index' });
       return;
     }
 
@@ -221,12 +221,12 @@ export default function CourseDetail() {
       <PageShell safeAreaBottom>
         <PageHeader title={courseLoadFailed ? '课程加载失败' : '课程不存在'} subtitle={courseLoadFailed ? '网络异常或课程暂时不可用' : '该课程可能已下架或链接已失效'} fallbackUrl='/pages/courses/index' />
         <AppCard>
-          <Empty title={courseLoadFailed ? '课程加载失败' : '课程不存在'} description={courseLoadFailed ? '请检查网络后重试，或返回课程列表重新选择。' : '请返回课程列表重新选择。'} />
-          {courseLoadFailed && courseId ? (
-            <View className='course-detail-page__error-action'>
-              <AppButton size='small' variant='primary' onClick={() => fetchData(courseId)}>重新加载</AppButton>
-            </View>
-          ) : null}
+          <Empty
+            title={courseLoadFailed ? '课程加载失败' : '课程不存在'}
+            description={courseLoadFailed ? '请检查网络后重试，或返回课程列表重新选择。' : '请返回课程列表重新选择。'}
+            actionLabel={courseLoadFailed && courseId ? '重新加载' : '返回课程列表'}
+            onActionClick={courseLoadFailed && courseId ? () => fetchData(courseId) : () => Taro.switchTab({ url: '/pages/courses/index' })}
+          />
         </AppCard>
       </PageShell>
     );
@@ -250,8 +250,9 @@ export default function CourseDetail() {
     getLabelByValue(CourseLevels, course.level),
     `${course.durationMinutes}min`,
   ];
-  const canBook = Boolean(featuredSession) && !isFull && !booked;
-  const ctaLabel = bookingLoading ? '预约中...' : booked ? '已预约成功' : isFull ? '已约满' : '立即预约';
+  const shouldGuideLogin = !profileLoadFailed && !member?.id;
+  const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin;
+  const ctaLabel = bookingLoading ? '预约中...' : booked ? '已预约成功' : !featuredSession ? '查看全部课程' : profileLoadFailed ? '资料同步失败' : shouldGuideLogin ? '登录后预约' : isFull ? '已约满' : '立即预约';
 
   return (
     <View className='course-detail-page'>
@@ -343,6 +344,11 @@ export default function CourseDetail() {
             <Text className='course-detail-page__section-label course-detail-page__section-label--muted'>ABOUT</Text>
             <AppCard>
               <Text className='course-detail-page__about'>{course.description || '暂无课程介绍'}</Text>
+              {shouldGuideLogin ? (
+                <View className='course-detail-page__error-action'>
+                  <AppButton size='small' variant='outline' onClick={() => Taro.switchTab({ url: '/pages/profile/index' })}>登录同步后预约</AppButton>
+                </View>
+              ) : null}
               <View className='course-detail-page__tags'>
                 {tags.map((tag, index) => (
                   <Text
@@ -381,8 +387,20 @@ export default function CourseDetail() {
               className='course-detail-page__cta-button'
               size='medium'
               variant='primary'
-              disabled={!canBook || bookingLoading}
-              onClick={handleBooking}
+              disabled={(!canBook && !shouldGuideLogin && Boolean(featuredSession)) || bookingLoading}
+              onClick={() => {
+                if (!featuredSession) {
+                  Taro.switchTab({ url: '/pages/courses/index' });
+                  return;
+                }
+
+                if (shouldGuideLogin) {
+                  Taro.switchTab({ url: '/pages/profile/index' });
+                  return;
+                }
+
+                handleBooking();
+              }}
             >
               {ctaLabel}
             </AppButton>
