@@ -3,7 +3,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text, ScrollView } from '@tarojs/components';
 import { bookingsApi, Booking } from '../../api/bookings';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageShell, PageHeader } from '../../components';
+import { AppButton, AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageShell, PageHeader } from '../../components';
 import './index.scss';
 
 type BookingTab = 'upcoming' | 'completed' | 'cancelled';
@@ -104,17 +104,38 @@ function mergeBookings(first: Booking[], second: Booking[]) {
 }
 
 export default function MyBookings() {
+  const pageSize = 10;
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
   const [authRequired, setAuthRequired] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [tabTotalCount, setTabTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [activeTab, setActiveTab] = useState<BookingTab>('upcoming');
-  const [displayCount, setDisplayCount] = useState(0);
   const [cancellingBookingId, setCancellingBookingId] = useState('');
   const requestSeqRef = useRef(0);
+
+  const fetchAllBookingsByStatuses = useCallback(async (statuses: Booking['status'][]) => {
+    const requestLimit = 50;
+    const responses = await Promise.all(statuses.map(async (status) => {
+      const allItems: Booking[] = [];
+      let current = 1;
+      let totalPages = 1;
+
+      do {
+        const response = await bookingsApi.getMyBookings({ page: current, limit: requestLimit, status }, { showLoading: false });
+        allItems.push(...(response.data.bookings || []));
+        totalPages = response.data.meta?.totalPages || ((response.data.bookings || []).length === requestLimit ? current + 1 : current);
+        current += 1;
+      } while (current <= totalPages);
+
+      return allItems;
+    }));
+
+    return responses.reduce<Booking[]>((result, current) => mergeBookings(result, current), []);
+  }, []);
 
   const fetchBookings = useCallback(async (currentPage = 1, append = false) => {
     const requestSeq = requestSeqRef.current + 1;
@@ -128,53 +149,20 @@ export default function MyBookings() {
         setAuthRequired(false);
       }
 
-      const params: { page: number; limit: number; status?: Booking['status'] } = { page: currentPage, limit: 10 };
-      if (activeTab === 'upcoming') {
-        params.status = 'CONFIRMED';
-      } else if (activeTab === 'completed') {
-        params.status = 'COMPLETED';
-      }
-
-      const response = activeTab === 'upcoming'
-        ? await Promise.all([
-          bookingsApi.getMyBookings({ ...params, status: 'PENDING' }),
-          bookingsApi.getMyBookings({ ...params, status: 'CONFIRMED' }),
-        ])
+      const mergedBookings = activeTab === 'upcoming'
+        ? await fetchAllBookingsByStatuses(['PENDING', 'CONFIRMED'])
         : activeTab === 'cancelled'
-        ? await Promise.all([
-          bookingsApi.getMyBookings({ ...params, status: 'CANCELLED' }),
-          bookingsApi.getMyBookings({ ...params, status: 'NO_SHOW' }),
-        ])
-        : [await bookingsApi.getMyBookings(params)];
-
-      const mergedBookings = response.reduce<Booking[]>((result, current) => {
-        return mergeBookings(result, current.data.bookings || []);
-      }, []);
+          ? await fetchAllBookingsByStatuses(['CANCELLED', 'NO_SHOW'])
+          : await fetchAllBookingsByStatuses(['COMPLETED']);
 
       if (requestSeq !== requestSeqRef.current) {
         return;
       }
 
-      const hasMorePages = response.some((current) => {
-        const meta = current.data.meta;
-        const items = current.data.bookings || [];
-        return meta ? meta.page < meta.totalPages : items.length === params.limit;
-      });
-
-      if (append) {
-        setBookings((prev) => mergeBookings(prev, mergedBookings));
-      } else {
-        setBookings(mergedBookings);
-      }
-
-      setDisplayCount((prev) => {
-        if (append) {
-          return Math.max(prev, prev + mergedBookings.length);
-        }
-
-        return mergedBookings.length;
-      });
-      setHasMore(hasMorePages);
+      const endIndex = currentPage * pageSize;
+      setBookings(mergedBookings.slice(0, endIndex));
+      setTabTotalCount(mergedBookings.length);
+      setHasMore(mergedBookings.length > endIndex);
       setPage(currentPage);
     } catch (error) {
       if (requestSeq !== requestSeqRef.current) {
@@ -183,6 +171,7 @@ export default function MyBookings() {
 
       if (!append) {
         setBookings([]);
+        setTabTotalCount(0);
         setLoadFailed(true);
         setAuthRequired(isUnauthorizedApiError(error));
       }
@@ -194,7 +183,7 @@ export default function MyBookings() {
         Taro.stopPullDownRefresh();
       }
     }
-  }, [activeTab]);
+  }, [activeTab, fetchAllBookingsByStatuses, pageSize]);
 
   useEffect(() => {
     fetchBookings(1, false);
@@ -216,7 +205,7 @@ export default function MyBookings() {
     }
 
     setBookings([]);
-    setDisplayCount(0);
+    setTabTotalCount(0);
     setHasMore(true);
     setActiveTab(tab);
     setPage(1);
@@ -278,7 +267,7 @@ export default function MyBookings() {
 
         <View className='my-bookings-page__count-row'>
           <Text className='my-bookings-page__count-title'>{activeTabMeta.label}</Text>
-          <Text className='my-bookings-page__count-value'>{`${bookings.length} 节`}</Text>
+          <Text className='my-bookings-page__count-value'>{`${tabTotalCount} 节`}</Text>
         </View>
 
       <ScrollView className='my-bookings-page__list' scrollY showScrollbar={false} lowerThreshold={80} onScrollToLower={handleLoadMore}>
@@ -353,17 +342,7 @@ export default function MyBookings() {
               </AppCard>
             )}
 
-            {hasMore && !loading && bookings.length > 0 ? (
-              <View className='my-bookings-page__loading-more'>
-                <Text className='my-bookings-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
-              </View>
-            ) : null}
-
-            {!hasMore && bookings.length > 0 ? (
-              <View className='my-bookings-page__loading-more'>
-                <Text className='my-bookings-page__loading-more-text'>没有更多了</Text>
-              </View>
-            ) : null}
+            {bookings.length > 0 ? <LoadMoreFooter loading={loadingMore} hasMore={hasMore} /> : null}
           </View>
         )}
       </ScrollView>

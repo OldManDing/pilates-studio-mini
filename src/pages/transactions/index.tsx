@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { transactionsApi, Transaction } from '../../api/transactions';
-import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
+import { AppButton, AppCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
 import { TransactionStatuses, TransactionKinds } from '../../constants/enums';
 import './index.scss';
 
@@ -170,17 +170,7 @@ export default function Transactions() {
           </AppCard>
         )}
 
-        {hasMore && !loading && transactions.length > 0 ? (
-          <View className='transactions-page__loading-more'>
-            <Text className='transactions-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
-          </View>
-        ) : null}
-
-        {!hasMore && transactions.length > 0 ? (
-          <View className='transactions-page__loading-more'>
-            <Text className='transactions-page__loading-more-text'>没有更多了</Text>
-          </View>
-        ) : null}
+        {transactions.length > 0 ? <LoadMoreFooter loading={loadingMore} hasMore={hasMore} /> : null}
       </View>
 
       <View className='transactions-page__spacer' />

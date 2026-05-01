@@ -1,4 +1,4 @@
-import { Image, Text, View } from '@tarojs/components';
+import { Button, Image, Text, View } from '@tarojs/components';
 import { AppCard, Icon } from '../../../components';
 import type { ProfileMenuItemData, ProfileMenuSectionData } from './types';
 
@@ -24,7 +24,7 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
       <AppCard className='profile-menu-section__card' padding='none'>
         {data.items.map((item, index) => (
           <View key={item.key}>
-            <View className={`profile-menu-section__item ${item.requiresLogin ? 'profile-menu-section__item--login-required' : ''}`} onClick={() => onItemClick?.(item)}>
+            <Button className={`profile-menu-section__item ${item.requiresLogin ? 'profile-menu-section__item--login-required' : ''}`} hoverClass='none' onClick={() => onItemClick?.(item)}>
               <View className='profile-menu-section__icon'>
                 <Image className='profile-menu-section__icon-image' src={iconMap[item.icon]} mode='aspectFit' />
               </View>
@@ -39,7 +39,7 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
               ) : (
                 <Icon name='chevron-right' className='profile-menu-section__arrow' />
               )}
-            </View>
+            </Button>
 
             {index < data.items.length - 1 ? <View className='profile-menu-section__divider' /> : null}
           </View>

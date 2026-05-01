@@ -22,7 +22,7 @@ function getBookingTimeValue(booking: Booking) {
 function buildCoachSummaries(coaches: Coach[], bookings: Booking[]): CoachSummary[] {
   return coaches.map((coach) => {
     const related = bookings
-      .filter((booking) => booking.session?.coach?.id === coach.id || booking.session?.coach?.name === coach.name)
+      .filter((booking) => booking.session?.coach?.id === coach.id)
       .sort((left, right) => getBookingTimeValue(right) - getBookingTimeValue(left));
     const lastCourseName = related[0]?.session?.course?.name || coach.courses?.[0]?.name || '暂无最近课程';
 

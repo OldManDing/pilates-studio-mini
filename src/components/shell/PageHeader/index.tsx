@@ -1,6 +1,6 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import Taro from '@tarojs/taro';
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import { getDefaultTabPageUrl, TAB_NAV_ITEMS, toTabPageUrl } from '../../../constants/navigation';
 import Icon from '../Icon';
 import './index.scss';
@@ -67,10 +67,10 @@ export default function PageHeader({
     <View className='page-header'>
       <View className='page-header__top'>
         {showBack ? (
-          <View className='page-header__back' onClick={handleBack}>
+          <Button className='page-header__back' hoverClass='none' onClick={handleBack}>
             <Icon name='chevron-left' className='page-header__back-icon' />
             <Text className='page-header__back-text'>返回</Text>
-          </View>
+          </Button>
         ) : (
           <View className='page-header__back page-header__back--placeholder' />
         )}

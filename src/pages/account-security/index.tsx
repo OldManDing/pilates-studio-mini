@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Taro from '@tarojs/taro';
-import { Input, Text, View } from '@tarojs/components';
+import { Button, Input, Text, View } from '@tarojs/components';
 import { membersApi } from '../../api/members';
 import { AppButton, AppCard, Divider, PageHeader, PageShell, SectionTitle } from '../../components';
 import { STORAGE_KEYS } from '../../constants/storage';
@@ -93,13 +93,13 @@ export default function AccountSecurity() {
             <Text className='security-row__value'>{hasBoundPhone ? '已绑定' : '未同步'}</Text>
           </View>
           <Divider spacing='none' />
-          <View className='security-row security-row--clickable' onClick={handlePasswordChange}>
+          <Button className='security-row security-row--clickable' hoverClass='none' onClick={handlePasswordChange}>
             <View className='security-row__main'>
               <Text className='security-row__title'>修改密码</Text>
               <Text className='security-row__desc'>定期修改保障账户安全</Text>
             </View>
             <Text className='security-row__value'>去修改</Text>
-          </View>
+          </Button>
         </AppCard>
       </View>
 
@@ -126,6 +126,7 @@ export default function AccountSecurity() {
                 placeholder='至少 8 位字符'
                 onInput={(event) => setNewPassword(String(event.detail.value || ''))}
               />
+              <Text className='password-form__hint'>建议包含字母与数字，提升账户安全性</Text>
             </View>
             <View className='password-form__field'>
               <Text className='password-form__label'>确认新密码</Text>
@@ -148,7 +149,7 @@ export default function AccountSecurity() {
       <View className='account-security-page__section'>
         <SectionTitle title='安全保护' actionLabel='PROTECT' actionTone='muted' />
         <AppCard padding='none' className='security-group'>
-          <View className='security-row security-row--clickable' onClick={toggleBiometric}>
+          <Button className='security-row security-row--clickable' hoverClass='none' onClick={toggleBiometric}>
             <View className='security-row__main'>
               <Text className='security-row__title'>面容/指纹解锁</Text>
               <Text className='security-row__desc'>与设置页保持同步的本机登录偏好</Text>
@@ -156,9 +157,9 @@ export default function AccountSecurity() {
             <View className={`security-toggle ${biometricEnabled ? 'security-toggle--on' : ''}`}>
               <View className='security-toggle__dot' />
             </View>
-          </View>
+          </Button>
           <Divider spacing='none' />
-          <View className='security-row security-row--clickable' onClick={toggleLoginProtection}>
+          <Button className='security-row security-row--clickable' hoverClass='none' onClick={toggleLoginProtection}>
             <View className='security-row__main'>
               <Text className='security-row__title'>异地登录提醒</Text>
               <Text className='security-row__desc'>检测异常登录时发送提醒</Text>
@@ -166,7 +167,7 @@ export default function AccountSecurity() {
             <View className={`security-toggle ${loginProtectionEnabled ? 'security-toggle--on' : ''}`}>
               <View className='security-toggle__dot' />
             </View>
-          </View>
+          </Button>
         </AppCard>
       </View>
 

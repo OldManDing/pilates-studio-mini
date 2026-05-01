@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
-import { Text, View } from '@tarojs/components';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import { Button, Text, View } from '@tarojs/components';
+import { AppButton, AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
 import { getApiErrorMessage } from '../../api/request';
 import './index.scss';
@@ -36,6 +36,10 @@ function formatTimeLabel(value?: string) {
   if (dayDiff === 0) return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   if (dayDiff === 1) return '昨日';
   if (dayDiff > 1 && dayDiff < 7) return `${dayDiff}天前`;
+  if (date.getFullYear() !== now.getFullYear()) {
+    return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+  }
+
   return `${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
 }
 
@@ -43,7 +47,7 @@ function formatDateLabel(value?: string) {
   if (!value) return '--.--';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '--.--';
-  return `${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
 }
 
 function getNotificationType(notification: ApiNotificationItem): NotificationType {
@@ -68,32 +72,68 @@ function toNotificationItem(notification: ApiNotificationItem): NotificationItem
 
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
   const [markingAllRead, setMarkingAllRead] = useState(false);
   const [markingReadIds, setMarkingReadIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = useCallback(async (currentPage = 1, append = false) => {
     try {
-      setLoading(true);
-      setLoadFailed(false);
-      const response = await notificationsApi.getMy({ page: 1, limit: 50 }, { showLoading: false });
-      setNotifications((response.data.notifications || []).map(toNotificationItem));
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setLoadFailed(false);
+      }
+
+      const pageSize = 20;
+      const response = await notificationsApi.getMy({ page: currentPage, limit: pageSize }, { showLoading: false });
+      const nextItems = (response.data.notifications || []).map(toNotificationItem);
+
+      setNotifications((previous) => {
+        if (!append) {
+          return nextItems;
+        }
+
+        const existedIds = new Set(previous.map((item) => item.id));
+        const deduped = nextItems.filter((item) => !existedIds.has(item.id));
+        return [...previous, ...deduped];
+      });
+
+      const nextHasMore = response.data.meta
+        ? response.data.meta.page < response.data.meta.totalPages
+        : nextItems.length === pageSize;
+      setHasMore(nextHasMore);
+      setPage(currentPage);
     } catch (error) {
-      setLoadFailed(true);
+      if (!append) {
+        setLoadFailed(true);
+      }
       Taro.showToast({ title: getApiErrorMessage(error, '消息加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
       Taro.stopPullDownRefresh();
     }
   }, []);
 
   useEffect(() => {
-    fetchNotifications();
+    fetchNotifications(1, false);
   }, [fetchNotifications]);
 
   usePullDownRefresh(() => {
-    fetchNotifications();
+    fetchNotifications(1, false);
+  });
+
+  useReachBottom(() => {
+    if (loading || loadingMore || !hasMore || loadFailed) {
+      return;
+    }
+
+    fetchNotifications(page + 1, true);
   });
 
   const unread = useMemo(
@@ -203,7 +243,7 @@ export default function Notifications() {
       {loadFailed && notifications.length === 0 ? (
         <View className='notifications-page__section'>
           <AppCard className='notifications-list notifications-list--empty'>
-            <Empty title='消息加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchNotifications} />
+            <Empty title='消息加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={() => fetchNotifications(1, false)} />
           </AppCard>
         </View>
       ) : unread.length > 0 ? (
@@ -212,7 +252,7 @@ export default function Notifications() {
           <AppCard className='notifications-list' padding='none'>
             {unread.map((notification, index) => (
               <View key={notification.id}>
-                <View className={`notifications-list__item ${markingReadIds.includes(notification.id) ? 'notifications-list__item--pending' : ''}`} onClick={() => handleMarkRead(notification.id)}>
+                <Button className={`notifications-list__item ${markingReadIds.includes(notification.id) ? 'notifications-list__item--pending' : ''}`} hoverClass='none' onClick={() => handleMarkRead(notification.id)}>
                   <View className={getIconChipClass(notification.type, false)}>
                     <Icon name={getIconName(notification.type)} className='notifications-list__icon-image' />
                   </View>
@@ -227,7 +267,7 @@ export default function Notifications() {
                     </View>
                     <Text className='notifications-list__description'>{notification.body}</Text>
                   </View>
-                </View>
+                </Button>
 
                 {index < unread.length - 1 ? <Divider spacing='none' className='notifications-list__divider' /> : null}
               </View>
@@ -272,6 +312,12 @@ export default function Notifications() {
           )}
         </AppCard>
       </View> : null}
+
+      {!loadFailed && notifications.length > 0 ? (
+        <View className='notifications-page__section'>
+          <LoadMoreFooter loading={loadingMore} hasMore={hasMore} />
+        </View>
+      ) : null}
     </PageShell>
   );
 }

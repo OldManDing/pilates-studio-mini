@@ -29,9 +29,10 @@ export default function AppButton({
 }: AppButtonProps) {
   return (
     <Button
-      className={joinClasses(['app-button', `app-button--${variant}`, `app-button--${size}`, disabled && 'app-button--disabled', className])}
-      disabled={disabled}
+      className={joinClasses(['app-button', `app-button--${variant}`, `app-button--${size}`, (disabled || loading) && 'app-button--disabled', loading && 'app-button--loading', className])}
+      disabled={disabled || loading}
       loading={loading}
+      hoverClass='none'
       onClick={onClick}
     >
       {children}

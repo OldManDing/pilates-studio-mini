@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Taro from '@tarojs/taro';
-import { ScrollView, Text, Textarea, View } from '@tarojs/components';
+import { Button, ScrollView, Text, Textarea, View } from '@tarojs/components';
 import { supportApi } from '../../api/support';
 import { AppButton, AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
@@ -142,16 +142,17 @@ export default function Help() {
             {CATEGORIES.map((category) => {
               const isActive = category.id === activeCategory;
               return (
-                <View
+                <Button
                   key={category.id}
                   className={`help-categories__pill ${isActive ? 'help-categories__pill--active' : ''}`}
+                  hoverClass='none'
                   onClick={() => {
                     setActiveCategory(category.id);
                     setExpandedId(null);
                   }}
                 >
                   <Text className='help-categories__pill-text'>{category.label}</Text>
-                </View>
+                </Button>
               );
             })}
           </View>
@@ -173,7 +174,7 @@ export default function Help() {
 
               return (
                 <View key={item.id}>
-                  <View className='help-faq__item' onClick={() => setExpandedId(isExpanded ? null : item.id)}>
+                  <Button className='help-faq__item' hoverClass='none' onClick={() => setExpandedId(isExpanded ? null : item.id)}>
                     <View className='help-faq__item-row'>
                       <Text className='help-faq__question'>{item.question}</Text>
                       <View className={`help-faq__arrow ${isExpanded ? 'help-faq__arrow--expanded' : ''}`}>
@@ -182,7 +183,7 @@ export default function Help() {
                     </View>
 
                     {isExpanded ? <Text className='help-faq__answer'>{item.answer}</Text> : null}
-                  </View>
+                  </Button>
                   {index < filteredFaqs.length - 1 ? <Divider spacing='none' className='help-faq__divider' /> : null}
                 </View>
               );
@@ -264,14 +265,20 @@ export default function Help() {
             </View>
           ) : contactItems.map((item, index) => (
               <View key={item.label}>
-                <View
+                <Button
                 className='help-contact__item help-contact__item--clickable'
+                hoverClass='none'
                 onClick={() => {
                   if (item.label === '客服热线') {
                     Taro.makePhoneCall({ phoneNumber: item.value });
                     return;
                   }
-                  Taro.setClipboardData({ data: item.value });
+                  Taro.setClipboardData({
+                    data: item.value,
+                    success: () => {
+                      Taro.showToast({ title: '邮箱已复制', icon: 'success' });
+                    },
+                  });
                 }}
               >
                 <View className='help-contact__icon-wrap'>
@@ -286,7 +293,7 @@ export default function Help() {
                   <Text className='help-contact__action-text'>{item.label === '客服热线' ? '拨打电话' : '复制邮箱地址'}</Text>
                   <Icon name='chevron-right' className='help-contact__arrow' />
                 </View>
-              </View>
+              </Button>
               {index < contactItems.length - 1 ? <Divider spacing='none' className='help-contact__divider' /> : null}
             </View>
           ))}

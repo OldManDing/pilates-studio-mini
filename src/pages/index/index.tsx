@@ -5,6 +5,7 @@ import { AppButton, Loading, PageShell, SectionTitle } from '../../components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { coursesApi, type Course } from '../../api/courses';
 import { membersApi, type Member, type Membership } from '../../api/members';
+import { settingsApi, type StudioSettings } from '../../api/settings';
 import HomeCuratedCard from './components/HomeCuratedCard';
 import HomeHero from './components/HomeHero';
 import HomeMembershipCard from './components/HomeMembershipCard';
@@ -28,6 +29,13 @@ import './index.scss';
 
 const WEEKDAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
 const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
+const BOOKING_STATUS_LABEL_MAP: Record<Booking['status'], string> = {
+  PENDING: '待确认',
+  CONFIRMED: '已预约',
+  COMPLETED: '已完成',
+  CANCELLED: '已取消',
+  NO_SHOW: '未到场',
+};
 
 function padNumber(value: number) {
   return String(value).padStart(2, '0');
@@ -50,11 +58,7 @@ function getDisplayMemberName(name?: string | null) {
     return '会员';
   }
 
-  if (name.endsWith('女士') || name.endsWith('先生') || name.endsWith('小姐')) {
-    return name;
-  }
-
-  return `${name}女士`;
+  return name;
 }
 
 function getRemainingDays(endDate?: string) {
@@ -163,6 +167,24 @@ function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemDa
   };
 }
 
+function toHomeRecentItem(booking: Booking, index: number): HomeUpcomingItemData {
+  const startsAt = booking.session?.startsAt;
+  const endsAt = booking.session?.endsAt;
+  const duration = calculateMinutes(startsAt, endsAt);
+  const courseId = booking.session?.course?.id;
+
+  return {
+    key: booking.id || `recent-booking-${index}`,
+    day: getUpcomingDay(startsAt),
+    weekday: getUpcomingWeekday(startsAt),
+    label: BOOKING_STATUS_LABEL_MAP[booking.status],
+    title: booking.session?.course?.name || '课程安排',
+    description: '',
+    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${duration > 0 ? duration : '--'}min`,
+    routeUrl: courseId ? `/pages/course-detail/index?id=${courseId}` : undefined,
+  };
+}
+
 function getRemainingRatio(startDate?: string, endDate?: string) {
   if (!startDate || !endDate) return '0%';
   const start = new Date(startDate).getTime();
@@ -183,6 +205,22 @@ function getMembershipDescription(membership?: Membership | null) {
   return `${membership.planName || '会员卡'} 当前剩余 ${membership.remainingCredits}/${membership.totalCredits} 次，可继续安排训练。`;
 }
 
+function calculateDurationDays(startDate?: string, endDate?: string) {
+  if (!startDate || !endDate) {
+    return 0;
+  }
+
+  const start = new Date(startDate).getTime();
+  const end = new Date(endDate).getTime();
+  const diff = end - start;
+
+  if (Number.isNaN(diff) || diff <= 0) {
+    return 0;
+  }
+
+  return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 function getMembershipCreditsText(membership?: Membership | null) {
   if (!membership) return '--';
   if (membership.totalCredits <= 0) return '无限次';
@@ -199,14 +237,14 @@ function getBookingDisplayName(booking?: Booking | null) {
   return booking?.session?.course?.name || '今天还没有预约课程';
 }
 
-function getBookingDisplayMeta(booking?: Booking | null) {
+function getBookingDisplayMeta(booking?: Booking | null, studioName?: string) {
   if (!booking?.session) return '可前往课程页选择适合的训练';
-  return `${booking.session.coach?.name || '教练待定'} · 朝阳门店`;
+  return `${booking.session.coach?.name || '教练待定'} · ${studioName || '门店待更新'}`;
 }
 
-function getCourseDisplayMeta(course?: Course | null) {
+function getCourseDisplayMeta(course?: Course | null, studioName?: string) {
   if (!course) return '课程内容更新中';
-  return `${course.coach?.name || '教练待定'} · 朝阳门店`;
+  return `${course.coach?.name || '教练待定'} · ${studioName || '门店待更新'}`;
 }
 
 function getCourseCaption(course?: Course | null) {
@@ -273,6 +311,7 @@ export default function Index() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [studioSettings, setStudioSettings] = useState<StudioSettings | null>(null);
 
   useShareAppMessage(() => ({
     title: 'Pilates Studio - 专业普拉提工作室',
@@ -286,20 +325,22 @@ export default function Index() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [profileRes, membershipsRes, bookingsRes, coursesRes] = await Promise.allSettled([
+      const [profileRes, membershipsRes, bookingsRes, coursesRes, studioRes] = await Promise.allSettled([
         membersApi.getProfile({ showLoading: false }),
         membersApi.getMyMemberships({ showLoading: false }),
         fetchAllMyBookings().then((items) => ({ data: { bookings: items } })),
         coursesApi.getAll({ page: 1, limit: 6, isActive: true }, { showLoading: false }),
+        settingsApi.getStudio(),
       ]);
 
-      const hasFailedSection = [profileRes, membershipsRes, bookingsRes, coursesRes].some((result) => result.status === 'rejected');
+      const hasFailedSection = [profileRes, membershipsRes, bookingsRes, coursesRes, studioRes].some((result) => result.status === 'rejected');
 
       setLoadFailed(hasFailedSection);
       setMember(profileRes.status === 'fulfilled' ? profileRes.value.data.member : null);
       setMemberships(membershipsRes.status === 'fulfilled' ? membershipsRes.value.data.memberships || [] : []);
       setBookings(bookingsRes.status === 'fulfilled' ? bookingsRes.value.data.bookings || [] : []);
       setCourses(coursesRes.status === 'fulfilled' ? coursesRes.value.data.courses || [] : []);
+      setStudioSettings(studioRes.status === 'fulfilled' ? studioRes.value.data : null);
     } catch {
       setLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
@@ -370,9 +411,16 @@ export default function Index() {
   const completedMinutes = completedThisMonth.reduce((total, booking) => total + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0);
   const monthlySessions = completedThisMonth.length;
   const monthlyHours = Math.round(completedMinutes / 60);
-  const monthlyGoalPercent = Math.min(100, Math.round((monthlySessions / 16) * 100));
+  const activeMembershipDurationDays = calculateDurationDays(activeMembership?.startDate, activeMembership?.endDate);
+  const membershipDerivedMonthlyGoal = activeMembership && activeMembership.totalCredits > 0 && activeMembershipDurationDays > 0
+    ? Math.max(1, Math.round((activeMembership.totalCredits / activeMembershipDurationDays) * 30))
+    : 16;
+  const monthlyGoalPercent = Math.min(100, Math.round((monthlySessions / membershipDerivedMonthlyGoal) * 100));
   const curatedCourse = courses[0] || null;
   const todayCourseSummary = getTodayCourseSummary(todayBooking, activeMembership);
+  const studioName = studioSettings?.studioName?.trim() || '门店待更新';
+  const studioAddress = studioSettings?.address?.trim() || '地址待更新';
+  const studioBusinessHours = studioSettings?.businessHours?.trim() || '';
 
   const heroData: HomeHeroData = {
     dateLabel: formatShellDate(now),
@@ -406,7 +454,7 @@ export default function Index() {
     timeRange: todayBooking ? formatTimeRange(todayBooking.session?.startsAt, todayBooking.session?.endsAt) : '--:-- – --:--',
     duration: todayBooking ? formatDurationLabel(todayBooking.session?.startsAt, todayBooking.session?.endsAt) : '待安排',
     title: getBookingDisplayName(todayBooking),
-    meta: getBookingDisplayMeta(todayBooking),
+    meta: getBookingDisplayMeta(todayBooking, studioName),
     note: todayBooking ? todayCourseSummary.note : '',
     primaryAction: todayBooking ? '查看详情' : '去预约课程',
     secondaryAction: todayBooking ? '改约' : activeMembership ? '查看全部课程' : '查看会员方案',
@@ -441,20 +489,27 @@ export default function Index() {
     caption: getCourseCaption(curatedCourse),
     title: curatedCourse?.name || '暂无推荐课程',
     description: '',
-    meta: getCourseDisplayMeta(curatedCourse),
+    meta: getCourseDisplayMeta(curatedCourse, studioName),
     cta: '预约',
     monogram: '',
     imageUrl: '/assets/ui/booking-pilates.svg',
     fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
-  const upcomingItems = upcomingBookings.slice(0, 2).map(toHomeUpcomingItem);
+  const recentBookings = bookings
+    .filter((booking) => Boolean(booking.session?.startsAt) && booking.session)
+    .sort((left, right) => new Date(right.session?.startsAt || '').getTime() - new Date(left.session?.startsAt || '').getTime());
+
+  const upcomingItems = upcomingBookings.length > 0
+    ? upcomingBookings.slice(0, 2).map(toHomeUpcomingItem)
+    : recentBookings.slice(0, 2).map(toHomeRecentItem);
+  const usingRecentBookingFallback = upcomingBookings.length === 0 && recentBookings.length > 0;
 
   const studioData: HomeStudioData = {
     label: 'YOUR STUDIO',
-    name: '朝阳门店',
-    address: '朝阳区建国门外大街 1 号',
-    hours: '营业时间 08:00 – 22:00',
+    name: studioName,
+    address: studioAddress,
+    hours: studioBusinessHours ? `营业时间 ${studioBusinessHours}` : '营业时间待更新',
     note: '',
     actionLabel: '导航前往',
   };
@@ -492,11 +547,17 @@ export default function Index() {
   };
 
   const handleStudioClick = () => {
+    const hasAddress = Boolean(studioSettings?.address?.trim());
+    if (!hasAddress) {
+      Taro.showToast({ title: '门店地址待更新', icon: 'none' });
+      return;
+    }
+
     Taro.openLocation({
       latitude: 39.9242,
       longitude: 116.4335,
-      name: 'Pilates Studio 朝阳门店',
-      address: '北京市朝阳区朝阳门外大街 88 号',
+      name: studioName,
+      address: studioAddress,
       scale: 16,
     });
   };
@@ -504,7 +565,10 @@ export default function Index() {
   const handleUpcomingItemClick = (item: HomeUpcomingItemData) => {
     if (item.routeUrl) {
       Taro.navigateTo({ url: item.routeUrl });
+      return;
     }
+
+    Taro.showToast({ title: '当前课程详情暂不可用', icon: 'none' });
   };
 
   if (loading) {
@@ -577,6 +641,7 @@ export default function Index() {
         <View className='home-page__section'>
           <SectionTitle
             title='近期安排'
+            subtitle={usingRecentBookingFallback ? '当前无待上课安排，已展示最近预约记录' : undefined}
             actionLabel='全部'
             actionTone='muted'
             actionIcon='chevron-right'

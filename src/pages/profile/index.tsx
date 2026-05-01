@@ -292,11 +292,12 @@ export default function Profile() {
 
     try {
       setLoggingIn(true);
-      await ensureMiniProgramAuth();
+      await ensureMiniProgramAuth({ interactive: true });
       await fetchProfile({ throwOnError: true });
       Taro.showToast({ title: '登录成功', icon: 'success' });
-    } catch {
-      Taro.showToast({ title: '登录失败，请稍后重试', icon: 'none' });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
+      Taro.showToast({ title: errorMessage, icon: 'none' });
     } finally {
       setLoggingIn(false);
     }
@@ -331,7 +332,11 @@ export default function Profile() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <PageShell className='profile-page' reserveTabBarSpace>
+        <Loading compact />
+      </PageShell>
+    );
   }
 
   return (
@@ -347,9 +352,9 @@ export default function Profile() {
           <View className='profile-page__login-panel'>
             <Empty
               title='资料同步失败'
-              description='当前网络或登录状态异常，请重新同步会员资料。'
-              actionLabel='重新同步'
-              onActionClick={() => fetchProfile()}
+              description='当前网络或登录状态异常，请使用微信登录重新同步会员资料。'
+              actionLabel='微信登录'
+              onActionClick={handleLogin}
             />
           </View>
         ) : !member ? (

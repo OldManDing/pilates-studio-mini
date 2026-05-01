@@ -169,22 +169,22 @@ export default function CourseDetail() {
     setLoading(false);
   });
 
-  const featuredSession = useMemo(() => {
+  const sortedSessions = useMemo(() => {
     if (sessions.length === 0) {
-      return null;
+      return [];
     }
 
-    const sorted = [...sessions].sort((left, right) => {
+    return [...sessions].sort((left, right) => {
       const leftTime = new Date(left.startsAt).getTime();
       const rightTime = new Date(right.startsAt).getTime();
       return leftTime - rightTime;
     });
-
-    return sorted[0];
   }, [sessions]);
 
+  const featuredSession = sortedSessions.find((session) => getSessionSpots(session, course?.maxCapacity || 0) > 0) || sortedSessions[0] || null;
+
   const handleBooking = async () => {
-    if (!featuredSession || !course) {
+    if (!course || sortedSessions.length === 0) {
       Taro.showToast({ title: '暂无可约场次', icon: 'none' });
       return;
     }
@@ -200,8 +200,33 @@ export default function CourseDetail() {
     }
 
     try {
+      let targetSession = featuredSession;
+      if (sortedSessions.length > 1) {
+        const options = sortedSessions.map((session) => {
+          const sessionDate = formatDate(session.startsAt);
+          const sessionTime = formatTimeRange(session.startsAt, session.endsAt);
+          const sessionSpots = getSessionSpots(session, course.maxCapacity);
+          return `${sessionDate} ${sessionTime} · 余${sessionSpots}名额`;
+        });
+
+        const selectedIndex = await Taro.showActionSheet({ itemList: options })
+          .then((result) => result.tapIndex)
+          .catch(() => -1);
+
+        if (selectedIndex < 0) {
+          return;
+        }
+
+        targetSession = sortedSessions[selectedIndex] || null;
+      }
+
+      if (!targetSession) {
+        Taro.showToast({ title: '场次信息无效，请重试', icon: 'none' });
+        return;
+      }
+
       setBookingLoading(true);
-      await bookingsApi.create({ memberId: member.id, sessionId: featuredSession.id });
+      await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id });
       Taro.showToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
       fetchData(course.id);
@@ -250,7 +275,9 @@ export default function CourseDetail() {
   const spots = getSessionSpots(featuredSession, course.maxCapacity);
   const totalSpots = getSessionTotal(featuredSession, course.maxCapacity);
   const usedSpots = Math.max(0, totalSpots - spots);
-  const isFull = totalSpots > 0 && spots <= 0;
+  const isFull = sortedSessions.length > 0
+    ? sortedSessions.every((session) => getSessionSpots(session, course.maxCapacity) <= 0)
+    : totalSpots > 0 && spots <= 0;
   const progress = totalSpots > 0 ? Math.round((usedSpots / totalSpots) * 100) : 0;
   const tags = [
     getLabelByValue(CourseTypes, course.type),
@@ -259,7 +286,21 @@ export default function CourseDetail() {
   ];
   const shouldGuideLogin = !profileLoadFailed && !member?.id;
   const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin && !profileLoadFailed;
-  const ctaLabel = bookingLoading ? '预约中...' : booked ? '已预约成功' : !featuredSession ? '查看全部课程' : profileLoadFailed ? '重新同步资料' : shouldGuideLogin ? '登录后预约' : isFull ? '已约满' : '立即预约';
+  const ctaLabel = bookingLoading
+    ? '预约中...'
+    : booked
+      ? '已预约成功'
+      : !featuredSession
+        ? '查看全部课程'
+        : profileLoadFailed
+          ? '重新同步资料'
+          : shouldGuideLogin
+            ? '登录后预约'
+            : isFull
+              ? '已约满'
+              : sortedSessions.length > 1
+                ? '选择场次预约'
+                : '立即预约';
 
   return (
     <View className='course-detail-page'>

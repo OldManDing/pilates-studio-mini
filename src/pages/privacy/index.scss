@@ -7,8 +7,8 @@
 }
 
 .privacy-hero {
-  padding: 42px 48px;
-  margin-bottom: 44px;
+  padding: 36px 40px;
+  margin-bottom: 36px;
   background: linear-gradient(135deg, rgba($accent, 0.1), rgba($surface, 0.98));
 
   &__label,
@@ -27,25 +27,26 @@
 
   &__title {
     color: $text-primary;
-    font-size: 34px;
+    font-size: 30px;
     font-weight: $font-weight-normal;
-    line-height: 46px;
-    margin-bottom: 14px;
+    line-height: 1.35;
+    margin-bottom: 10px;
   }
 
   &__desc {
     color: #ababab;
-    font-size: 20px;
+    font-size: 18px;
+    line-height: 1.5;
   }
 }
 
 .privacy-content {
-  padding: 36px 42px;
+  padding: 28px 34px;
 
   &__text {
     display: block;
     color: #7a7a7a;
-    font-size: 24px;
-    line-height: 40px;
+    font-size: 20px;
+    line-height: 1.72;
   }
 }

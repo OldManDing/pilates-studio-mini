@@ -1,4 +1,5 @@
 export { default as Loading } from './Loading';
+export { default as LoadMoreFooter } from './LoadMoreFooter';
 export { default as Empty } from './Empty';
 export { default as StatusTag } from './StatusTag';
 export { default as Price } from './Price';

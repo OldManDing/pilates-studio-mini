@@ -101,11 +101,19 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__item {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
     gap: 28px;
-    padding: 35px 49px;
+    padding: 28px 36px;
 
     &:active {
       background: rgba($accent-soft, 0.32);
+    }
+
+    &::after {
+      border: 0;
     }
 
     &--read {
@@ -120,8 +128,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__icon {
-    width: 63px;
-    height: 63px;
+    width: 56px;
+    height: 56px;
     justify-content: center;
     border-radius: 21px;
     flex-shrink: 0;
@@ -189,11 +197,11 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__description {
     overflow: hidden;
     color: $support-muted-1;
-    font-size: $figma-body;
-    line-height: 31px;
+    font-size: 20px;
+    line-height: 1.55;
     letter-spacing: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
   }
 
@@ -227,8 +235,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__divider {
-    margin-left: calc(49px + 63px + 28px);
-    margin-right: 49px;
+    margin-left: calc(36px + 56px + 28px);
+    margin-right: 36px;
   }
 
   &__empty {

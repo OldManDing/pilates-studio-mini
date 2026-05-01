@@ -135,7 +135,13 @@ export default function CoachDetail() {
                 重新加载
               </AppButton>
             </View>
-          ) : null}
+          ) : (
+            <View className='coach-detail-page__error-action'>
+              <AppButton size='small' variant='primary' onClick={() => Taro.redirectTo({ url: '/pages/coaches/index' })}>
+                返回教练列表
+              </AppButton>
+            </View>
+          )}
         </AppCard>
       </PageShell>
     );
@@ -164,7 +170,12 @@ export default function CoachDetail() {
       return;
     }
 
-    Taro.setClipboardData({ data: coach.email });
+    Taro.setClipboardData({
+      data: coach.email,
+      success: () => {
+        Taro.showToast({ title: '邮箱已复制', icon: 'success' });
+      },
+    });
   };
 
   return (
