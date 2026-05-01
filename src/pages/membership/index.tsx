@@ -3,6 +3,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { membersApi, Membership as MembershipType } from '../../api/members';
 import { membershipPlansApi, MembershipPlan } from '../../api/membershipPlans';
+import { bookingsApi, type Booking } from '../../api/bookings';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
 import './index.scss';
 
@@ -85,6 +86,38 @@ function getDurationMonths(startDate?: string) {
   return Math.max(0, months || (now.getDate() >= start.getDate() ? 1 : 0));
 }
 
+function calculateMinutes(start?: string, end?: string) {
+  if (!start || !end) {
+    return 0;
+  }
+
+  const startTime = new Date(start).getTime();
+  const endTime = new Date(end).getTime();
+  const diff = endTime - startTime;
+
+  if (Number.isNaN(diff) || diff <= 0) {
+    return 0;
+  }
+
+  return Math.round(diff / (1000 * 60));
+}
+
+async function fetchAllCompletedBookings() {
+  const pageSize = 50;
+  const allBookings: Booking[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await bookingsApi.getMyBookings({ page: currentPage, limit: pageSize, status: 'COMPLETED' }, { showLoading: false });
+    allBookings.push(...(response.data.bookings || []));
+    totalPages = response.data.meta?.totalPages || ((response.data.bookings || []).length === pageSize ? currentPage + 1 : currentPage);
+    currentPage += 1;
+  } while (currentPage <= totalPages);
+
+  return allBookings;
+}
+
 function isMembershipUsable(membership: MembershipType) {
   if (!membership.isActive) {
     return false;
@@ -125,15 +158,17 @@ export default function Membership() {
   const [loading, setLoading] = useState(true);
   const [memberships, setMemberships] = useState<MembershipType[]>([]);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [completedTrainingMinutes, setCompletedTrainingMinutes] = useState(0);
   const [loadFailed, setLoadFailed] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
-      const [membershipsRes, plansRes] = await Promise.all([
+      const [membershipsRes, plansRes, completedBookings] = await Promise.all([
         membersApi.getMyMemberships(),
         membershipPlansApi.getActive(),
+        fetchAllCompletedBookings().catch(() => [] as Booking[]),
       ]);
 
       const membershipsData = membershipsRes.data.memberships || [];
@@ -141,6 +176,7 @@ export default function Membership() {
 
       setMemberships(membershipsData);
       setPlans(plansData);
+      setCompletedTrainingMinutes(completedBookings.reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0));
     } catch {
       Taro.showToast({ title: '加载失败', icon: 'none' });
       setLoadFailed(true);
@@ -170,8 +206,7 @@ export default function Membership() {
 
   const currentMembership = useMemo(() => {
     return sortedMemberships.find(isMembershipUsable)
-      || sortedMemberships.find((membership) => membership.isActive)
-      || sortedMemberships[0]
+      || sortedMemberships.find((membership) => membership.isActive && new Date(membership.endDate).getTime() >= Date.now())
       || null;
   }, [sortedMemberships]);
 
@@ -199,7 +234,7 @@ export default function Membership() {
   const remainingDays = currentMembership ? getRemainingDays(currentMembership.endDate) : 0;
   const progressRatio = currentMembership ? getRemainingRatio(currentMembership.startDate, currentMembership.endDate) : 0;
   const membershipMonths = earliestMembership ? getDurationMonths(earliestMembership.startDate) : 0;
-  const estimatedHours = totalUsedCredits > 0 ? Math.round(totalUsedCredits * 1.5) : 0;
+  const estimatedHours = completedTrainingMinutes > 0 ? Math.round(completedTrainingMinutes / 60) : 0;
   const hasMemberships = memberships.length > 0;
   const statusBadgeLabel = currentMembership ? 'GOLD' : 'GUEST';
   const statusFlag = currentMembership ? getMembershipStatusLabel(currentMembership) : '待开通';
@@ -207,7 +242,7 @@ export default function Membership() {
 
   const membershipCode = useMemo(() => {
     if (!currentMembership) {
-      return 'LIN-0000-0000';
+      return '--';
     }
 
     const prefix = (currentMembership.planName || 'LIN').slice(0, 3).toUpperCase().padEnd(3, 'X');

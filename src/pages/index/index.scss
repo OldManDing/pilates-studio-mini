@@ -4,7 +4,7 @@
   &__content {
     display: flex;
     flex-direction: column;
-    gap: $figma-section-gap;
+    gap: 40px;
   }
 
   &__section {
@@ -18,10 +18,10 @@
   }
 
   &__notice {
-    padding: 10px 12px;
+    padding: 14px 16px;
     border: 1px solid rgba($accent, 0.18);
     border-radius: $radius-md;
-    background: rgba($accent-soft, 0.48);
+    background: rgba($accent-soft, 0.62);
   }
 
   &__notice-action {
@@ -36,7 +36,7 @@
   &__notice-text {
     display: block;
     color: $accent-strong;
-    font-size: $figma-caption;
+    font-size: 20px;
     line-height: $line-height-normal;
   }
 
@@ -142,13 +142,13 @@
   &__title {
     margin-bottom: 10px;
     color: $text-primary;
-    font-size: 46px;
+    font-size: 40px;
     font-weight: $font-weight-normal;
     line-height: 1.15;
   }
 
   &__subtitle {
-    max-width: 82%;
+    max-width: 88%;
     color: #cdcdcd;
     font-size: $figma-caption;
     letter-spacing: 0.02em;
@@ -160,7 +160,7 @@
   background: $white;
   box-shadow: $shadow-xs;
   border-radius: $figma-radius-card;
-  padding: 32px 40px 24px;
+  padding: 28px 32px 22px;
 
   &__header,
   &__metrics,
@@ -178,7 +178,7 @@
   &__header {
     align-items: flex-start;
     gap: $spacing-md;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   &__heading {
@@ -294,7 +294,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 14px;
-    margin-top: 22px;
+    margin-top: 18px;
     margin-bottom: 0;
   }
 
@@ -846,7 +846,7 @@
     gap: 0;
     width: 100%;
     margin: 0;
-    padding: 14px 22px;
+    padding: 13px 20px;
     border: none;
     background: transparent;
     line-height: 1;
@@ -863,8 +863,8 @@
   }
 
   &__date {
-    min-width: 46px;
-    margin-right: 14px;
+    min-width: 42px;
+    margin-right: 12px;
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -883,7 +883,7 @@
 
   &__day {
     color: $text-primary;
-    font-size: $font-size-xl;
+    font-size: 30px;
     font-weight: $font-weight-normal;
     line-height: $line-height-tight;
     letter-spacing: -0.02em;
@@ -891,7 +891,7 @@
 
   &__weekday {
     margin-top: 2px;
-    color: $text-muted;
+    color: rgba($text-muted, 0.86);
     font-size: $figma-micro;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wider;
@@ -899,10 +899,10 @@
 
   &__mid-divider {
     width: 1px;
-    height: 28px;
-    background: rgba($gray-300, 0.74);
+    height: 24px;
+    background: rgba($gray-300, 0.62);
     border-radius: 1px;
-    margin-right: 14px;
+    margin-right: 12px;
 
     &--accent {
       background: rgba($accent, 0.5);
@@ -916,7 +916,7 @@
 
   &__title-row {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: $spacing-xs;
     margin-bottom: 2px;
   }
@@ -924,7 +924,7 @@
   &__item-title {
     flex: 1;
     color: $text-primary;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     min-width: 0;
@@ -934,13 +934,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 30px;
-    padding: 0 8px;
+    min-height: 22px;
+    padding: 0 9px;
     border-radius: $radius-full;
-    background: rgba($accent-soft, 0.62);
-    color: rgba($accent-strong, 0.78);
-    font-size: $figma-micro;
+    background: rgba($accent-soft, 0.5);
+    border: 1px solid rgba($accent, 0.16);
+    color: rgba($accent-strong, 0.72);
+    font-size: 14px;
     font-weight: $font-weight-normal;
+    letter-spacing: 0.04em;
   }
 
   &__item-description,
@@ -952,14 +954,15 @@
   }
 
   &__item-meta {
-    margin-top: 2px;
+    margin-top: 1px;
     letter-spacing: 0.01em;
   }
 
   &__item-arrow {
-    color: rgba($gray-400, 0.9);
-    width: 18px;
-    height: 18px;
+    color: rgba($gray-500, 0.82);
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
   }
 
   &__line {
@@ -1033,17 +1036,18 @@
 
   &__pin-ring {
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: $radius-full;
-    background: rgba($white, 0.06);
-    border: 1px solid rgba($white, 0.09);
+    background: rgba($white, 0.09);
+    border: 1px solid rgba($white, 0.18);
+    box-shadow: inset 0 0 0 1px rgba($white, 0.05);
   }
 
   &__pin-icon {
-    width: 24px;
-    height: 24px;
-    color: rgba($white, 0.5);
+    width: 22px;
+    height: 22px;
+    color: rgba($white, 0.72);
   }
 
   &__address {

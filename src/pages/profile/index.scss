@@ -62,7 +62,7 @@
   border: none;
   border-radius: $figma-radius-card;
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
-  padding: 49px 56px;
+  padding: 36px 40px;
 
   &__top,
   &__identity-row,
@@ -75,7 +75,7 @@
 
   &__top {
     gap: 35px;
-    margin-bottom: 42px;
+    margin-bottom: 28px;
   }
 
   &__avatar-wrap {
@@ -208,7 +208,7 @@
   &__stats {
     align-items: stretch;
     gap: 0;
-    padding: 35px 0;
+    padding: 28px 0;
     border-radius: 21px;
     background: #fafafa;
   }
@@ -264,8 +264,8 @@
 .profile-menu-section {
   display: flex;
   flex-direction: column;
-  gap: 21px;
-  margin-top: 56px;
+  gap: 18px;
+  margin-top: 40px;
 
   &__label {
     display: block;
@@ -292,17 +292,31 @@
   }
 
   &__item {
-    gap: 28px;
-    padding: 31px 49px;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 20px;
+    padding: 24px 36px;
 
     &:active {
       background: #fdfdfd;
+    }
+
+    &::after {
+      border: 0;
     }
 
     &--login-required {
       .profile-menu-section__title,
       .profile-menu-section__description {
         color: #d4d4d4;
+      }
+
+      .profile-menu-section__body {
+        max-width: calc(100% - 96px);
       }
     }
   }
@@ -357,7 +371,9 @@
     flex-shrink: 0;
     color: $accent;
     font-size: $figma-caption;
-    line-height: 1;
+    line-height: 1.2;
+    max-width: 92px;
+    text-align: right;
   }
 
   &__divider {
