@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
-import { View, Text } from '@tarojs/components';
+import { View } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
-import { AppButton, AppCard, CoachCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, CoachCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
 export default function Coaches() {
@@ -91,14 +91,13 @@ export default function Coaches() {
         />
       </View>
 
-      {loading && page === 1 ? (
-        <Loading compact />
-      ) : loadFailed ? (
-        <AppCard className='coaches-page__empty-card'>
-          <Empty title='教练加载失败' description='请检查网络后重试。' />
-          <AppButton size='small' variant='primary' onClick={() => fetchCoaches(1, false)}>重新加载</AppButton>
-        </AppCard>
-      ) : coaches.length > 0 ? (
+        {loading && page === 1 ? (
+          <Loading compact />
+        ) : loadFailed ? (
+          <AppCard className='coaches-page__empty-card'>
+            <Empty title='教练加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={() => fetchCoaches(1, false)} />
+          </AppCard>
+        ) : coaches.length > 0 ? (
         <AppCard padding='none' className='coaches-page__list-card'>
           {coaches.map((coach, index) => (
             <View key={coach.id}>
@@ -121,17 +120,7 @@ export default function Coaches() {
         </AppCard>
       )}
 
-        {hasMore && !loading && coaches.length > 0 ? (
-          <View className='coaches-page__loading-more'>
-            <Text className='coaches-page__loading-more-text'>{loadingMore ? '加载中...' : '上拉加载更多'}</Text>
-          </View>
-        ) : null}
-
-      {!hasMore && coaches.length > 0 ? (
-        <View className='coaches-page__loading-more'>
-          <Text className='coaches-page__loading-more-text'>没有更多了</Text>
-        </View>
-      ) : null}
+      {coaches.length > 0 ? <LoadMoreFooter loading={loadingMore} hasMore={hasMore} /> : null}
 
       <View className='coaches-page__spacer' />
     </PageShell>

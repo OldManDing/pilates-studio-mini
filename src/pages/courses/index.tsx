@@ -32,6 +32,26 @@ function getCourseImageKind(type: Course['type']): BookingCourseCardData['imageK
   return 'yoga';
 }
 
+function getCourseCategoryKey(type?: string) {
+  if (!type) {
+    return 'other';
+  }
+
+  if (type === 'PRIVATE') {
+    return 'meditation';
+  }
+
+  if (['MAT', 'REFORMER', 'CADILLAC', 'CHAIR', 'BARREL'].includes(type)) {
+    return 'pilates';
+  }
+
+  if (['YOGA', 'FLOW', 'STRETCH'].includes(type)) {
+    return 'yoga';
+  }
+
+  return 'other';
+}
+
 async function fetchAllUpcomingSessions() {
   const pageSize = 50;
   const allSessions: CourseSession[] = [];
@@ -93,7 +113,7 @@ export default function Courses() {
     () => {
       const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       const today = new Date();
-      return Array.from({ length: 7 }, (_, index) => {
+      return Array.from({ length: 14 }, (_, index) => {
         const date = new Date(today);
         date.setDate(today.getDate() + index);
         const key = `date-${index}`;
@@ -116,6 +136,7 @@ export default function Courses() {
       { key: 'yoga', label: '瑜伽', active: selectedCategoryKey === 'yoga' },
       { key: 'pilates', label: '普拉提', active: selectedCategoryKey === 'pilates' },
       { key: 'meditation', label: '冥想', active: selectedCategoryKey === 'meditation' },
+      { key: 'other', label: '其他', active: selectedCategoryKey === 'other' },
     ],
     [selectedCategoryKey],
   );
@@ -161,7 +182,7 @@ export default function Courses() {
       time: startsAt && !Number.isNaN(startsAt.getTime()) ? `${String(startsAt.getHours()).padStart(2, '0')}:${String(startsAt.getMinutes()).padStart(2, '0')}` : '--:--',
       duration: durationMinutes > 0 ? `${durationMinutes}min` : '待定',
       instructor: session.coach?.name || '待安排',
-      location: '朝阳门店',
+      location: '门店待更新',
       spotsText: spots > 0 ? `余 ${spots} 位` : '已约满',
       imageKind,
       full: spots <= 0,
@@ -171,7 +192,7 @@ export default function Courses() {
   const filteredCourseItems = useMemo(() => {
     return courseItems.filter((item) => {
       const session = sessions.find((sessionItem) => sessionItem.id === item.key);
-      const categoryKey = item.imageKind === 'pilates' ? 'pilates' : item.imageKind === 'meditation' ? 'meditation' : 'yoga';
+      const categoryKey = getCourseCategoryKey(session?.course?.type);
       const matchesCategory = selectedCategoryKey === 'all' || categoryKey === selectedCategoryKey;
       const selectedIndex = Number(selectedDateKey.replace('date-', ''));
       const selectedDate = dateItems[selectedIndex];

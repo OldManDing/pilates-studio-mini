@@ -8,17 +8,27 @@
   }
 
   &__filters {
+    position: sticky;
+    top: 0;
+    z-index: 6;
     display: flex;
     flex-direction: column;
-    gap: 42px;
-    margin-top: 42px;
+    gap: 24px;
+    margin-top: 28px;
+    margin-left: calc(-1 * #{$spacing-xs});
+    margin-right: calc(-1 * #{$spacing-xs});
+    padding: 14px $spacing-xs 10px;
+    border-radius: $radius-xl;
+    background: rgba($background, 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 rgba($gray-300, 0.6);
   }
 
   &__section {
     display: flex;
     flex-direction: column;
     gap: $figma-section-title-gap;
-    margin-top: 56px;
+    margin-top: 40px;
   }
 
   &__list {
@@ -105,7 +115,7 @@
 .booking-date-strip {
   &__row {
     display: flex;
-    gap: 14px;
+    gap: 10px;
     white-space: nowrap;
   }
 
@@ -176,7 +186,7 @@
 
 .booking-category-pills {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
 
   &__pill {
@@ -340,6 +350,13 @@
     font-size: $figma-small;
     font-weight: $font-weight-normal;
     line-height: 1.25;
+  }
+
+  &__meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   &__footer {

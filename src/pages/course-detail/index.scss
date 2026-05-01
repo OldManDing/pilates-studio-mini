@@ -14,7 +14,7 @@ $course-detail-cta-content-height: 78px;
   &__hero {
     position: relative;
     height: 42vh;
-    min-height: 320px;
+    min-height: 280px;
     max-height: 460px;
     overflow: hidden;
   }
@@ -93,7 +93,7 @@ $course-detail-cta-content-height: 78px;
     position: relative;
     z-index: 2;
     margin-top: -$spacing-sm;
-    padding: 0 $figma-page-x;
+    padding: 0 28px;
   }
 
   &__info-card {
@@ -330,9 +330,9 @@ $course-detail-cta-content-height: 78px;
   &__cta-button {
     min-height: 64px;
     border-radius: $radius-md;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     box-shadow: 0 4px 10px rgba($ink, 0.06);
   }
 

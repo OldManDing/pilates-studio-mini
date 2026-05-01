@@ -167,9 +167,8 @@
     min-width: 0;
     max-width: 65%;
     text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
     color: $text-primary;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
