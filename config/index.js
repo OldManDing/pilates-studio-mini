@@ -1,4 +1,35 @@
 const packageInfo = require('../package.json');
+const fs = require('fs');
+const path = require('path');
+
+function loadLocalEnv() {
+  const envPath = path.resolve(__dirname, '../.env');
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
+  fs.readFileSync(envPath, 'utf8')
+    .split(/\r?\n/)
+    .forEach((line) => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine || trimmedLine.startsWith('#')) {
+        return;
+      }
+
+      const separatorIndex = trimmedLine.indexOf('=');
+      if (separatorIndex === -1) {
+        return;
+      }
+
+      const key = trimmedLine.slice(0, separatorIndex).trim();
+      const value = trimmedLine.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (key && process.env[key] === undefined) {
+        process.env[key] = value;
+      }
+    });
+}
+
+loadLocalEnv();
 
 const isProductionRelease = process.env.APP_ENV === 'production'
   || process.env.MINI_RELEASE === 'true'
@@ -33,6 +64,9 @@ const config = {
   plugins: [],
   defineConstants: {
     API_BASE_URL: JSON.stringify(apiBaseUrl),
+    DEVTOOLS_API_BASE_URL: JSON.stringify(process.env.DEVTOOLS_API_BASE_URL || fallbackApiBaseUrl),
+    ALLOW_INSECURE_REAL_DEVICE_API: JSON.stringify(process.env.ALLOW_INSECURE_REAL_DEVICE_API === 'true'),
+    USE_MINI_OPEN_ID_LOGIN: JSON.stringify(process.env.USE_MINI_OPEN_ID_LOGIN === 'true'),
     MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || ''),
     APP_VERSION: JSON.stringify(process.env.APP_VERSION || `v${packageInfo.version}`),
     SUPPORT_PHONE: JSON.stringify(process.env.SUPPORT_PHONE || ''),

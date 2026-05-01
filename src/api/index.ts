@@ -8,3 +8,4 @@ export { membershipPlansApi } from './membershipPlans';
 export { transactionsApi } from './transactions';
 export { supportApi } from './support';
 export { miniAuthApi } from './miniAuth';
+export { settingsApi } from './settings';

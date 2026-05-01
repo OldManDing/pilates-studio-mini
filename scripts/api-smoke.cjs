@@ -53,14 +53,72 @@ async function main() {
   assert(Array.isArray(sessions.data), 'course-sessions/upcoming did not return array data');
   assert(sessions.meta?.pageSize, 'course-sessions/upcoming did not return pagination meta');
 
+  const firstSessionId = sessions.data[0]?.id;
+  assert(firstSessionId, 'No upcoming session available for detail smoke');
+
+  const sessionDetail = await request(`/course-sessions/${firstSessionId}`, { token });
+  assert(sessionDetail.data?.id === firstSessionId, 'course-sessions/:id did not return requested session');
+
+  const seats = await request(`/course-sessions/${firstSessionId}/available-seats`, { token });
+  assert(Number.isFinite(seats.data?.availableSeats), 'course-sessions/:id/available-seats did not return availableSeats');
+
+  const courses = await request('/courses?page=1&pageSize=5', { token });
+  assert(Array.isArray(courses.data), 'courses did not return array data');
+  const firstCourseId = courses.data[0]?.id;
+  assert(firstCourseId, 'No course available for detail smoke');
+
+  const course = await request(`/courses/${firstCourseId}`, { token });
+  assert(course.data?.id === firstCourseId, 'courses/:id did not return requested course');
+
+  const courseSessions = await request(`/courses/${firstCourseId}/sessions?upcoming=true`, { token });
+  assert(Array.isArray(courseSessions.data) || Array.isArray(courseSessions.data?.sessions), 'courses/:id/sessions did not return sessions');
+
+  const coaches = await request('/coaches/active?page=1&pageSize=5', { token });
+  assert(Array.isArray(coaches.data), 'coaches/active did not return array data');
+  const firstCoachId = coaches.data[0]?.id;
+  assert(firstCoachId, 'No coach available for detail smoke');
+
+  const coach = await request(`/coaches/${firstCoachId}`, { token });
+  assert(coach.data?.id === firstCoachId, 'coaches/:id did not return requested coach');
+
+  const coachSchedule = await request(`/coaches/${firstCoachId}/schedule`, { token });
+  assert(
+    Array.isArray(coachSchedule.data) || Array.isArray(coachSchedule.data?.sessions),
+    'coaches/:id/schedule did not return schedule data',
+  );
+
   const bookings = await request('/bookings/my?page=1&pageSize=5', { token });
   assert(Array.isArray(bookings.data), 'bookings/my did not return array data');
+
+  const firstBookingId = bookings.data[0]?.id;
+  if (firstBookingId) {
+    const booking = await request(`/bookings/${firstBookingId}`, { token });
+    assert(booking.data?.id === firstBookingId, 'bookings/:id did not return requested booking');
+  }
 
   const transactions = await request('/transactions/my?page=1&pageSize=5', { token });
   assert(Array.isArray(transactions.data), 'transactions/my did not return array data');
 
+  const transactionSummary = await request('/transactions/my-summary', { token });
+  assert(Number.isFinite(transactionSummary.data?.transactionCount), 'transactions/my-summary did not return transactionCount');
+
+  const firstTransactionId = transactions.data[0]?.id;
+  if (firstTransactionId) {
+    const transaction = await request(`/transactions/${firstTransactionId}`, { token });
+    assert(transaction.data?.id === firstTransactionId, 'transactions/:id did not return requested transaction');
+  }
+
+  const notifications = await request('/notifications/my?page=1&pageSize=5', { token });
+  assert(Array.isArray(notifications.data), 'notifications/my did not return array data');
+
   const plans = await request('/membership-plans/active', { token });
   assert(Array.isArray(plans.data), 'membership-plans/active did not return array data');
+
+  const firstPlanId = plans.data[0]?.id;
+  assert(firstPlanId, 'No active plan available for detail smoke');
+
+  const plan = await request(`/membership-plans/${firstPlanId}`, { token });
+  assert(plan.data?.id === firstPlanId, 'membership-plans/:id did not return requested plan');
 
   if (runMutations) {
     const feedback = await request('/support/feedback', {
@@ -70,7 +128,7 @@ async function main() {
     });
     assert(feedback.data.submitted === true, 'support/feedback did not return submitted=true');
 
-    const planId = plans.data[0]?.id;
+    const planId = firstPlanId;
     assert(planId, 'No active plan available for renewal smoke');
 
     const renewal = await request('/membership-renewals', {

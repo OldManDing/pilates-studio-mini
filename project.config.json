@@ -4,7 +4,7 @@
   "description": "Pilates Studio Mini Program",
   "appid": "wx9608a7c1e99814f2",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": true,
     "enhance": true,
     "postcss": false,

@@ -1,10 +1,6 @@
 import Taro from '@tarojs/taro';
-import { ensureMiniProgramAuth } from './auth';
+import { ensureMiniProgramAuth, getApiBaseUrlUnavailableMessage, getRuntimeApiBaseUrl } from './auth';
 import { clearAuthState } from '../utils/storage';
-
-declare const API_BASE_URL: string;
-
-const REQUEST_BASE_URL = API_BASE_URL;
 
 type RequestData = object;
 
@@ -91,6 +87,28 @@ function normalizePaginationMeta(meta?: PaginationMeta): PaginationMeta | undefi
   };
 }
 
+function resolveNetworkFailureMessage(errorMessage: string, errMsg?: string) {
+  const combined = `${errorMessage || ''} ${errMsg || ''}`.toLowerCase();
+
+  if (combined.includes('not in domain list') || combined.includes('url not in domain list')) {
+    return 'request 合法域名未配置，请检查微信开发者工具域名校验设置';
+  }
+
+  if (combined.includes('timeout')) {
+    return '请求超时，请检查后端服务与局域网连接';
+  }
+
+  if (combined.includes('refused') || combined.includes('econnrefused') || combined.includes('failed to fetch')) {
+    return '后端服务不可达，请确认服务已启动且地址可访问';
+  }
+
+  if (combined.includes('ssl') || combined.includes('certificate') || combined.includes('tls')) {
+    return 'HTTPS 证书校验失败，请检查合法域名与证书配置';
+  }
+
+  return '网络连接失败，请检查网络';
+}
+
 async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<T>> {
   const {
     url,
@@ -107,7 +125,8 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
   }
 
   try {
-    let fullUrl = `${REQUEST_BASE_URL}${url}`;
+    const requestBaseUrl = getRuntimeApiBaseUrl();
+    let fullUrl = `${requestBaseUrl}${url}`;
     const requestParams = normalizeRequestParams(params);
     if (requestParams && method === 'GET') {
       const queryString = Object.entries(requestParams)
@@ -122,7 +141,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
 
     let token = getToken();
     if (!token && url !== '/mini-auth/login') {
-      token = await ensureMiniProgramAuth();
+      token = await ensureMiniProgramAuth({ interactive: true });
     }
 
     const response = await Taro.request({
@@ -167,8 +186,12 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     const errorMessage = requestError.message;
     const errorWithMessage = error as { errMsg?: string; message?: string };
 
-    if (errorWithMessage.errMsg?.includes('fail') || errorMessage.includes('Network')) {
-      Taro.showToast({ title: '网络连接失败，请检查网络', icon: 'none' });
+    const apiBaseUrlUnavailableMessage = getApiBaseUrlUnavailableMessage(getRuntimeApiBaseUrl());
+
+    if (apiBaseUrlUnavailableMessage) {
+      Taro.showToast({ title: apiBaseUrlUnavailableMessage, icon: 'none' });
+    } else if (errorWithMessage.errMsg?.includes('fail') || errorMessage.includes('Network')) {
+      Taro.showToast({ title: resolveNetworkFailureMessage(errorMessage, errorWithMessage.errMsg), icon: 'none' });
     } else if (!(requestError instanceof ApiBusinessError) && !errorMessage.includes('UNAUTHORIZED')) {
       Taro.showToast({ title: errorMessage || '请求失败', icon: 'none' });
     }
