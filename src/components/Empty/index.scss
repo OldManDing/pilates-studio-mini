@@ -36,8 +36,8 @@
   }
 
   &__image {
-    width: 208px;
-    height: 208px;
+    width: 168px;
+    height: 168px;
     margin-bottom: $spacing-md;
     opacity: 0.42;
   }
@@ -62,5 +62,12 @@
     margin-top: $spacing-lg;
     display: flex;
     justify-content: center;
+
+    .app-button {
+      width: auto;
+      min-width: 160px;
+      padding-left: $spacing-lg;
+      padding-right: $spacing-lg;
+    }
   }
 }
