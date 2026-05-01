@@ -54,10 +54,14 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 }
 
 .settings-row {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
   display: flex;
   align-items: center;
-    gap: 24px;
-    padding: 32px $figma-card-x;
+    gap: 20px;
+    padding: 24px 36px;
 
   &--clickable {
     transition: background $duration-fast $ease-in-out;
@@ -65,6 +69,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &:active {
       background: #fdfdfd;
     }
+  }
+
+  &::after {
+    border: 0;
   }
 
   &__icon-wrap {
@@ -124,7 +132,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-all;
   }
 
   &__arrow {
@@ -140,11 +149,15 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 }
 
 .settings-about-row {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 21px;
-    padding: 32px $figma-card-x;
+    gap: 18px;
+    padding: 24px 36px;
 
   &--clickable {
     transition: background $duration-fast $ease-in-out;
@@ -152,6 +165,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &:active {
       background: #fdfdfd;
     }
+  }
+
+  &::after {
+    border: 0;
   }
 
   &__title,
@@ -178,7 +195,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-all;
   }
 
   &__arrow {
@@ -225,6 +243,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
 .danger-action {
   width: 100%;
+  background: transparent;
   padding: 28px 0;
   border: 1px solid $support-border-2;
   border-radius: $figma-radius-card;
@@ -236,6 +255,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &:active {
     opacity: 0.92;
+  }
+
+  &::after {
+    border: 0;
   }
 
   &__icon {
@@ -255,6 +278,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
 .danger-link {
   width: 100%;
+  background: transparent;
   min-height: 56px;
   display: flex;
   align-items: center;
@@ -263,6 +287,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &:active {
     opacity: 0.92;
+  }
+
+  &::after {
+    border: 0;
   }
 
   &__text {
@@ -311,6 +339,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__button {
     flex: 1;
+    background: transparent;
     padding: 21px 0;
     border-radius: $figma-radius-button;
     display: flex;
@@ -320,6 +349,10 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
     &:active {
       opacity: 0.92;
+    }
+
+    &::after {
+      border: 0;
     }
 
     &--confirm {

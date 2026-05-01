@@ -31,7 +31,7 @@
   }
 
   &__summary-amount {
-    margin: 10px 0 28px;
+    margin: 8px 0 20px;
 
     .price {
       color: $accent;
@@ -72,7 +72,7 @@
     justify-content: space-between;
     align-items: center;
     gap: $spacing-md;
-    padding: 24px $figma-card-x;
+    padding: 20px 36px;
   }
 
   &__item-main {
@@ -96,9 +96,8 @@
   &__item-code {
     display: block;
     margin-top: $spacing-2xs;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
   }
 
   &__item-side {

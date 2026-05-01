@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
 import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
@@ -50,6 +50,11 @@ export default function MembershipRenew() {
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId) || null;
 
   const handleSubmitRenew = async () => {
+    if (loadFailed) {
+      Taro.showToast({ title: '方案未同步完成，请先刷新', icon: 'none' });
+      return;
+    }
+
     if (!selectedPlan) {
       Taro.showToast({ title: '请选择会员方案', icon: 'none' });
       return;
@@ -101,8 +106,7 @@ export default function MembershipRenew() {
         <SectionTitle title='可选方案' actionLabel='PLANS' actionTone='muted' />
         {loadFailed && plans.length === 0 ? (
           <AppCard className='membership-renew-page__empty'>
-            <Empty title='会员方案加载失败' description='请检查网络后重试。' />
-            <AppButton size='small' variant='primary' onClick={fetchPlans}>重新加载</AppButton>
+            <Empty title='会员方案加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchPlans} />
           </AppCard>
         ) : plans.length > 0 ? (
           <>
@@ -116,16 +120,16 @@ export default function MembershipRenew() {
               const selected = plan.id === selectedPlanId;
               return (
                 <View key={plan.id || plan.planCode}>
-                  <View className={`membership-plan-list__item ${selected ? 'membership-plan-list__item--selected' : ''}`} onClick={() => setSelectedPlanId(plan.id)}>
+                  <Button className={`membership-plan-list__item ${selected ? 'membership-plan-list__item--selected' : ''}`} hoverClass='none' onClick={() => setSelectedPlanId(plan.id)}>
                     <View className='membership-plan-list__main'>
                       <Text className='membership-plan-list__name'>{plan.name}</Text>
                       <Text className='membership-plan-list__desc'>{getPlanCredits(plan)} · 有效 {plan.validityDays} 天</Text>
                     </View>
                     <View className='membership-plan-list__price-wrap'>
                       <Text className='membership-plan-list__price'>{formatPrice(plan.priceCents)}</Text>
-                      <Text className='membership-plan-list__tag'>{selected ? '已选择' : '选择'}</Text>
+                      <Text className={`membership-plan-list__tag ${selected ? 'membership-plan-list__tag--selected' : ''}`}>{selected ? '已选择' : '选择'}</Text>
                     </View>
-                  </View>
+                  </Button>
                   {index < plans.length - 1 ? <Divider spacing='none' /> : null}
                 </View>
               );
@@ -143,10 +147,10 @@ export default function MembershipRenew() {
         <AppButton
           size='large'
           variant='primary'
-          disabled={!selectedPlan || submitting || submittedPlanId === selectedPlan?.id}
+          disabled={loadFailed || !selectedPlan || submitting || submittedPlanId === selectedPlan?.id}
           onClick={handleSubmitRenew}
         >
-          {submitting ? '提交中...' : submittedPlanId === selectedPlan?.id ? '已提交，等待处理' : '确认续费'}
+          {submitting ? '提交中...' : submittedPlanId === selectedPlan?.id ? '已提交，等待处理' : loadFailed ? '请先同步最新方案' : '确认续费'}
         </AppButton>
       </View>
     </PageShell>
