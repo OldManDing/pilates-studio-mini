@@ -74,7 +74,7 @@ function getStoredToken(): string | null {
 }
 
 function shouldUseForcedMiniOpenIdLogin() {
-  return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID);
+  return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID) && isWeChatDeveloperTool();
 }
 
 async function confirmLoginAuthorization() {
@@ -158,12 +158,12 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
     ? { openId: MINI_OPEN_ID, ...profile }
     : code
       ? { code, ...profile }
-      : MINI_OPEN_ID
+      : MINI_OPEN_ID && isWeChatDeveloperTool()
         ? { openId: MINI_OPEN_ID, ...profile }
         : null;
 
   if (!payload) {
-    throw new Error('小程序登录凭证获取失败');
+    throw new Error('小程序登录凭证获取失败，请在真机环境确认微信登录、HTTPS 域名和合法请求域名配置');
   }
 
   const response = await Taro.request<MiniAuthPayload>({

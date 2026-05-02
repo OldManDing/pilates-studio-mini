@@ -45,6 +45,10 @@ if (isProductionRelease) {
     throw new Error(`生产发布缺少必要环境变量: ${missingKeys.join(', ')}`);
   }
 
+  if (process.env.USE_MINI_OPEN_ID_LOGIN === 'true') {
+    throw new Error('生产发布不能启用 USE_MINI_OPEN_ID_LOGIN，请使用真实微信登录链路');
+  }
+
   if (localApiPattern.test(apiBaseUrl)) {
     throw new Error('生产发布 API_BASE_URL 不能使用 localhost 或 127.0.0.1');
   }
