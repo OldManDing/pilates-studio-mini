@@ -69,6 +69,12 @@ const FAQ_ITEMS: FaqItem[] = [
     question: '如何修改绑定手机号？',
     answer: '当前手机号用于会员身份核验。如需变更，请在「帮助与反馈」提交说明或联系客服，由门店完成身份确认后处理。',
   },
+  {
+    id: 'f7',
+    category: 'account',
+    question: '如何修改账号信息或注销账户？',
+    answer: '当前小程序账号基于微信授权登录，不支持在小程序内单独修改密码或直接提交注销。若需处理账号相关问题，请联系门店客服人工协助。',
+  },
 ];
 
 export default function Help() {

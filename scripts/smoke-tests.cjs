@@ -83,13 +83,15 @@ assertIncludes('src/constants/navigation.ts', "pagePath: 'pages/profile/index'")
   'pages/agreement/index',
   'pages/privacy/index',
   'pages/transactions/index',
-].forEach((pagePath) => assert(appConfig.includes(pagePath), `app.config.ts 未注册 ${pagePath}`));
-
+].forEach((pagePath) => {
+  assert(appConfig.includes(pagePath), `app.config.ts 未注册 ${pagePath}`);
+});
 assertIncludes('src/pages/settings/index.tsx', 'clearAuthState');
 assertIncludes('src/api/request.ts', 'clearAuthState');
 assertIncludes('src/utils/storage.ts', "Taro.removeStorageSync('token')");
 assertIncludes('src/api/request.ts', '登录已过期，请重新登录');
-assertIncludes('src/pages/settings/index.tsx', 'membersApi.requestAccountDeletion');
+assertIncludes('src/pages/settings/index.tsx', '联系客服处理');
+assertNotIncludes('src/pages/settings/index.tsx', 'membersApi.requestAccountDeletion');
 assertIncludes('src/pages/settings/index.tsx', 'Taro.setNavigationBarColor');
 assertIncludes('src/pages/settings/index.tsx', "Taro.switchTab({ url: '/pages/index/index' })");
 assertNotIncludes('src/pages/settings/index.tsx', 'Taro.clearStorageSync');
@@ -107,7 +109,8 @@ assertNotIncludes('src/pages/courses/index.tsx', 'coursesApi.getAll');
 assertIncludes('src/pages/course-detail/index.tsx', 'profileLoadFailed');
 assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.requestRenewal');
 assertIncludes('src/pages/membership-renew/index.tsx', 'submittedPlanId');
-assertIncludes('src/pages/account-security/index.tsx', 'membersApi.changePassword');
+assertIncludes('src/pages/account-security/index.tsx', '当前账号通过微信授权登录');
+assertNotIncludes('src/pages/account-security/index.tsx', 'membersApi.changePassword');
 assertIncludes('src/pages/account-security/index.tsx', 'writeStorage(STORAGE_KEYS.settings');
 assertIncludes('src/pages/help/index.tsx', 'supportApi.submitFeedback');
 assertIncludes('src/pages/help/index.tsx', 'submittingFeedback');
