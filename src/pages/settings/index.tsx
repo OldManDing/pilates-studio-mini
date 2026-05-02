@@ -45,14 +45,14 @@ const SECTIONS: SettingSection[] = [
       {
         icon: '/assets/ui/icon-support.svg',
         title: '账户安全',
-        description: '管理密码与登录保护',
+        description: '查看账号说明与本机登录偏好',
         type: 'navigate',
         route: '/pages/account-security/index',
       },
       {
         icon: '/assets/ui/icon-settings.svg',
-        title: '面容/指纹解锁',
-        description: '使用生物识别快速登录',
+        title: '本机快捷访问偏好',
+        description: '仅记录当前设备的快捷访问偏好',
         type: 'toggle',
         toggleKey: 'biometric',
       },
@@ -63,15 +63,15 @@ const SECTIONS: SettingSection[] = [
     items: [
       {
         icon: '/assets/ui/icon-notifications.svg',
-        title: '课程提醒',
-        description: '课前 30 分钟推送提醒',
+        title: '本机课程提醒偏好',
+        description: '仅影响当前设备内的提醒展示体验',
         type: 'toggle',
         toggleKey: 'courseReminder',
       },
       {
         icon: '/assets/ui/icon-notifications.svg',
-        title: '系统通知',
-        description: '接收系统公告与活动通知',
+        title: '本机通知展示偏好',
+        description: '仅影响当前设备内的通知展示方式',
         type: 'toggle',
         toggleKey: 'systemNotification',
       },
@@ -83,7 +83,7 @@ const SECTIONS: SettingSection[] = [
       {
         icon: '/assets/ui/icon-settings.svg',
         title: '深色模式',
-        description: '降低屏幕亮度，保护眼睛',
+        description: '仅影响当前设备的页面展示风格',
         type: 'toggle',
         toggleKey: 'darkMode',
       },
@@ -144,8 +144,6 @@ export default function Settings() {
     biometric: true,
   });
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const syncProfile = useCallback(async () => {
     if (!Taro.getStorageSync('token')) {
@@ -223,41 +221,17 @@ export default function Settings() {
     Taro.showToast({ title: '页面缓存已清理', icon: 'success' });
   };
 
-  const handleDeleteAccount = async () => {
-    if (deletingAccount) {
-      return;
-    }
-
-    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
-    if (!authenticated) {
-      return;
-    }
-
-    try {
-      setDeletingAccount(true);
-      await membersApi.requestAccountDeletion();
-      setShowDeleteConfirm(false);
-      clearAuthState();
-      Taro.showToast({ title: '注销申请已提交', icon: 'success' });
-      Taro.switchTab({ url: '/pages/index/index' });
-    } catch (error) {
-      Taro.showToast({ title: getApiErrorMessage(error, '注销申请提交失败'), icon: 'none' });
-    } finally {
-      setDeletingAccount(false);
-    }
-  };
-
   const handleOpenLogoutConfirm = async () => {
     setShowLogoutConfirm(true);
   };
 
-  const handleOpenDeleteConfirm = async () => {
-    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
+  const handleContactSupportForDeletion = async () => {
+    const authenticated = await ensureAuthenticated('已登录，可前往帮助页联系客服');
     if (!authenticated) {
       return;
     }
 
-    setShowDeleteConfirm(true);
+    Taro.navigateTo({ url: '/pages/help/index' });
   };
 
   const handleNavigateRow = (item: SettingRow) => {
@@ -401,38 +375,19 @@ export default function Settings() {
           </AppCard>
         )}
 
-        {!showDeleteConfirm ? (
-          <Button className='danger-link' hoverClass='none' onClick={handleOpenDeleteConfirm}>
-            <Text className='danger-link__text'>申请注销账户</Text>
-          </Button>
-        ) : (
-          <AppCard className='danger-confirm' padding='none'>
-            <Text className='danger-confirm__title'>确认申请注销账户？</Text>
-            <Text className='danger-confirm__description'>注销后所有数据将被永久删除且无法恢复，包括会员权益、训练记录等。</Text>
-            <View className='danger-confirm__actions'>
-              <Button
-                className={`danger-confirm__button danger-confirm__button--cancel ${deletingAccount ? 'danger-confirm__button--disabled' : ''}`}
-                hoverClass='none'
-                onClick={() => {
-                  if (!deletingAccount) {
-                    setShowDeleteConfirm(false);
-                  }
-                }}
-              >
-                <Text className='danger-confirm__button-text danger-confirm__button-text--cancel'>取消</Text>
-              </Button>
-              <Button
-                className={`danger-confirm__button danger-confirm__button--danger ${deletingAccount ? 'danger-confirm__button--disabled' : ''}`}
-                hoverClass='none'
-                onClick={() => {
-                  handleDeleteAccount();
-                }}
-              >
-                <Text className='danger-confirm__button-text'>{deletingAccount ? '提交中...' : '确认申请'}</Text>
-              </Button>
-            </View>
-          </AppCard>
-        )}
+        <AppCard className='danger-confirm' padding='none'>
+          <Text className='danger-confirm__title'>账号注销说明</Text>
+          <Text className='danger-confirm__description'>当前暂不支持在小程序内直接提交账号注销申请。如需处理账号注销，请联系门店客服人工协助。</Text>
+          <View className='danger-confirm__actions'>
+            <Button
+              className='danger-confirm__button danger-confirm__button--confirm'
+              hoverClass='none'
+              onClick={handleContactSupportForDeletion}
+            >
+              <Text className='danger-confirm__button-text'>联系客服处理</Text>
+            </Button>
+          </View>
+        </AppCard>
       </View>
     </PageShell>
   );

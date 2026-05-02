@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import Taro from '@tarojs/taro';
-import { Button, Input, Text, View } from '@tarojs/components';
-import { ensureMiniProgramAuth } from '../../api/auth';
-import { membersApi } from '../../api/members';
-import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
-import { AppButton, AppCard, Divider, PageHeader, PageShell, SectionTitle } from '../../components';
+import { Button, Text, View } from '@tarojs/components';
+import { AppCard, Divider, PageHeader, PageShell, SectionTitle } from '../../components';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
@@ -18,60 +15,6 @@ export default function AccountSecurity() {
   const hasBoundPhone = profile.hasBoundPhone === true;
   const [biometricEnabled, setBiometricEnabled] = useState(() => readStorage<SettingsStorage>(STORAGE_KEYS.settings, { biometric: true }).biometric === true);
   const [loginProtectionEnabled, setLoginProtectionEnabled] = useState(() => Taro.getStorageSync('loginProtectionEnabled') !== false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const handlePasswordChange = () => {
-    setShowPasswordForm(true);
-  };
-
-  const resetPasswordForm = () => {
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setShowPasswordForm(false);
-  };
-
-  const handlePasswordSubmit = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Taro.showToast({ title: '请完整填写密码信息', icon: 'none' });
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      Taro.showToast({ title: '新密码至少 8 位', icon: 'none' });
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Taro.showToast({ title: '两次新密码不一致', icon: 'none' });
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      await membersApi.changePassword({ currentPassword, newPassword });
-      Taro.showToast({ title: '密码已更新', icon: 'success' });
-      resetPasswordForm();
-    } catch (error) {
-      if (isUnauthorizedApiError(error)) {
-        try {
-          await ensureMiniProgramAuth({ interactive: true });
-          Taro.showToast({ title: '登录成功，请重新提交密码修改', icon: 'success' });
-          return;
-        } catch (authError) {
-          Taro.showToast({ title: getApiErrorMessage(authError, '登录失败，请稍后重试'), icon: 'none' });
-          return;
-        }
-      }
-      Taro.showToast({ title: getApiErrorMessage(error, '密码修改失败，请稍后重试'), icon: 'none' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const toggleBiometric = () => {
     setBiometricEnabled((value) => {
@@ -92,7 +35,7 @@ export default function AccountSecurity() {
 
   return (
     <PageShell className='account-security-page' safeAreaBottom>
-      <PageHeader title='账户安全' subtitle='手机号、密码与登录保护' fallbackUrl='/pages/settings/index' />
+      <PageHeader title='账户安全' subtitle='手机号展示与本机登录偏好' fallbackUrl='/pages/settings/index' />
 
       <View className='account-security-page__section'>
         <SectionTitle title='登录账户' actionLabel='ACCOUNT' actionTone='muted' />
@@ -105,58 +48,15 @@ export default function AccountSecurity() {
             <Text className='security-row__value'>{hasBoundPhone ? '已绑定' : '未同步'}</Text>
           </View>
           <Divider spacing='none' />
-          <Button className='security-row security-row--clickable' hoverClass='none' onClick={handlePasswordChange}>
+          <View className='security-row'>
             <View className='security-row__main'>
-              <Text className='security-row__title'>修改密码</Text>
-              <Text className='security-row__desc'>定期修改保障账户安全</Text>
+              <Text className='security-row__title'>账号管理说明</Text>
+              <Text className='security-row__desc'>当前账号通过微信授权登录，不支持在小程序内单独修改密码。</Text>
             </View>
-            <Text className='security-row__value'>去修改</Text>
-          </Button>
+            <Text className='security-row__value'>微信授权</Text>
+          </View>
         </AppCard>
       </View>
-
-      {showPasswordForm ? (
-        <View className='account-security-page__section'>
-          <SectionTitle title='修改密码' actionLabel='PASSWORD' actionTone='muted' />
-          <AppCard className='password-form'>
-            <View className='password-form__field'>
-              <Text className='password-form__label'>当前密码</Text>
-              <Input
-                className='password-form__input'
-                password
-                value={currentPassword}
-                placeholder='请输入当前密码'
-                onInput={(event) => setCurrentPassword(String(event.detail.value || ''))}
-              />
-            </View>
-            <View className='password-form__field'>
-              <Text className='password-form__label'>新密码</Text>
-              <Input
-                className='password-form__input'
-                password
-                value={newPassword}
-                placeholder='至少 8 位字符'
-                onInput={(event) => setNewPassword(String(event.detail.value || ''))}
-              />
-              <Text className='password-form__hint'>建议包含字母与数字，提升账户安全性</Text>
-            </View>
-            <View className='password-form__field'>
-              <Text className='password-form__label'>确认新密码</Text>
-              <Input
-                className='password-form__input'
-                password
-                value={confirmPassword}
-                placeholder='再次输入新密码'
-                onInput={(event) => setConfirmPassword(String(event.detail.value || ''))}
-              />
-            </View>
-            <View className='password-form__actions'>
-              <AppButton variant='outline' onClick={resetPasswordForm}>取消</AppButton>
-              <AppButton variant='primary' disabled={submitting} onClick={handlePasswordSubmit}>{submitting ? '更新中...' : '确认修改'}</AppButton>
-            </View>
-          </AppCard>
-        </View>
-      ) : null}
 
       <View className='account-security-page__section'>
         <SectionTitle title='安全保护' actionLabel='PROTECT' actionTone='muted' />
@@ -164,7 +64,7 @@ export default function AccountSecurity() {
           <Button className='security-row security-row--clickable' hoverClass='none' onClick={toggleBiometric}>
             <View className='security-row__main'>
               <Text className='security-row__title'>面容/指纹解锁</Text>
-              <Text className='security-row__desc'>与设置页保持同步的本机登录偏好</Text>
+              <Text className='security-row__desc'>记录当前设备的快捷访问偏好，不影响服务端登录方式。</Text>
             </View>
             <View className={`security-toggle ${biometricEnabled ? 'security-toggle--on' : ''}`}>
               <View className='security-toggle__dot' />
@@ -174,7 +74,7 @@ export default function AccountSecurity() {
           <Button className='security-row security-row--clickable' hoverClass='none' onClick={toggleLoginProtection}>
             <View className='security-row__main'>
               <Text className='security-row__title'>异地登录提醒</Text>
-              <Text className='security-row__desc'>检测异常登录时发送提醒</Text>
+              <Text className='security-row__desc'>当前仅保留本机安全提醒偏好，暂未与服务端风控联动。</Text>
             </View>
             <View className={`security-toggle ${loginProtectionEnabled ? 'security-toggle--on' : ''}`}>
               <View className='security-toggle__dot' />
