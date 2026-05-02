@@ -49,6 +49,10 @@ async function main() {
   const memberships = await request('/members/my-memberships', { token });
   assert(Array.isArray(memberships.data.memberships), 'members/my-memberships did not return memberships array');
 
+  const preferences = await request('/members/preferences', { token });
+  assert(typeof preferences.data?.preferences?.courseReminder === 'boolean', 'members/preferences did not return courseReminder');
+  assert(typeof preferences.data?.preferences?.systemNotification === 'boolean', 'members/preferences did not return systemNotification');
+
   const sessions = await request('/course-sessions/upcoming?page=1&pageSize=5', { token });
   assert(Array.isArray(sessions.data), 'course-sessions/upcoming did not return array data');
   assert(sessions.meta?.pageSize, 'course-sessions/upcoming did not return pagination meta');
@@ -121,12 +125,33 @@ async function main() {
   assert(plan.data?.id === firstPlanId, 'membership-plans/:id did not return requested plan');
 
   if (runMutations) {
+    const nextCourseReminder = !preferences.data.preferences.courseReminder;
+    const nextSystemNotification = !preferences.data.preferences.systemNotification;
+
+    const updatedPreferences = await request('/members/preferences', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({
+        courseReminder: nextCourseReminder,
+        systemNotification: nextSystemNotification,
+      }),
+    });
+    assert(updatedPreferences.data.preferences.courseReminder === nextCourseReminder, 'members/preferences did not update courseReminder');
+    assert(updatedPreferences.data.preferences.systemNotification === nextSystemNotification, 'members/preferences did not update systemNotification');
+
     const feedback = await request('/support/feedback', {
       method: 'POST',
       token,
       body: JSON.stringify({ content: `API smoke feedback ${new Date().toISOString()}` }),
     });
     assert(feedback.data.submitted === true, 'support/feedback did not return submitted=true');
+
+    const deletionRequest = await request('/support/account-deletion-request', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ reason: `API smoke deletion request ${new Date().toISOString()}` }),
+    });
+    assert(deletionRequest.data.submitted === true, 'support/account-deletion-request did not return submitted=true');
 
     const planId = firstPlanId;
     assert(planId, 'No active plan available for renewal smoke');

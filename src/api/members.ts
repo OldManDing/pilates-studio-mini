@@ -48,6 +48,11 @@ export interface ChangePasswordData {
   newPassword: string;
 }
 
+export interface MemberPreferences {
+  courseReminder: boolean;
+  systemNotification: boolean;
+}
+
 // Member APIs
 export const membersApi = {
   // Get current member profile
@@ -66,11 +71,11 @@ export const membersApi = {
   getMyMemberships: (config?: { showLoading?: boolean }) =>
     http.get<{ memberships: Membership[] }>('/members/my-memberships', undefined, config),
 
-  // Submit password change request
-  changePassword: (data: ChangePasswordData) =>
-    http.post<{ submitted: boolean }>('/members/change-password', data),
+  // Get current member preferences
+  getPreferences: (config?: { showLoading?: boolean }) =>
+    http.get<{ preferences: MemberPreferences }>('/members/preferences', undefined, config),
 
-  // Submit account deletion request
-  requestAccountDeletion: () =>
-    http.post<{ submitted: boolean }>('/members/delete-request'),
+  // Update current member preferences
+  updatePreferences: (data: Partial<MemberPreferences>) =>
+    http.put<{ preferences: MemberPreferences }>('/members/preferences', data),
 };

@@ -5,6 +5,7 @@ import { ensureMiniProgramAuth } from '../../api/auth';
 import { AppCard, Divider, Icon, PageHeader, PageShell } from '../../components';
 import { membersApi } from '../../api/members';
 import { getApiErrorMessage } from '../../api/request';
+import { supportApi } from '../../api/support';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { clearAuthState, readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
@@ -63,15 +64,15 @@ const SECTIONS: SettingSection[] = [
     items: [
       {
         icon: '/assets/ui/icon-notifications.svg',
-        title: '本机课程提醒偏好',
-        description: '仅影响当前设备内的提醒展示体验',
+        title: '课程提醒',
+        description: '控制课程相关通知是否继续发送',
         type: 'toggle',
         toggleKey: 'courseReminder',
       },
       {
         icon: '/assets/ui/icon-notifications.svg',
-        title: '本机通知展示偏好',
-        description: '仅影响当前设备内的通知展示方式',
+        title: '系统通知',
+        description: '控制系统通知是否继续发送',
         type: 'toggle',
         toggleKey: 'systemNotification',
       },
@@ -144,6 +145,9 @@ export default function Settings() {
     biometric: true,
   });
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [submittingDeletionRequest, setSubmittingDeletionRequest] = useState(false);
+  const [deletionRequested, setDeletionRequested] = useState(false);
 
   const syncProfile = useCallback(async () => {
     if (!Taro.getStorageSync('token')) {
@@ -195,9 +199,54 @@ export default function Settings() {
       biometric: true,
     }));
     syncProfile();
+    const syncMemberPreferences = async () => {
+      if (!Taro.getStorageSync('token')) {
+        return;
+      }
+
+      try {
+        const response = await membersApi.getPreferences({ showLoading: false });
+        setToggles((previous) => ({
+          ...previous,
+          courseReminder: response.data.preferences.courseReminder,
+          systemNotification: response.data.preferences.systemNotification,
+        }));
+      } catch {
+        // keep local fallback
+      }
+    };
+    void syncMemberPreferences();
   }, [syncProfile]);
 
-  const handleToggle = (key: ToggleKey) => {
+  const handleToggle = async (key: ToggleKey) => {
+    const current = toggles[key];
+    const nextValue = !current;
+
+    if (key === 'courseReminder' || key === 'systemNotification') {
+      const authenticated = await ensureAuthenticated('已登录，正在同步通知偏好');
+      if (!authenticated) {
+        return;
+      }
+
+      try {
+        const response = await membersApi.updatePreferences({ [key]: nextValue });
+        setToggles((previous) => ({
+          ...previous,
+          courseReminder: response.data.preferences.courseReminder,
+          systemNotification: response.data.preferences.systemNotification,
+        }));
+        writeStorage(STORAGE_KEYS.settings, {
+          ...readStorage(STORAGE_KEYS.settings, {}),
+          courseReminder: response.data.preferences.courseReminder,
+          systemNotification: response.data.preferences.systemNotification,
+        });
+        Taro.showToast({ title: '通知偏好已同步', icon: 'success' });
+      } catch (error) {
+        Taro.showToast({ title: getApiErrorMessage(error, '通知偏好同步失败'), icon: 'none' });
+      }
+      return;
+    }
+
     setToggles((previous) => {
       const next = { ...previous, [key]: !previous[key] };
       writeStorage(STORAGE_KEYS.settings, next);
@@ -225,13 +274,36 @@ export default function Settings() {
     setShowLogoutConfirm(true);
   };
 
-  const handleContactSupportForDeletion = async () => {
-    const authenticated = await ensureAuthenticated('已登录，可前往帮助页联系客服');
+  const handleSubmitAccountDeletionRequest = async () => {
+    if (submittingDeletionRequest || deletionRequested) {
+      return;
+    }
+
+    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
     if (!authenticated) {
       return;
     }
 
-    Taro.navigateTo({ url: '/pages/help/index' });
+    try {
+      setSubmittingDeletionRequest(true);
+      await supportApi.submitAccountDeletionRequest();
+      setDeletionRequested(true);
+      setShowDeleteConfirm(false);
+      Taro.showToast({ title: '注销申请已提交', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '注销申请提交失败'), icon: 'none' });
+    } finally {
+      setSubmittingDeletionRequest(false);
+    }
+  };
+
+  const handleOpenDeleteConfirm = async () => {
+    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
+    if (!authenticated) {
+      return;
+    }
+
+    setShowDeleteConfirm(true);
   };
 
   const handleNavigateRow = (item: SettingRow) => {
@@ -248,7 +320,7 @@ export default function Settings() {
         hoverClass='none'
         onClick={() => {
           if (item.type === 'toggle' && item.toggleKey) {
-            handleToggle(item.toggleKey);
+            void handleToggle(item.toggleKey);
             return;
           }
 
@@ -375,19 +447,44 @@ export default function Settings() {
           </AppCard>
         )}
 
-        <AppCard className='danger-confirm' padding='none'>
-          <Text className='danger-confirm__title'>账号注销说明</Text>
-          <Text className='danger-confirm__description'>当前暂不支持在小程序内直接提交账号注销申请。如需处理账号注销，请联系门店客服人工协助。</Text>
-          <View className='danger-confirm__actions'>
-            <Button
-              className='danger-confirm__button danger-confirm__button--confirm'
-              hoverClass='none'
-              onClick={handleContactSupportForDeletion}
-            >
-              <Text className='danger-confirm__button-text'>联系客服处理</Text>
-            </Button>
-          </View>
-        </AppCard>
+        {!showDeleteConfirm ? (
+          <AppCard className='danger-confirm' padding='none'>
+            <Text className='danger-confirm__title'>账号注销说明</Text>
+            <Text className='danger-confirm__description'>如需注销账号，可在此提交申请，门店客服会在核实身份与历史权益后人工处理。</Text>
+            <View className='danger-confirm__actions'>
+              <Button
+                className='danger-confirm__button danger-confirm__button--confirm'
+                hoverClass='none'
+                onClick={handleOpenDeleteConfirm}
+                disabled={deletionRequested}
+              >
+                <Text className='danger-confirm__button-text'>{deletionRequested ? '已提交，等待处理' : '提交注销申请'}</Text>
+              </Button>
+            </View>
+          </AppCard>
+        ) : (
+          <AppCard className='danger-confirm' padding='none'>
+            <Text className='danger-confirm__title'>确认提交注销申请？</Text>
+            <Text className='danger-confirm__description'>提交后将由门店客服人工核实并处理，历史预约、交易与权益记录不会立即物理删除。</Text>
+            <View className='danger-confirm__actions'>
+              <Button
+                className='danger-confirm__button danger-confirm__button--cancel'
+                hoverClass='none'
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                <Text className='danger-confirm__button-text danger-confirm__button-text--cancel'>取消</Text>
+              </Button>
+              <Button
+                className='danger-confirm__button danger-confirm__button--confirm'
+                hoverClass='none'
+                onClick={handleSubmitAccountDeletionRequest}
+                disabled={submittingDeletionRequest}
+              >
+                <Text className='danger-confirm__button-text'>{submittingDeletionRequest ? '提交中...' : '确认提交'}</Text>
+              </Button>
+            </View>
+          </AppCard>
+        )}
       </View>
     </PageShell>
   );
