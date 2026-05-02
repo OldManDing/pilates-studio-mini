@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
-import { transactionsApi, Transaction } from '../../api/transactions';
+import { ensureMiniProgramAuth } from '../../api/auth';
+import { transactionsApi, Transaction, TransactionSummary } from '../../api/transactions';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
 import { TransactionStatuses, TransactionKinds } from '../../constants/enums';
 import './index.scss';
@@ -27,10 +29,12 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [summaryLoadFailed, setSummaryLoadFailed] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [summary, setSummary] = useState({ totalRevenue: 0, transactionCount: 0 });
+  const [summary, setSummary] = useState<TransactionSummary | null>(null);
 
   const fetchTransactions = useCallback(async (currentPage = 1, append = false) => {
     try {
@@ -39,12 +43,21 @@ export default function Transactions() {
       } else {
         setLoading(true);
         setLoadFailed(false);
+        setAuthRequired(false);
       }
 
       const transactionsRes = await transactionsApi.getMyTransactions({ page: currentPage, limit: 10 });
-      const summaryRes = currentPage === 1
-        ? await transactionsApi.getMySummary().catch(() => null)
-        : null;
+      let summaryRes = null;
+
+      if (currentPage === 1) {
+        try {
+          summaryRes = await transactionsApi.getMySummary();
+          setSummaryLoadFailed(false);
+        } catch {
+          setSummaryLoadFailed(true);
+          setSummary(null);
+        }
+      }
 
       const newTransactions = transactionsRes.data.transactions || [];
       const meta = transactionsRes.data.meta;
@@ -60,18 +73,29 @@ export default function Transactions() {
       if (summaryRes) {
         setSummary(summaryRes.data);
       }
-    } catch {
+    } catch (error) {
       if (!append) {
         setTransactions([]);
         setLoadFailed(true);
+        setAuthRequired(isUnauthorizedApiError(error));
       }
-      Taro.showToast({ title: '交易记录加载失败，请重试', icon: 'none' });
+      Taro.showToast({ title: getApiErrorMessage(error, '交易记录加载失败，请重试'), icon: 'none' });
     } finally {
       setLoading(false);
       setLoadingMore(false);
       Taro.stopPullDownRefresh();
     }
   }, []);
+
+  const handleAuthRecover = useCallback(async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchTransactions(1, false);
+      Taro.showToast({ title: '登录成功，已同步消费记录', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
+  }, [fetchTransactions]);
 
   useEffect(() => {
     fetchTransactions();
@@ -86,6 +110,8 @@ export default function Transactions() {
       fetchTransactions(page + 1, true);
     }
   });
+
+  const completedRevenue = summary?.byStatus?.COMPLETED?.total ?? 0;
 
   return (
     <PageShell className='transactions-page' safeAreaBottom>
@@ -106,13 +132,21 @@ export default function Transactions() {
         <AppCard className='transactions-page__summary-card'>
           <Text className='transactions-page__summary-label'>累计消费金额</Text>
           <View className='transactions-page__summary-amount'>
-            <Price amount={summary.totalRevenue} size='xl' variant='default' />
+            {summary ? <Price amount={completedRevenue} size='xl' variant='default' /> : <Text className='transactions-page__summary-meta-value'>--</Text>}
           </View>
 
           <View className='transactions-page__summary-meta'>
             <Text className='transactions-page__summary-meta-label'>交易笔数</Text>
-            <Text className='transactions-page__summary-meta-value'>{summary.transactionCount} 笔</Text>
+            <Text className='transactions-page__summary-meta-value'>{summary ? `${summary.transactionCount} 笔` : '--'}</Text>
           </View>
+
+          {summary ? (
+            <Text className='transactions-page__summary-meta-label'>累计消费金额仅统计已完成交易，待处理订单请以下方状态为准。</Text>
+          ) : null}
+
+          {summaryLoadFailed ? (
+            <Text className='transactions-page__summary-meta-label'>消费总览同步失败，当前仅展示成功拉取的流水列表。</Text>
+          ) : null}
         </AppCard>
       </View>
 
@@ -130,10 +164,10 @@ export default function Transactions() {
         ) : loadFailed ? (
           <AppCard className='transactions-page__empty-card'>
             <Empty
-              title='消费记录加载失败'
-              description='请检查网络后重试，或返回会员中心查看权益。'
-              actionLabel='重新加载'
-              onActionClick={() => fetchTransactions(1, false)}
+              title={authRequired ? '请先登录' : '消费记录加载失败'}
+              description={authRequired ? '登录后即可同步消费记录与支付状态。' : '请检查网络后重试，或返回会员中心查看权益。'}
+              actionLabel={authRequired ? '去登录' : '重新加载'}
+              onActionClick={authRequired ? handleAuthRecover : () => fetchTransactions(1, false)}
             />
           </AppCard>
         ) : transactions.length > 0 ? (

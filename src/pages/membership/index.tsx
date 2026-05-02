@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { membersApi, Membership as MembershipType } from '../../api/members';
 import { membershipPlansApi, MembershipPlan } from '../../api/membershipPlans';
 import { bookingsApi, type Booking } from '../../api/bookings';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
 import './index.scss';
 
@@ -160,11 +162,13 @@ export default function Membership() {
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [completedTrainingMinutes, setCompletedTrainingMinutes] = useState(0);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
+      setAuthRequired(false);
       const [membershipsRes, plansRes, completedBookings] = await Promise.all([
         membersApi.getMyMemberships(),
         membershipPlansApi.getActive(),
@@ -177,9 +181,13 @@ export default function Membership() {
       setMemberships(membershipsData);
       setPlans(plansData);
       setCompletedTrainingMinutes(completedBookings.reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0));
-    } catch {
-      Taro.showToast({ title: '加载失败', icon: 'none' });
+    } catch (error) {
+      setMemberships([]);
+      setPlans([]);
+      setCompletedTrainingMinutes(0);
+      Taro.showToast({ title: getApiErrorMessage(error, '加载失败'), icon: 'none' });
       setLoadFailed(true);
+      setAuthRequired(isUnauthorizedApiError(error));
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -240,6 +248,16 @@ export default function Membership() {
   const statusFlag = currentMembership ? getMembershipStatusLabel(currentMembership) : '待开通';
   const renewActionLabel = currentMembership ? '续费会员' : '查看会员方案';
 
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchData();
+      Taro.showToast({ title: '登录成功，已同步会员权益', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
+  };
+
   const membershipCode = useMemo(() => {
     if (!currentMembership) {
       return '--';
@@ -291,7 +309,7 @@ export default function Membership() {
           id: `${membership.id}-end`,
           date: membership.endDate,
           title: `${name} 有效期至 ${formatDisplayDate(membership.endDate)}`,
-          type: 'consume',
+          type: 'renew',
         });
       }
 
@@ -299,7 +317,7 @@ export default function Membership() {
         id: `${membership.id}-credits`,
         date: membership.endDate || membership.startDate,
         title: membership.totalCredits <= 0 ? `${name} 权益无限次` : `${name} 剩余 ${membership.remainingCredits}/${membership.totalCredits} 次`,
-        type: 'consume',
+        type: 'renew',
       });
     });
 
@@ -352,7 +370,9 @@ export default function Membership() {
               <Text className='membership-page__status-code'>{membershipCode}</Text>
               {!currentMembership || loadFailed ? (
                 <Text className='membership-page__status-plan'>
-                    {loadFailed ? '数据加载中断，请稍后重试或查看会员方案。' : '尚未开通会员，开通后即可同步权益与训练记录。'}
+                  {loadFailed
+                    ? (authRequired ? '请先登录后同步会员权益与训练记录。' : '数据加载中断，请稍后重试或查看会员方案。')
+                    : '尚未开通会员，开通后即可同步权益与训练记录。'}
                 </Text>
               ) : null}
 
@@ -384,9 +404,9 @@ export default function Membership() {
             <Divider spacing='none' />
 
             <View className='membership-page__renew'>
-                <AppButton size='large' variant='primary' onClick={() => Taro.navigateTo({ url: '/pages/membership-renew/index' })}>
-                  {renewActionLabel}
-                </AppButton>
+              <AppButton size='large' variant='primary' onClick={() => (authRequired ? handleAuthRecover() : Taro.navigateTo({ url: '/pages/membership-renew/index' }))}>
+                {authRequired ? '登录后同步权益' : renewActionLabel}
+              </AppButton>
             </View>
           </AppCard>
         </View>
@@ -477,10 +497,10 @@ export default function Membership() {
             )) : (
             <View className='membership-page__empty-wrap'>
               <Empty
-                title={hasMemberships ? '暂无会员动态' : '尚未开通会员'}
-                description={hasMemberships ? '近期没有新的权益变化记录。' : '开通会员后，这里会显示你的会员开通与权益变化。'}
-                actionLabel='查看会员方案'
-                onActionClick={() => Taro.navigateTo({ url: '/pages/membership-renew/index' })}
+                title={loadFailed && authRequired ? '请先登录' : hasMemberships ? '暂无会员动态' : '尚未开通会员'}
+                description={loadFailed && authRequired ? '登录后即可同步会员权益、续费状态与训练记录。' : hasMemberships ? '近期没有新的权益变化记录。' : '开通会员后，这里会显示你的会员开通与权益变化。'}
+                actionLabel={loadFailed && authRequired ? '去登录' : '查看会员方案'}
+                onActionClick={loadFailed && authRequired ? handleAuthRecover : () => Taro.navigateTo({ url: '/pages/membership-renew/index' })}
               />
             </View>
             )}

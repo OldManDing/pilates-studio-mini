@@ -14,5 +14,4 @@ export function clearAuthState() {
   Taro.removeStorageSync('token');
   Taro.removeStorageSync(STORAGE_KEYS.profile);
   Taro.removeStorageSync('biometricEnabled');
-  Taro.removeStorageSync('loginProtectionEnabled');
 }
