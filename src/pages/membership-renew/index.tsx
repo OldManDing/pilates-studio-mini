@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Button, Text, View } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
-import { getApiErrorMessage } from '../../api/request';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
@@ -17,6 +18,7 @@ function getPlanCredits(plan: MembershipPlan) {
 export default function MembershipRenew() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submittedPlanId, setSubmittedPlanId] = useState('');
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
@@ -26,12 +28,14 @@ export default function MembershipRenew() {
     try {
       setLoading(true);
       setLoadFailed(false);
+      setAuthRequired(false);
       const response = await membershipPlansApi.getActive();
       const activePlans = response.data.plans || [];
       setPlans(activePlans);
       setSelectedPlanId((previous) => activePlans.some((plan) => plan.id === previous) ? previous : activePlans[0]?.id || '');
     } catch (error) {
       setLoadFailed(true);
+      setAuthRequired(isUnauthorizedApiError(error));
       Taro.showToast({ title: getApiErrorMessage(error, '会员方案加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
@@ -49,7 +53,22 @@ export default function MembershipRenew() {
 
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId) || null;
 
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchPlans();
+      Taro.showToast({ title: '登录成功，已同步会员方案', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
+  };
+
   const handleSubmitRenew = async () => {
+    if (authRequired) {
+      await handleAuthRecover();
+      return;
+    }
+
     if (loadFailed) {
       Taro.showToast({ title: '方案未同步完成，请先刷新', icon: 'none' });
       return;
@@ -99,14 +118,19 @@ export default function MembershipRenew() {
       <View className='membership-renew-page__hero'>
         <Text className='membership-renew-page__hero-label'>MEMBERSHIP PLAN</Text>
         <Text className='membership-renew-page__hero-title'>{selectedPlan?.name || '会员方案'}</Text>
-        <Text className='membership-renew-page__hero-desc'>{selectedPlan?.description || '提前续费不影响当前有效期，新周期将自动顺延。'}</Text>
+        <Text className='membership-renew-page__hero-desc'>{selectedPlan?.description || '当前会籍未到期时，仅支持同方案续费顺延；如需更换方案，请待当前会籍结束后处理。'}</Text>
       </View>
 
       <View className='membership-renew-page__section'>
         <SectionTitle title='可选方案' actionLabel='PLANS' actionTone='muted' />
         {loadFailed && plans.length === 0 ? (
           <AppCard className='membership-renew-page__empty'>
-            <Empty title='会员方案加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchPlans} />
+            <Empty
+              title={authRequired ? '请先登录' : '会员方案加载失败'}
+              description={authRequired ? '登录后即可同步会员方案并提交续费申请。' : '请检查网络后重试。'}
+              actionLabel={authRequired ? '去登录' : '重新加载'}
+              onActionClick={authRequired ? handleAuthRecover : fetchPlans}
+            />
           </AppCard>
         ) : plans.length > 0 ? (
           <>

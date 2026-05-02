@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Button, Image, Text, View } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { AppCard, Divider, Icon, PageHeader, PageShell } from '../../components';
 import { membersApi } from '../../api/members';
+import { getApiErrorMessage } from '../../api/request';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { clearAuthState, readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
@@ -134,7 +136,7 @@ const ABOUT_ROWS: SettingRow[] = [
 ];
 
 export default function Settings() {
-  const profile = readStorage<{ phone?: string }>(STORAGE_KEYS.profile, {});
+  const [profile, setProfile] = useState<{ phone?: string; hasBoundPhone?: boolean }>(() => readStorage(STORAGE_KEYS.profile, {}));
   const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
     courseReminder: true,
     systemNotification: true,
@@ -145,9 +147,57 @@ export default function Settings() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
-  useEffect(() => {
-    setToggles(readStorage(STORAGE_KEYS.settings, toggles));
+  const syncProfile = useCallback(async () => {
+    if (!Taro.getStorageSync('token')) {
+      setProfile(readStorage(STORAGE_KEYS.profile, {}));
+      return;
+    }
+
+    try {
+      const response = await membersApi.getProfile({ showLoading: false });
+      const nextMember = response.data.member;
+
+      if (!nextMember) {
+        return;
+      }
+
+      const nextProfile = {
+        phone: nextMember.phone ? nextMember.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '',
+        hasBoundPhone: Boolean(nextMember.phone),
+      };
+
+      writeStorage(STORAGE_KEYS.profile, nextProfile);
+      setProfile(nextProfile);
+    } catch {
+      setProfile(readStorage(STORAGE_KEYS.profile, {}));
+    }
   }, []);
+
+  const ensureAuthenticated = async (successMessage: string) => {
+    if (Taro.getStorageSync('token')) {
+      return true;
+    }
+
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await syncProfile();
+      Taro.showToast({ title: successMessage, icon: 'success' });
+      return true;
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    setToggles(readStorage(STORAGE_KEYS.settings, {
+      courseReminder: true,
+      systemNotification: true,
+      darkMode: false,
+      biometric: true,
+    }));
+    syncProfile();
+  }, [syncProfile]);
 
   const handleToggle = (key: ToggleKey) => {
     setToggles((previous) => {
@@ -167,12 +217,19 @@ export default function Settings() {
   };
 
   const handleClearCache = () => {
-    CACHE_KEYS.forEach((key) => Taro.removeStorageSync(key));
+    CACHE_KEYS.forEach((key) => {
+      Taro.removeStorageSync(key);
+    });
     Taro.showToast({ title: '页面缓存已清理', icon: 'success' });
   };
 
   const handleDeleteAccount = async () => {
     if (deletingAccount) {
+      return;
+    }
+
+    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
+    if (!authenticated) {
       return;
     }
 
@@ -183,11 +240,24 @@ export default function Settings() {
       clearAuthState();
       Taro.showToast({ title: '注销申请已提交', icon: 'success' });
       Taro.switchTab({ url: '/pages/index/index' });
-    } catch {
-      Taro.showToast({ title: '注销申请提交失败', icon: 'none' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '注销申请提交失败'), icon: 'none' });
     } finally {
       setDeletingAccount(false);
     }
+  };
+
+  const handleOpenLogoutConfirm = async () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleOpenDeleteConfirm = async () => {
+    const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
+    if (!authenticated) {
+      return;
+    }
+
+    setShowDeleteConfirm(true);
   };
 
   const handleNavigateRow = (item: SettingRow) => {
@@ -304,7 +374,7 @@ export default function Settings() {
 
       <View className='settings-page__section settings-page__section--danger'>
         {!showLogoutConfirm ? (
-          <Button className='danger-action' hoverClass='none' onClick={() => setShowLogoutConfirm(true)}>
+          <Button className='danger-action' hoverClass='none' onClick={handleOpenLogoutConfirm}>
             <Icon name='logout' className='danger-action__icon' />
             <Text className='danger-action__text'>退出登录</Text>
           </Button>
@@ -332,7 +402,7 @@ export default function Settings() {
         )}
 
         {!showDeleteConfirm ? (
-          <Button className='danger-link' hoverClass='none' onClick={() => setShowDeleteConfirm(true)}>
+          <Button className='danger-link' hoverClass='none' onClick={handleOpenDeleteConfirm}>
             <Text className='danger-link__text'>申请注销账户</Text>
           </Button>
         ) : (

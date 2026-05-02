@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { coursesApi, Course, CourseSession } from '../../api/courses';
 import { bookingsApi } from '../../api/bookings';
 import { membersApi, Member } from '../../api/members';
+import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
 import { CourseLevels, CourseTypes, Weekdays, getLabelByValue } from '../../constants/enums';
 import './index.scss';
@@ -230,10 +232,28 @@ export default function CourseDetail() {
       Taro.showToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
       fetchData(course.id);
-    } catch {
-      Taro.showToast({ title: '预约失败，请稍后重试', icon: 'none' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  const handleLoginAndReload = async () => {
+    const targetCourseId = course?.id || courseId;
+
+    if (!targetCourseId) {
+      Taro.showToast({ title: '课程信息缺失，请返回重试', icon: 'none' });
+      return;
+    }
+
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchData(targetCourseId);
+      Taro.showToast({ title: '登录成功，请继续预约', icon: 'success' });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
+      Taro.showToast({ title: errorMessage, icon: 'none' });
     }
   };
 
@@ -394,13 +414,13 @@ export default function CourseDetail() {
               <Text className='course-detail-page__about'>{course.description || '暂无课程介绍'}</Text>
               {shouldGuideLogin ? (
                 <View className='course-detail-page__error-action'>
-                  <AppButton size='small' variant='outline' onClick={() => Taro.switchTab({ url: '/pages/profile/index' })}>登录同步后预约</AppButton>
+                  <AppButton size='small' variant='outline' onClick={handleLoginAndReload}>登录同步后预约</AppButton>
                 </View>
               ) : null}
               <View className='course-detail-page__tags'>
                 {tags.map((tag, index) => (
                   <Text
-                    key={`${tag}-${index}`}
+                    key={tag}
                     className={`course-detail-page__tag ${index === tags.length - 1 ? 'course-detail-page__tag--gold' : ''}`}
                   >
                     {tag}
@@ -453,7 +473,7 @@ export default function CourseDetail() {
                 }
 
                 if (shouldGuideLogin) {
-                  Taro.switchTab({ url: '/pages/profile/index' });
+                  handleLoginAndReload();
                   return;
                 }
 

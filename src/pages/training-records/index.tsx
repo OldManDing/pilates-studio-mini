@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { bookingsApi, type Booking } from '../../api/bookings';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
@@ -26,12 +28,14 @@ function calculateMinutes(start?: string, end?: string) {
 export default function TrainingRecords() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
   const [records, setRecords] = useState<Booking[]>([]);
 
   const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
+      setAuthRequired(false);
       const pageSize = 50;
       const allRecords: Booking[] = [];
       let currentPage = 1;
@@ -45,10 +49,11 @@ export default function TrainingRecords() {
       } while (currentPage <= totalPages);
 
       setRecords(allRecords);
-    } catch {
+    } catch (error) {
       setRecords([]);
       setLoadFailed(true);
-      Taro.showToast({ title: '训练记录加载失败，请重试', icon: 'none' });
+      setAuthRequired(isUnauthorizedApiError(error));
+      Taro.showToast({ title: getApiErrorMessage(error, '训练记录加载失败，请重试'), icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -72,6 +77,16 @@ export default function TrainingRecords() {
       coaches: coaches.size,
     };
   }, [records]);
+
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchRecords();
+      Taro.showToast({ title: '登录成功，已同步训练记录', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
+  };
 
   if (loading) {
     return (
@@ -107,10 +122,10 @@ export default function TrainingRecords() {
         {loadFailed ? (
           <AppCard className='training-records-page__empty'>
             <Empty
-              title='训练记录加载失败'
-              description='请检查网络后重试，或返回课程页继续安排训练。'
-              actionLabel='重新加载'
-              onActionClick={fetchRecords}
+              title={authRequired ? '请先登录' : '训练记录加载失败'}
+              description={authRequired ? '登录后即可同步训练统计与历史课程记录。' : '请检查网络后重试，或返回课程页继续安排训练。'}
+              actionLabel={authRequired ? '去登录' : '重新加载'}
+              onActionClick={authRequired ? handleAuthRecover : fetchRecords}
             />
           </AppCard>
         ) : records.length > 0 ? (

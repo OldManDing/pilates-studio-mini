@@ -144,6 +144,9 @@ export default function Profile() {
       setMemberships(membershipsRes.data.memberships || nextMember?.memberships || []);
       setBookings(bookingItems);
     } catch {
+      setMember(null);
+      setMemberships([]);
+      setBookings([]);
       setProfileLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
       if (options.throwOnError) {
@@ -274,10 +277,20 @@ export default function Profile() {
     label: '退出登录',
   };
 
-  const handleMenuClick = (item: ProfileMenuItemData) => {
+  const handleMenuClick = async (item: ProfileMenuItemData) => {
     if (item.requiresLogin) {
-      Taro.showToast({ title: '请先微信登录', icon: 'none' });
-      return;
+      try {
+        setLoggingIn(true);
+        await ensureMiniProgramAuth({ interactive: true });
+        await fetchProfile({ throwOnError: true });
+        Taro.showToast({ title: '登录成功', icon: 'success' });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
+        Taro.showToast({ title: errorMessage, icon: 'none' });
+        return;
+      } finally {
+        setLoggingIn(false);
+      }
     }
 
     if (item.route) {

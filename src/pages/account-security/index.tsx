@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Button, Input, Text, View } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { membersApi } from '../../api/members';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, PageHeader, PageShell, SectionTitle } from '../../components';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { readStorage, writeStorage } from '../../utils/storage';
@@ -54,8 +56,18 @@ export default function AccountSecurity() {
       await membersApi.changePassword({ currentPassword, newPassword });
       Taro.showToast({ title: '密码已更新', icon: 'success' });
       resetPasswordForm();
-    } catch {
-      Taro.showToast({ title: '密码修改失败，请稍后重试', icon: 'none' });
+    } catch (error) {
+      if (isUnauthorizedApiError(error)) {
+        try {
+          await ensureMiniProgramAuth({ interactive: true });
+          Taro.showToast({ title: '登录成功，请重新提交密码修改', icon: 'success' });
+          return;
+        } catch (authError) {
+          Taro.showToast({ title: getApiErrorMessage(authError, '登录失败，请稍后重试'), icon: 'none' });
+          return;
+        }
+      }
+      Taro.showToast({ title: getApiErrorMessage(error, '密码修改失败，请稍后重试'), icon: 'none' });
     } finally {
       setSubmitting(false);
     }

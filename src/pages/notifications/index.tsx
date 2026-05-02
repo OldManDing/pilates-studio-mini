@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { Button, Text, View } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { AppButton, AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { notificationsApi, type NotificationItem as ApiNotificationItem } from '../../api/notifications';
-import { getApiErrorMessage } from '../../api/request';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import './index.scss';
 
 type NotificationType = 'course' | 'system' | 'member';
@@ -74,6 +75,7 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
   const [markingAllRead, setMarkingAllRead] = useState(false);
   const [markingReadIds, setMarkingReadIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -87,6 +89,7 @@ export default function Notifications() {
       } else {
         setLoading(true);
         setLoadFailed(false);
+        setAuthRequired(false);
       }
 
       const pageSize = 20;
@@ -111,6 +114,7 @@ export default function Notifications() {
     } catch (error) {
       if (!append) {
         setLoadFailed(true);
+        setAuthRequired(isUnauthorizedApiError(error));
       }
       Taro.showToast({ title: getApiErrorMessage(error, '消息加载失败'), icon: 'none' });
     } finally {
@@ -147,6 +151,16 @@ export default function Notifications() {
 
   const unreadCount = unread.length;
 
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchNotifications(1, false);
+      Taro.showToast({ title: '登录成功，已同步消息', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
+  };
+
   const handleMarkAllRead = async () => {
     const unreadIds = unread.map((notification) => notification.id);
     if (unreadIds.length === 0 || markingAllRead) {
@@ -171,6 +185,11 @@ export default function Notifications() {
         Taro.showToast({ title: getApiErrorMessage(firstRejected?.reason, succeededIds.length > 0 ? '部分消息标记失败' : '标记失败，请稍后重试'), icon: 'none' });
       }
     } catch (error) {
+      if (isUnauthorizedApiError(error)) {
+        setAuthRequired(true);
+        Taro.showToast({ title: '登录已过期，请先重新登录', icon: 'none' });
+        return;
+      }
       Taro.showToast({ title: getApiErrorMessage(error, '标记失败，请稍后重试'), icon: 'none' });
     } finally {
       setMarkingAllRead(false);
@@ -191,6 +210,11 @@ export default function Notifications() {
           : notification
       )));
     } catch (error) {
+      if (isUnauthorizedApiError(error)) {
+        setAuthRequired(true);
+        Taro.showToast({ title: '登录已过期，请先重新登录', icon: 'none' });
+        return;
+      }
       Taro.showToast({ title: getApiErrorMessage(error, '标记失败，请稍后重试'), icon: 'none' });
     } finally {
       setMarkingReadIds((previous) => previous.filter((item) => item !== id));
@@ -243,7 +267,12 @@ export default function Notifications() {
       {loadFailed && notifications.length === 0 ? (
         <View className='notifications-page__section'>
           <AppCard className='notifications-list notifications-list--empty'>
-            <Empty title='消息加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={() => fetchNotifications(1, false)} />
+            <Empty
+              title={authRequired ? '请先登录' : '消息加载失败'}
+              description={authRequired ? '登录后即可同步课程提醒与系统通知。' : '请检查网络后重试。'}
+              actionLabel={authRequired ? '去登录' : '重新加载'}
+              onActionClick={authRequired ? handleAuthRecover : () => fetchNotifications(1, false)}
+            />
           </AppCard>
         </View>
       ) : unread.length > 0 ? (
