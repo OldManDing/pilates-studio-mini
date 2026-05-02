@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text, ScrollView } from '@tarojs/components';
+import { ensureMiniProgramAuth } from '../../api/auth';
 import { bookingsApi, Booking } from '../../api/bookings';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageShell, PageHeader } from '../../components';
@@ -183,7 +184,7 @@ export default function MyBookings() {
         Taro.stopPullDownRefresh();
       }
     }
-  }, [activeTab, fetchAllBookingsByStatuses, pageSize]);
+  }, [activeTab, fetchAllBookingsByStatuses]);
 
   useEffect(() => {
     fetchBookings(1, false);
@@ -227,10 +228,14 @@ export default function MyBookings() {
         if (res.cancel) {
           try {
             setCancellingBookingId(booking.id);
-            await bookingsApi.cancel(booking.id);
-            Taro.showToast({ title: '已取消', icon: 'success' });
+            const response = await bookingsApi.cancel(booking.id);
+            const nextStatus = response.data.booking.status;
+            Taro.showToast({ title: nextStatus === 'NO_SHOW' ? '已按规则扣除一次权益' : '已取消', icon: 'success' });
             await fetchBookings(1, false);
           } catch (error) {
+            if (isUnauthorizedApiError(error)) {
+              setAuthRequired(true);
+            }
             Taro.showToast({ title: getApiErrorMessage(error, '取消失败，请稍后重试'), icon: 'none' });
           } finally {
             setCancellingBookingId('');
@@ -238,6 +243,16 @@ export default function MyBookings() {
         }
       },
     });
+  };
+
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchBookings(1, false);
+      Taro.showToast({ title: '登录成功，已同步预约', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
   };
 
   const activeTabMeta = useMemo(() => TABS.find((tab) => tab.value === activeTab) || TABS[0], [activeTab]);
@@ -281,7 +296,7 @@ export default function MyBookings() {
                   title={authRequired ? '请先登录' : '预约加载失败'}
                   description={authRequired ? '登录后即可同步预约、取消和上课记录。' : '请检查网络后重试，或返回课程页继续查看。'}
                   actionLabel={authRequired ? '去登录' : '重新加载'}
-                  onActionClick={authRequired ? () => Taro.switchTab({ url: '/pages/profile/index' }) : () => fetchBookings(1, false)}
+                  onActionClick={authRequired ? handleAuthRecover : () => fetchBookings(1, false)}
                 />
               </AppCard>
             ) : bookings.length > 0 ? (

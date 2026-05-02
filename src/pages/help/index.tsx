@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Button, ScrollView, Text, Textarea, View } from '@tarojs/components';
 import { supportApi } from '../../api/support';
+import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
 
@@ -54,7 +55,7 @@ const FAQ_ITEMS: FaqItem[] = [
     id: 'f4',
     category: 'member',
     question: '会员卡如何续费？',
-    answer: '进入「会员中心」页面，点击「续费会员」即可选择续费方案。提前续费不影响当前有效期，新周期将自动顺延。',
+    answer: '进入「会员中心」页面，点击「续费会员」即可选择续费方案。当前会籍未到期时，仅支持同方案续费顺延；如需更换方案，请待当前会籍结束后处理。',
   },
   {
     id: 'f5',
@@ -95,8 +96,8 @@ export default function Help() {
       setSubmittingFeedback(true);
       await supportApi.submitFeedback({ content: feedbackText.trim() });
       setFeedbackStep('sent');
-    } catch {
-      Taro.showToast({ title: '反馈提交失败，请稍后重试', icon: 'none' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '反馈提交失败，请稍后重试'), icon: 'none' });
       return;
     } finally {
       setSubmittingFeedback(false);
