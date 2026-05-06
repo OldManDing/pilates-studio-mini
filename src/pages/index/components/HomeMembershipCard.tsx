@@ -6,9 +6,10 @@ interface HomeMembershipCardProps {
   data: HomeMembershipData;
   onPrimaryClick?: () => void;
   onDetailClick?: () => void;
+  onSecondaryClick?: () => void;
 }
 
-export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick }: HomeMembershipCardProps) {
+export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick, onSecondaryClick }: HomeMembershipCardProps) {
   const progressWidth = `${Math.max(0, Math.min(100, data.progressPercent))}%`;
 
   return (
@@ -49,7 +50,7 @@ export default function HomeMembershipCard({ data, onPrimaryClick, onDetailClick
 
       {data.secondaryAction ? (
         <View className='home-membership-card__secondary-action'>
-          <Button className='home-membership-card__secondary-button' hoverClass='none' onClick={onDetailClick}>
+          <Button className='home-membership-card__secondary-button' hoverClass='none' onClick={onSecondaryClick || onDetailClick}>
             <Text className='home-membership-card__secondary-text'>{data.secondaryAction}</Text>
             <Icon name='chevron-right' className='home-membership-card__secondary-icon' />
           </Button>

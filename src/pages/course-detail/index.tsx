@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
@@ -6,8 +6,9 @@ import { coursesApi, Course, CourseSession } from '../../api/courses';
 import { bookingsApi } from '../../api/bookings';
 import { membersApi, Member } from '../../api/members';
 import { getApiErrorMessage } from '../../api/request';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
+import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, PageHeader, PageShell } from '../../components';
 import { CourseLevels, CourseTypes, Weekdays, getLabelByValue } from '../../constants/enums';
+import { formatDurationMinutes, getSafeMiniImageSrc } from '../../utils/ui';
 import './index.scss';
 
 const HERO_IMAGE_FALLBACK_BY_TYPE: Record<string, string> = {
@@ -20,12 +21,12 @@ const HERO_IMAGE_FALLBACK_BY_TYPE: Record<string, string> = {
 };
 
 const TYPE_SUBTITLE_MAP: Record<string, string> = {
-  MAT: 'MAT PILATES',
-  REFORMER: 'REFORMER PILATES',
-  CADILLAC: 'CADILLAC PILATES',
-  CHAIR: 'CHAIR PILATES',
-  BARREL: 'BARREL PILATES',
-  PRIVATE: 'PRIVATE SESSION',
+  MAT: '垫上普拉提',
+  REFORMER: '器械普拉提',
+  CADILLAC: '凯迪拉克床',
+  CHAIR: '稳踏椅训练',
+  BARREL: '脊柱矫正桶',
+  PRIVATE: '私教课程',
 };
 
 function pad(value: number) {
@@ -129,13 +130,16 @@ export default function CourseDetail() {
   const [member, setMember] = useState<Member | null>(null);
   const [profileLoadFailed, setProfileLoadFailed] = useState(false);
   const [courseLoadFailed, setCourseLoadFailed] = useState(false);
+  const [courseIdMissing, setCourseIdMissing] = useState(false);
   const [courseId, setCourseId] = useState('');
   const [heroImageSrc, setHeroImageSrc] = useState('');
+  const bookingInFlightRef = useRef(false);
 
   const fetchData = useCallback(async (id: string) => {
     try {
       setLoading(true);
       setCourseLoadFailed(false);
+      setCourseIdMissing(false);
       const [courseRes, sessionsRes, profileRes] = await Promise.all([
         coursesApi.getById(id),
         coursesApi.getSessions(id, { upcoming: true }),
@@ -147,7 +151,7 @@ export default function CourseDetail() {
       setSessions(sessionsRes.data.sessions || []);
       setMember(profileRes.response.data.member || null);
       setProfileLoadFailed(profileRes.failed);
-      const nextHero = HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg';
+      const nextHero = getSafeMiniImageSrc(courseRes.data.course.coverImageUrl, HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg');
       setHeroImageSrc(nextHero);
     } catch {
       setCourse(null);
@@ -168,6 +172,7 @@ export default function CourseDetail() {
     }
 
     setCourseLoadFailed(true);
+    setCourseIdMissing(true);
     setLoading(false);
   });
 
@@ -201,6 +206,12 @@ export default function CourseDetail() {
       return;
     }
 
+    if (bookingLoading || bookingInFlightRef.current) {
+      return;
+    }
+
+    bookingInFlightRef.current = true;
+
     try {
       let targetSession = featuredSession;
       if (sortedSessions.length > 1) {
@@ -228,13 +239,14 @@ export default function CourseDetail() {
       }
 
       setBookingLoading(true);
-      await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id });
+      await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' });
       Taro.showToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
       fetchData(course.id);
     } catch (error) {
       Taro.showToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
     } finally {
+      bookingInFlightRef.current = false;
       setBookingLoading(false);
     }
   };
@@ -269,15 +281,29 @@ export default function CourseDetail() {
   }
 
   if (!course) {
+    const emptyTitle = courseIdMissing ? '课程信息缺失' : courseLoadFailed ? '课程加载失败' : '课程不存在';
+    const emptySubtitle = courseIdMissing
+      ? '缺少课程编号，请返回课程列表重新选择'
+      : courseLoadFailed
+        ? '网络异常或课程暂时不可用'
+        : '该课程可能已下架或链接已失效';
+    const emptyDescription = courseIdMissing
+      ? '当前入口没有携带课程编号，无法定位要预约的课程。请返回课程列表重新选择。'
+      : courseLoadFailed
+        ? '请检查网络后重试，或返回课程列表重新选择。'
+        : '请返回课程列表重新选择。';
+    const canRetryCourseLoad = courseLoadFailed && Boolean(courseId);
+
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title={courseLoadFailed ? '课程加载失败' : '课程不存在'} subtitle={courseLoadFailed ? '网络异常或课程暂时不可用' : '该课程可能已下架或链接已失效'} fallbackUrl='/pages/courses/index' />
+        <PageHeader title={emptyTitle} subtitle={emptySubtitle} fallbackUrl='/pages/courses/index' />
         <AppCard>
           <Empty
-            title={courseLoadFailed ? '课程加载失败' : '课程不存在'}
-            description={courseLoadFailed ? '请检查网络后重试，或返回课程列表重新选择。' : '请返回课程列表重新选择。'}
-            actionLabel={courseLoadFailed && courseId ? '重新加载' : '返回课程列表'}
-            onActionClick={courseLoadFailed && courseId ? () => fetchData(courseId) : () => Taro.switchTab({ url: '/pages/courses/index' })}
+            title={emptyTitle}
+            description={emptyDescription}
+            actionLabel={canRetryCourseLoad ? '重新加载' : '返回课程列表'}
+            actionVariant={canRetryCourseLoad ? 'primary' : 'outline'}
+            onActionClick={canRetryCourseLoad ? () => fetchData(courseId) : () => Taro.switchTab({ url: '/pages/courses/index' })}
           />
         </AppCard>
       </PageShell>
@@ -302,12 +328,12 @@ export default function CourseDetail() {
   const tags = [
     getLabelByValue(CourseTypes, course.type),
     getLabelByValue(CourseLevels, course.level),
-    `${course.durationMinutes}min`,
+    formatDurationMinutes(course.durationMinutes),
   ];
   const shouldGuideLogin = !profileLoadFailed && !member?.id;
   const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin && !profileLoadFailed;
   const ctaLabel = bookingLoading
-    ? '预约中...'
+    ? '预约中…'
     : booked
       ? '已预约成功'
       : !featuredSession
@@ -324,26 +350,12 @@ export default function CourseDetail() {
 
   return (
     <View className='course-detail-page'>
+      <FloatingBackButton fallbackUrl='/pages/courses/index' theme='light' />
       <ScrollView className='course-detail-page__scroll' scrollY showScrollbar={false}>
         <View className='course-detail-page__hero'>
           <Image className='course-detail-page__hero-image' src={heroImageSrc || heroImageFallback} mode='aspectFill' onError={() => setHeroImageSrc(heroImageFallback)} />
           <View className='course-detail-page__hero-mask' />
-
-          <View
-            className='course-detail-page__back'
-            onClick={async () => {
-              try {
-                await Taro.navigateBack({ delta: 1 });
-              } catch {
-                Taro.switchTab({ url: '/pages/courses/index' });
-              }
-            }}
-          >
-            <Icon name='chevron-left' className='course-detail-page__back-icon' />
-            <Text className='course-detail-page__back-label'>返回</Text>
-          </View>
-
-          <View className='course-detail-page__hero-text'>
+        <View className='course-detail-page__hero-text'>
             <Text className='course-detail-page__subtitle'>{subtitle}</Text>
             <Text className='course-detail-page__title'>{course.name}</Text>
           </View>
@@ -354,7 +366,7 @@ export default function CourseDetail() {
             <View className='course-detail-page__time-row'>
               <Icon name='clock' className='course-detail-page__time-icon' />
               <Text className='course-detail-page__time-value'>{timeRange}</Text>
-              <Text className='course-detail-page__duration'>{durationMinutes}min</Text>
+              <Text className='course-detail-page__duration'>{formatDurationMinutes(durationMinutes)}</Text>
               <Text className='course-detail-page__date-label'>{dateLabel}</Text>
             </View>
 
@@ -390,7 +402,6 @@ export default function CourseDetail() {
           </AppCard>
 
           <View className='course-detail-page__section'>
-            <Text className='course-detail-page__section-label'>INSTRUCTOR</Text>
             <AppCard>
               <View className='course-detail-page__instructor'>
                 <View className='course-detail-page__instructor-avatar'>
@@ -409,7 +420,6 @@ export default function CourseDetail() {
           </View>
 
           <View className='course-detail-page__section'>
-            <Text className='course-detail-page__section-label course-detail-page__section-label--muted'>ABOUT</Text>
             <AppCard>
               <Text className='course-detail-page__about'>{course.description || '暂无课程介绍'}</Text>
               {shouldGuideLogin ? (
@@ -460,7 +470,7 @@ export default function CourseDetail() {
               className='course-detail-page__cta-button'
               size='medium'
               variant='primary'
-              disabled={(!canBook && !shouldGuideLogin && Boolean(featuredSession)) || bookingLoading}
+              disabled={bookingLoading || (!profileLoadFailed && !shouldGuideLogin && !canBook && Boolean(featuredSession))}
               onClick={() => {
                 if (!featuredSession) {
                   Taro.switchTab({ url: '/pages/courses/index' });

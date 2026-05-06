@@ -1,78 +1,31 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { bookingsApi, type Booking } from '../../api/bookings';
-import { coachesApi, type Coach } from '../../api/coaches';
-import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { ensureMiniProgramAuth } from '../../api/auth';
+import { coachesApi, type Coach, type MyCoachSummary } from '../../api/coaches';
+import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
+import { AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
-
-interface CoachSummary {
-  coach: Coach;
-  completedCount: number;
-  lastCourseName: string;
-}
-
-function getBookingTimeValue(booking: Booking) {
-  const value = booking.session?.startsAt || booking.bookingTime || booking.bookedAt;
-  const time = value ? new Date(value).getTime() : NaN;
-
-  return Number.isNaN(time) ? 0 : time;
-}
-
-function buildCoachSummaries(coaches: Coach[], bookings: Booking[]): CoachSummary[] {
-  return coaches.map((coach) => {
-    const related = bookings
-      .filter((booking) => booking.session?.coach?.id === coach.id)
-      .sort((left, right) => getBookingTimeValue(right) - getBookingTimeValue(left));
-    const lastCourseName = related[0]?.session?.course?.name || coach.courses?.[0]?.name || '暂无最近课程';
-
-    return {
-      coach,
-      completedCount: related.filter((booking) => booking.status === 'COMPLETED').length,
-      lastCourseName,
-    };
-  });
-}
 
 export default function MyCoaches() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [coaches, setCoaches] = useState<Coach[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [summaries, setSummaries] = useState<MyCoachSummary[]>([]);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
-      const pageSize = 50;
-      const allCoaches: Coach[] = [];
-      let coachPage = 1;
-      let coachTotalPages = 1;
+      setAuthRequired(false);
 
-      do {
-        const response = await coachesApi.getAll({ page: coachPage, limit: pageSize, isActive: true });
-        allCoaches.push(...(response.data.coaches || []));
-        coachTotalPages = response.data.meta?.totalPages || (response.data.coaches?.length === pageSize ? coachPage + 1 : coachPage);
-        coachPage += 1;
-      } while (coachPage <= coachTotalPages);
-
-      const allBookings: Booking[] = [];
-      let bookingPage = 1;
-      let bookingTotalPages = 1;
-
-      do {
-        const response = await bookingsApi.getMyBookings({ page: bookingPage, limit: pageSize }, { showLoading: false });
-        allBookings.push(...(response.data.bookings || []));
-        bookingTotalPages = response.data.meta?.totalPages || (response.data.bookings?.length === pageSize ? bookingPage + 1 : bookingPage);
-        bookingPage += 1;
-      } while (bookingPage <= bookingTotalPages);
-
-      setCoaches(allCoaches);
-      setBookings(allBookings);
-    } catch {
-      setCoaches([]);
+      const response = await coachesApi.getMine();
+      setSummaries(response.data.coaches || []);
+    } catch (error) {
+      setSummaries([]);
       setLoadFailed(true);
-      Taro.showToast({ title: '教练信息加载失败', icon: 'none' });
+      setAuthRequired(isUnauthorizedApiError(error));
+      Taro.showToast({ title: getApiErrorMessage(error, '教练信息加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -87,8 +40,6 @@ export default function MyCoaches() {
     fetchData();
   });
 
-  const summaries = useMemo(() => buildCoachSummaries(coaches, bookings), [bookings, coaches]);
-
   const handleCoachClick = (coach: Coach) => {
     if (!coach.id) {
       Taro.showToast({ title: '教练信息暂未同步', icon: 'none' });
@@ -96,6 +47,16 @@ export default function MyCoaches() {
     }
 
     Taro.navigateTo({ url: `/pages/coach-detail/index?id=${coach.id}` });
+  };
+
+  const handleAuthRecover = async () => {
+    try {
+      await ensureMiniProgramAuth({ interactive: true });
+      await fetchData();
+      Taro.showToast({ title: '登录成功，已同步教练关系', icon: 'success' });
+    } catch (error) {
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+    }
   };
 
   if (loading) {
@@ -114,20 +75,20 @@ export default function MyCoaches() {
       <PageHeader title='我的教练' subtitle='常用教练与近期课程' fallbackUrl='/pages/profile/index' />
 
       <View className='my-coaches-page__hero'>
-        <Text className='my-coaches-page__hero-label'>COACH TEAM</Text>
+        <Text className='my-coaches-page__hero-label'>教练团队</Text>
         <Text className='my-coaches-page__hero-value'>{loadFailed ? '--' : summaries.length}</Text>
         <Text className='my-coaches-page__hero-desc'>{loadFailed ? '教练信息暂时无法同步，请稍后重试。' : '位可预约教练，结合历史课程展示你的常用教练关系。'}</Text>
       </View>
 
       <View className='my-coaches-page__section'>
-        <SectionTitle title='常用教练' actionLabel='FAVORITES' actionTone='muted' />
+        <SectionTitle title='常用教练' actionLabel='常用' actionTone='muted' />
         {loadFailed ? (
           <AppCard className='my-coaches-page__empty'>
             <Empty
-              title='教练信息加载失败'
-              description='请检查网络后重试，或返回课程页查看可预约教练。'
-              actionLabel='重新加载'
-              onActionClick={fetchData}
+              title={authRequired ? '请先登录' : '教练信息加载失败'}
+              description={authRequired ? '登录后即可同步你的常用教练、历史课程和近期关系。' : '请检查网络后重试，或返回课程页查看可预约教练。'}
+              actionLabel={authRequired ? '去登录' : '重新加载'}
+              onActionClick={authRequired ? handleAuthRecover : fetchData}
             />
           </AppCard>
         ) : summaries.length > 0 ? (
@@ -143,7 +104,7 @@ export default function MyCoaches() {
                   </View>
                   <View className='my-coaches-list__content'>
                     <Text className='my-coaches-list__name'>{item.coach.name}</Text>
-                    <Text className='my-coaches-list__desc'>{item.coach.specialties?.slice(0, 2).join(' · ') || item.lastCourseName}</Text>
+                    <Text className='my-coaches-list__desc'>{item.coach.specialties?.slice(0, 2).join(' · ') || item.lastCourseName || '暂无最近课程'}</Text>
                   </View>
                   <View className='my-coaches-list__side'>
                     <Text className='my-coaches-list__count'>{item.completedCount}</Text>

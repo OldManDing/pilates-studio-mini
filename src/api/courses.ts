@@ -6,6 +6,7 @@ export interface Course {
   courseCode: string;
   name: string;
   description: string;
+  coverImageUrl?: string;
   type: string;
   level: string;
   durationMinutes: number;
@@ -56,6 +57,7 @@ export interface CourseSession {
   course?: {
     id: string;
     name: string;
+    coverImageUrl?: string;
     type: string;
     level: string;
     durationMinutes: number;

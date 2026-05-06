@@ -1,8 +1,8 @@
-import { Text, View } from '@tarojs/components';
+import { Button, Text, View } from '@tarojs/components';
 import Icon from '../Icon';
+import './index.scss';
 
 type SectionActionTone = 'accent' | 'muted';
-import './index.scss';
 
 interface SectionTitleProps {
   title: string;
@@ -16,8 +16,6 @@ interface SectionTitleProps {
 
 export default function SectionTitle({
   title,
-  eyebrow,
-  subtitle,
   actionLabel,
   actionTone = 'accent',
   actionIcon,
@@ -26,13 +24,20 @@ export default function SectionTitle({
   return (
     <View className='section-title-block'>
       <View className='section-title-block__main'>
-        {eyebrow ? <Text className='section-title-block__eyebrow'>{eyebrow}</Text> : null}
         <Text className='section-title-block__title'>{title}</Text>
-        {subtitle ? <Text className='section-title-block__subtitle'>{subtitle}</Text> : null}
       </View>
 
-      {actionLabel ? (
-        <View className={`section-title-block__action section-title-block__action--${actionTone}`} onClick={onActionClick}>
+      {actionLabel && onActionClick ? (
+        <Button
+          className={`section-title-block__action section-title-block__action--clickable section-title-block__action--${actionTone}`}
+          hoverClass='section-title-block__action--hover'
+          onClick={onActionClick}
+        >
+          <Text className='section-title-block__action-text'>{actionLabel}</Text>
+          {actionIcon ? <Icon name={actionIcon} className='section-title-block__action-icon' /> : null}
+        </Button>
+      ) : actionLabel && actionIcon ? (
+        <View className={`section-title-block__action section-title-block__action--static section-title-block__action--${actionTone}`}>
           <Text className='section-title-block__action-text'>{actionLabel}</Text>
           {actionIcon ? <Icon name={actionIcon} className='section-title-block__action-icon' /> : null}
         </View>

@@ -1,5 +1,5 @@
 const DEFAULT_API_BASE_URL = 'http://127.0.0.1:3000/api';
-const DEFAULT_MINI_OPEN_ID = 'dev-openid-pilates';
+const DEFAULT_MINI_OPEN_ID = 'dev-openid-yoga';
 
 const apiBaseUrl = process.env.API_BASE_URL || DEFAULT_API_BASE_URL;
 const miniOpenId = process.env.MINI_OPEN_ID || DEFAULT_MINI_OPEN_ID;
@@ -29,6 +29,24 @@ async function request(path, options = {}) {
   }
 
   return payload;
+}
+
+async function requestAllowBusinessError(path, options = {}) {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const payload = await response.json().catch(() => null);
+  return {
+    ok: response.ok && Boolean(payload?.success),
+    status: response.status,
+    payload,
+  };
 }
 
 async function main() {
@@ -125,6 +143,45 @@ async function main() {
   assert(plan.data?.id === firstPlanId, 'membership-plans/:id did not return requested plan');
 
   if (runMutations) {
+    const latestBookings = await request('/bookings/my?page=1&pageSize=100', { token });
+    const bookedSessionIds = new Set((latestBookings.data || []).map((booking) => booking.sessionId));
+    const bookingTarget = (sessions.data || []).find((session) => {
+      const availableSeats = session.capacity - (session.bookedCount || 0);
+      return availableSeats > 0 && !bookedSessionIds.has(session.id);
+    });
+
+    assert(bookingTarget?.id, 'No available unbooked upcoming session for booking mutation smoke');
+
+    const createdBooking = await request('/bookings', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({
+        memberId: profile.data.id,
+        sessionId: bookingTarget.id,
+        source: 'MINI_PROGRAM',
+      }),
+    });
+    assert(createdBooking.data?.id, 'bookings create did not return booking id');
+
+    const createdBookingDetail = await request(`/bookings/${createdBooking.data.id}`, { token });
+    assert(createdBookingDetail.data?.id === createdBooking.data.id, 'created booking detail lookup failed');
+
+    const refreshedBookings = await request('/bookings/my?page=1&pageSize=100', { token });
+    assert(
+      (refreshedBookings.data || []).some((booking) => booking.id === createdBooking.data.id),
+      'created booking was not visible in bookings/my',
+    );
+
+    const cancelledBooking = await request(`/bookings/${createdBooking.data.id}/cancel`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify({ reason: 'API smoke cleanup' }),
+    });
+    assert(
+      ['CANCELLED', 'NO_SHOW'].includes(cancelledBooking.data?.status),
+      'bookings cancel did not return CANCELLED or NO_SHOW status',
+    );
+
     const nextCourseReminder = !preferences.data.preferences.courseReminder;
     const nextSystemNotification = !preferences.data.preferences.systemNotification;
 
@@ -146,22 +203,39 @@ async function main() {
     });
     assert(feedback.data.submitted === true, 'support/feedback did not return submitted=true');
 
-    const deletionRequest = await request('/support/account-deletion-request', {
+    const deletionStatus = await request('/support/account-deletion-request/status', { token });
+    if (!['pending', 'processed'].includes(String(deletionStatus.data?.status || '').toLowerCase())) {
+      const deletionRequest = await request('/support/account-deletion-request', {
+        method: 'POST',
+        token,
+        body: JSON.stringify({ reason: `API smoke deletion request ${new Date().toISOString()}` }),
+      });
+      assert(deletionRequest.data.submitted === true, 'support/account-deletion-request did not return submitted=true');
+    }
+
+    const currentMembershipPlanId = memberships.data.memberships?.[0]?.planId;
+    const renewalPlanId = plans.data.find((plan) => plan.id === currentMembershipPlanId)?.id || firstPlanId;
+    assert(renewalPlanId, 'No active plan available for renewal smoke');
+
+    const renewal = await requestAllowBusinessError('/membership-renewals', {
       method: 'POST',
       token,
-      body: JSON.stringify({ reason: `API smoke deletion request ${new Date().toISOString()}` }),
+      body: JSON.stringify({ planId: renewalPlanId }),
     });
-    assert(deletionRequest.data.submitted === true, 'support/account-deletion-request did not return submitted=true');
 
-    const planId = firstPlanId;
-    assert(planId, 'No active plan available for renewal smoke');
-
-    const renewal = await request('/membership-renewals', {
-      method: 'POST',
-      token,
-      body: JSON.stringify({ planId }),
-    });
-    assert(renewal.data.submitted === true, 'membership-renewals did not return submitted=true');
+    if (renewal.ok) {
+      assert(renewal.payload.data.submitted === true, 'membership-renewals did not return submitted=true');
+    } else {
+      const renewalMessage = renewal.payload?.error?.message || '';
+      const allowedBusinessErrors = [
+        'Current membership has not expired; only same-plan renewal is supported',
+        'An account deletion request is already pending',
+      ];
+      assert(
+        allowedBusinessErrors.includes(renewalMessage),
+        `/membership-renewals unexpected business error: ${renewalMessage || renewal.status}`,
+      );
+    }
   }
 
   console.log('API smoke passed');

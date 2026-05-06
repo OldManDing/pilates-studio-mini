@@ -1,6 +1,6 @@
 import { View, Text, Image } from '@tarojs/components';
 import { Course } from '../../api/courses';
-import { getLabelByValue, CourseTypes, CourseLevels } from '../../constants/enums';
+import { CourseTypes, CourseLevels } from '../../constants/enums';
 import StatusTag from '../StatusTag';
 import './index.scss';
 
@@ -21,7 +21,7 @@ export default function CourseCard({ course, onClick, showCoach = true }: Course
         <Text className='course-card__duration'>{course.durationMinutes} 分钟</Text>
       </View>
       <Text className='course-card__name'>{course.name}</Text>
-      <Text className='course-card__desc' numberOfLines={2}>{course.description || '暂无课程描述'}</Text>
+      <Text className='course-card__desc'>{course.description || '暂无课程描述'}</Text>
       {showCoach && course.coach && (
         <View className='course-card__coach'>
           <Image className='course-card__coach-avatar' src={course.coach.avatar || '/assets/default-avatar.png'} />

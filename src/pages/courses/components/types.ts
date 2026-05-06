@@ -3,6 +3,7 @@ export interface BookingHeroData {
   title: string;
   subtitle: string;
   actionLabel: string;
+  imageUrl?: string;
 }
 
 export interface BookingDateItemData {
@@ -32,5 +33,6 @@ export interface BookingCourseCardData {
   location: string;
   spotsText: string;
   imageKind: 'yoga' | 'pilates' | 'meditation' | 'dark';
+  imageUrl?: string;
   full?: boolean;
 }

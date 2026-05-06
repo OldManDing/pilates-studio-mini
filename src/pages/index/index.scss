@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .home-page {
   &__content {
@@ -18,24 +18,48 @@
   }
 
   &__notice {
-    padding: 14px 16px;
-    border: 1px solid rgba($accent, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border: 1px solid rgba($gray-500, 0.12);
     border-radius: $radius-md;
-    background: rgba($accent-soft, 0.62);
+    background: rgba($white, 0.9);
+
+    &--refreshing {
+      border-color: rgba($accent, 0.16);
+      background: rgba($accent-soft, 0.22);
+    }
   }
 
   &__notice-action {
-    margin-top: $spacing-sm;
+    flex-shrink: 0;
 
     .app-button {
       width: auto;
-      min-width: 168px;
+      min-width: 120px;
     }
+  }
+
+  &__notice-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   &__notice-text {
     display: block;
-    color: $accent-strong;
+    color: $text-primary;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    line-height: $line-height-normal;
+  }
+
+  &__notice-meta {
+    display: block;
+    color: $text-muted;
     font-size: 20px;
     line-height: $line-height-normal;
   }
@@ -51,7 +75,7 @@
     color: $text-primary;
     font-size: $figma-section-title;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
 
   &__today-status {
@@ -71,49 +95,92 @@
     color: $accent;
     font-size: $figma-caption;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 }
 
 .home-hero {
-  padding-top: 14px;
-  padding-bottom: 14px;
+  position: relative;
+  min-height: 384px;
+  margin: 0 calc(-1 * #{$figma-page-x}) -2px;
+  overflow: hidden;
+  background: #1a1a1a;
+
+  &__image,
+  &__mask {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__mask {
+    background:
+      linear-gradient(180deg, rgba($black, 0.18) 0%, rgba($black, 0.16) 38%, rgba($black, 0.58) 100%),
+      linear-gradient(90deg, rgba($black, 0.42) 0%, rgba($black, 0.08) 64%, rgba($black, 0.2) 100%);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 384px;
+    flex-direction: column;
+    padding: 112px $figma-page-x 36px;
+  }
 
   &__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: $spacing-md;
-    margin-bottom: 24px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 28px;
+  }
+
+  &__main {
+    margin-top: auto;
   }
 
   &__date {
     flex: 1;
-    color: #c8c8c8;
+    min-width: 0;
+    overflow: hidden;
+    color: rgba($white, 0.74);
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
     letter-spacing: $letter-spacing-wide;
     line-height: $line-height-normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__badge {
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     padding: 3px 10px;
-    border: 0.5px solid rgba($accent, 0.3);
+    border: 0.5px solid rgba($white, 0.32);
     border-radius: $radius-full;
-    background: transparent;
+    background: rgba($black, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 
     &--muted {
-      border-color: rgba($gray-500, 0.24);
+      border-color: rgba($white, 0.26);
 
       .home-hero__badge-dot {
-        background: $gray-500;
+        background: rgba($white, 0.72);
       }
 
       .home-hero__badge-text {
-        color: rgba($text-muted, 0.92);
+        color: rgba($white, 0.78);
       }
     }
   }
@@ -129,7 +196,7 @@
     color: rgba($accent-strong, 0.86);
     font-size: $figma-caption;
     font-weight: 600;
-    letter-spacing: 0.18em;
+    letter-spacing: 0;
   }
 
   &__title,
@@ -141,7 +208,7 @@
 
   &__title {
     margin-bottom: 10px;
-    color: $text-primary;
+    color: $white;
     font-size: 40px;
     font-weight: $font-weight-normal;
     line-height: 1.15;
@@ -149,9 +216,9 @@
 
   &__subtitle {
     max-width: 88%;
-    color: #cdcdcd;
+    color: rgba($white, 0.74);
     font-size: $figma-caption;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     line-height: 1.35;
   }
 }
@@ -211,13 +278,17 @@
   }
 
   &__status {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 42%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    min-height: 24px;
+    min-width: 82px;
+    min-height: 82px;
     margin: 0;
-    padding: 0;
+    padding: 0 8px;
     border: none;
     background: transparent;
     color: #bcbcbc;
@@ -234,9 +305,11 @@
   }
 
   &__status-text {
+    display: block;
     color: #bcbcbc;
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
+    white-space: nowrap;
   }
 
   &__status-icon {
@@ -301,7 +374,7 @@
   &__progress-label {
     display: block;
     color: $text-muted;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__progress-meta {
@@ -314,7 +387,7 @@
     color: rgba($accent-strong, 0.72);
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     min-width: 26px;
     text-align: right;
   }
@@ -347,9 +420,9 @@
     align-items: center;
     justify-content: flex-start;
     gap: 4px;
-    min-height: 40px;
+    min-height: 82px;
     margin: 0;
-    padding: 0;
+    padding: 0 10px 0 0;
     border: none;
     background: transparent;
     line-height: 1;
@@ -367,7 +440,7 @@
     color: $accent-strong;
     font-size: $figma-caption;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__secondary-icon {
@@ -386,7 +459,8 @@
   &__button {
     flex: 1;
     height: auto;
-    padding: $figma-button-lg-y 0;
+    min-height: 88px;
+    padding: 0 $spacing-lg;
     font-size: $figma-body;
     font-weight: $font-weight-medium;
     border-radius: $figma-radius-button;
@@ -589,7 +663,7 @@
     font-size: $figma-micro;
     color: rgba($text-muted, 0.58);
     font-weight: $font-weight-normal;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
   }
 
   &__label {
@@ -597,7 +671,7 @@
     color: $text-primary;
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
     line-height: $line-height-tight;
   }
 
@@ -664,7 +738,7 @@
     font-size: $figma-number-lg;
     font-weight: $font-weight-normal;
     line-height: 1;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
   }
 
   &__unit,
@@ -772,7 +846,7 @@
     position: absolute;
     left: 48px;
     bottom: 36px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0;
     text-transform: uppercase;
     font-weight: 500;
   }
@@ -886,7 +960,7 @@
     font-size: 30px;
     font-weight: $font-weight-normal;
     line-height: $line-height-tight;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   &__weekday {
@@ -942,7 +1016,7 @@
     color: rgba($accent-strong, 0.72);
     font-size: 14px;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__item-description,
@@ -955,7 +1029,7 @@
 
   &__item-meta {
     margin-top: 1px;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
 
   &__item-arrow {
@@ -997,6 +1071,15 @@
   border-radius: $figma-radius-card;
   padding: $figma-card-y $figma-card-x;
 
+  &__visual-image {
+    width: 100%;
+    height: 188px;
+    display: block;
+    margin-bottom: 18px;
+    border-radius: 24px;
+    background: rgba($white, 0.04);
+  }
+
   &__top,
   &__pin,
   &__pin-ring,
@@ -1023,7 +1106,7 @@
   &__label {
     margin-bottom: 8px;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.16em;
+    letter-spacing: 0;
   }
 
   &__name {
@@ -1082,7 +1165,7 @@
   &__action-text,
   &__action-arrow {
     font-size: $figma-caption;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     font-weight: $font-weight-medium;
   }
 
@@ -1126,7 +1209,7 @@
 
   &__metric-label {
     margin-bottom: 14px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 
   &__metrics {
@@ -1163,6 +1246,12 @@
 
   &__actions {
     padding: 42px 0;
+  }
+
+  &__button {
+    min-height: 88px;
+    border-radius: 22px;
+    box-shadow: 0 1px 6px rgba($ink, 0.08);
   }
 }
 
@@ -1210,7 +1299,8 @@
   &__button:first-child {
     flex: 1;
     min-width: 0;
-    padding: 23px 0;
+    min-height: 78px;
+    padding: 0 28px;
     font-size: $figma-body;
     box-shadow: 0 2px 8px rgba($ink, 0.1);
   }
@@ -1219,14 +1309,15 @@
     flex: 0 0 auto;
     width: auto;
     min-width: auto;
-    padding: 23px 49px;
+    min-height: 78px;
+    padding: 0 42px;
     font-size: $figma-body;
     border: 0.5px solid #e8e8e8;
     background: transparent;
     box-shadow: none;
     color: #ababab;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 }
 
@@ -1332,7 +1423,7 @@
     color: $accent;
     font-size: $figma-micro;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 
   &__line {
@@ -1386,6 +1477,7 @@
 
   &__action {
     padding: 21px 16px;
+    min-height: 82px;
     border-radius: 24px;
     background: rgba($white, 0.05);
     border: 0.5px solid rgba($white, 0.1);

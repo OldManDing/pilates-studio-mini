@@ -7,6 +7,14 @@ declare module '*.scss';
 declare module '*.sass';
 declare module '*.css';
 
+import type { ReactNode } from 'react';
+
+declare module '@tarojs/components/types/common' {
+  interface StandardProps {
+    children?: ReactNode;
+  }
+}
+
 // Taro env
 declare const process: {
   env: {

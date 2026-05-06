@@ -38,7 +38,7 @@ export default function AccountSecurity() {
       <PageHeader title='账户安全' subtitle='手机号展示与本机登录偏好' fallbackUrl='/pages/settings/index' />
 
       <View className='account-security-page__section'>
-        <SectionTitle title='登录账户' actionLabel='ACCOUNT' actionTone='muted' />
+        <SectionTitle title='登录账户' actionLabel='账户' actionTone='muted' />
         <AppCard padding='none' className='security-group'>
           <View className='security-row'>
             <View className='security-row__main'>
@@ -59,7 +59,7 @@ export default function AccountSecurity() {
       </View>
 
       <View className='account-security-page__section'>
-        <SectionTitle title='安全保护' actionLabel='PROTECT' actionTone='muted' />
+        <SectionTitle title='安全保护' actionLabel='保护' actionTone='muted' />
         <AppCard padding='none' className='security-group'>
           <Button className='security-row security-row--clickable' hoverClass='none' onClick={toggleBiometric}>
             <View className='security-row__main'>

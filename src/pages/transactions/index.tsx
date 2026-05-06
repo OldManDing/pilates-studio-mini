@@ -4,7 +4,7 @@ import { View, Text } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { transactionsApi, Transaction, TransactionSummary } from '../../api/transactions';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
-import { AppButton, AppCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
+import { AppCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, Price, SectionTitle, StatusTag } from '../../components';
 import { TransactionStatuses, TransactionKinds } from '../../constants/enums';
 import './index.scss';
 
@@ -111,20 +111,20 @@ export default function Transactions() {
     }
   });
 
-  const completedRevenue = summary?.byStatus?.COMPLETED?.total ?? 0;
+  const completedRevenue = summary?.completedRevenue ?? summary?.byStatus?.COMPLETED?.total ?? 0;
 
   return (
     <PageShell className='transactions-page' safeAreaBottom>
       <PageHeader
         title='消费记录'
         subtitle='查看你的历史交易与支付状态'
-        eyebrow='ACTIVITY'
+        eyebrow='消费'
         fallbackUrl='/pages/membership/index'
       />
 
       <View className='transactions-page__section'>
         <SectionTitle
-          eyebrow='SUMMARY'
+          eyebrow='总览'
           title='消费总览'
           subtitle='会员中心累计账单总览'
         />
@@ -152,7 +152,7 @@ export default function Transactions() {
 
       <View className='transactions-page__section'>
         <SectionTitle
-          eyebrow='LEDGER'
+          eyebrow='流水'
           title='交易流水'
           subtitle='按时间倒序展示最近记录'
         />

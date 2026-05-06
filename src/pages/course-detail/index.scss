@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 $course-detail-cta-content-height: 78px;
 
@@ -14,7 +14,7 @@ $course-detail-cta-content-height: 78px;
   &__hero {
     position: relative;
     height: 42vh;
-    min-height: 280px;
+    min-height: 330px;
     max-height: 460px;
     overflow: hidden;
   }
@@ -34,57 +34,26 @@ $course-detail-cta-content-height: 78px;
     background: linear-gradient(180deg, rgba($black, 0.24) 0%, rgba($black, 0.06) 42%, rgba($black, 0.34) 100%);
   }
 
-  &__back {
-    position: absolute;
-    left: $spacing-md;
-    top: calc(#{$spacing-xl} + constant(safe-area-inset-top));
-    top: calc(#{$spacing-xl} + env(safe-area-inset-top));
-    width: 44px;
-    height: 44px;
-    border-radius: $radius-full;
-    border: none;
-    background: rgba($white, 0.14);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(20px);
-  }
-
-  &__back-icon {
-    color: $white;
-    width: 14px;
-    height: 14px;
-  }
-
-  &__back-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
   &__hero-text {
     position: absolute;
-    left: $spacing-lg;
-    right: $spacing-lg;
-    bottom: $spacing-md;
+    left: $figma-page-x;
+    right: $figma-page-x;
+    bottom: $spacing-xl;
   }
 
   &__subtitle {
     display: block;
-    margin-bottom: 8px;
-    color: rgba($white, 0.5);
-    font-size: $font-size-2xs;
+    margin-bottom: 12px;
+    color: rgba($white, 0.72);
+    font-size: $figma-body;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
   }
 
   &__title {
     display: block;
     color: $white;
-    font-size: $font-size-xl;
+    font-size: 46px;
     font-weight: $font-weight-medium;
     line-height: 1.2;
   }
@@ -92,12 +61,12 @@ $course-detail-cta-content-height: 78px;
   &__body {
     position: relative;
     z-index: 2;
-    margin-top: -$spacing-sm;
-    padding: 0 28px;
+    margin-top: -28px;
+    padding: 0 $figma-page-x;
   }
 
   &__info-card {
-    margin-bottom: $spacing-md;
+    margin-bottom: 34px;
     box-shadow: $shadow-xs;
   }
 
@@ -112,56 +81,58 @@ $course-detail-cta-content-height: 78px;
   }
 
   &__time-row {
-    gap: $spacing-xs;
-    margin-bottom: $spacing-xs;
+    gap: 14px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
   }
 
   &__time-icon,
   &__meta-icon {
     color: $accent;
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
 
   &__time-value {
     color: $text-secondary;
-    font-size: $font-size-xs;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
   }
 
   &__duration {
     color: $text-muted;
-    font-size: $font-size-2xs;
+    font-size: $figma-body;
   }
 
   &__date-label {
     margin-left: auto;
-    min-height: 30px;
-    padding: 0 8px;
+    min-height: 42px;
+    padding: 0 18px;
     border-radius: $radius-full;
     border: 1px solid rgba($accent, 0.24);
     color: $accent-strong;
-    font-size: $font-size-2xs;
-    line-height: 30px;
+    font-size: $figma-caption;
+    line-height: 42px;
     background: rgba($accent-soft, 0.68);
   }
 
   &__date-value {
     display: block;
-    margin-bottom: $spacing-xs;
+    margin-bottom: 18px;
     color: $text-muted;
-    font-size: $font-size-2xs;
+    font-size: $figma-body;
     letter-spacing: $letter-spacing-wide;
   }
 
   &__meta-row {
-    gap: $spacing-sm;
-    padding: 8px 0;
+    gap: 18px;
+    padding: 20px 0;
   }
 
   &__meta-title {
     display: block;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -169,8 +140,8 @@ $course-detail-cta-content-height: 78px;
   &__meta-desc {
     display: block;
     color: $text-muted;
-    font-size: $font-size-xs;
-    margin-top: 3px;
+    font-size: $figma-body;
+    margin-top: 6px;
   }
 
   &__capacity {
@@ -182,8 +153,8 @@ $course-detail-cta-content-height: 78px;
   }
 
   &__capacity-track {
-    margin-top: 6px;
-    height: 4px;
+    margin-top: 14px;
+    height: 8px;
     border-radius: $radius-full;
     background: rgba($gray-300, 0.62);
     overflow: hidden;
@@ -200,7 +171,7 @@ $course-detail-cta-content-height: 78px;
   }
 
   &__section {
-    margin-bottom: $spacing-sm;
+    margin-bottom: 32px;
   }
 
   &__error-action {
@@ -211,9 +182,9 @@ $course-detail-cta-content-height: 78px;
 
   &__section-label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 14px;
     color: $accent;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wider;
 
@@ -224,12 +195,12 @@ $course-detail-cta-content-height: 78px;
 
   &__instructor {
     align-items: flex-start;
-    gap: $spacing-sm;
+    gap: 22px;
   }
 
   &__instructor-avatar {
-    width: 64px;
-    height: 64px;
+    width: 88px;
+    height: 88px;
     border-radius: $radius-full;
     flex-shrink: 0;
     background: rgba($gray-200, 0.72);
@@ -246,7 +217,7 @@ $course-detail-cta-content-height: 78px;
 
   &__instructor-avatar-text {
     color: $text-muted;
-    font-size: $font-size-sm;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
   }
 
@@ -257,41 +228,41 @@ $course-detail-cta-content-height: 78px;
 
   &__instructor-name {
     display: block;
-    margin-bottom: $spacing-2xs;
+    margin-bottom: 8px;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
   }
 
   &__instructor-desc {
     display: block;
     color: $text-muted;
-    font-size: $font-size-xs;
+    font-size: $figma-body;
     line-height: $line-height-normal;
   }
 
   &__about {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
     color: $text-secondary;
-    font-size: $font-size-sm;
-    line-height: $line-height-normal;
+    font-size: $figma-body;
+    line-height: $line-height-relaxed;
   }
 
   &__tags {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 10px;
   }
 
   &__tag {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 32px;
-    padding: 0 8px;
+    min-height: 42px;
+    padding: 0 16px;
     border-radius: $radius-full;
     color: rgba($text-muted, 0.94);
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     background: rgba($gray-200, 0.78);
 
     &--gold {
@@ -328,18 +299,18 @@ $course-detail-cta-content-height: 78px;
   }
 
   &__cta-button {
-    min-height: 64px;
+    min-height: 96px;
     border-radius: $radius-md;
-    font-size: $font-size-xs;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     box-shadow: 0 4px 10px rgba($ink, 0.06);
   }
 
   &__success {
     justify-content: center;
     gap: $spacing-xs;
-    min-height: 78px;
+    min-height: 88px;
     border-radius: $radius-md;
     background: rgba($gray-100, 0.9);
     border: 1px solid $border-faint;
@@ -347,13 +318,13 @@ $course-detail-cta-content-height: 78px;
 
   &__success-icon {
     color: $accent;
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
 
   &__success-text {
     color: $text-primary;
-    font-size: $font-size-sm;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wide;
   }

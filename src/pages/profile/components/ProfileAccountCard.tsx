@@ -38,6 +38,7 @@ export default function ProfileAccountCard({ data }: ProfileAccountCardProps) {
         <Text className='profile-account-card__summary-label'>{data.membershipLabel}</Text>
         <Text className='profile-account-card__summary-title'>{data.membershipTitle}</Text>
         <Text className='profile-account-card__summary-description'>{data.membershipDescription}</Text>
+        {data.syncNotice ? <Text className='profile-account-card__summary-description'>{data.syncNotice}</Text> : null}
       </View>
 
       <View className='profile-account-card__stats'>

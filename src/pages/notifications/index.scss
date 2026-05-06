@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 $support-gold: $accent;
 $support-gold-soft: rgba($accent, 0.08);
@@ -19,10 +19,12 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__header-action {
     display: flex;
     width: auto;
+    max-width: 100%;
     align-items: center;
     gap: 7px;
     min-height: 35px;
     padding: 14px 18px;
+    white-space: nowrap;
 
     &--disabled,
     &.app-button--disabled {
@@ -45,7 +47,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-small;
     font-weight: $font-weight-normal;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 
   &__section {
@@ -65,7 +67,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &__title {
       font-size: $figma-section-title;
       font-weight: $font-weight-medium;
-      letter-spacing: 0.01em;
+      letter-spacing: 0;
     }
 
     &__action {
@@ -76,7 +78,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &__action-text {
       font-size: $figma-caption;
       font-weight: $font-weight-normal;
-      letter-spacing: 0.1em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
   }
@@ -107,6 +109,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     background: transparent;
     gap: 28px;
     padding: 28px 36px;
+    line-height: normal;
+    text-align: left;
 
     &:active {
       background: rgba($accent-soft, 0.32);
@@ -191,7 +195,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: 1.25;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
 
   &__description {

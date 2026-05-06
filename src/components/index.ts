@@ -8,6 +8,7 @@ export { default as CoachCard } from './CoachCard';
 export { default as BookingItem } from './BookingItem';
 export { default as PageShell } from './shell/PageShell';
 export { default as PageHeader } from './shell/PageHeader';
+export { default as FloatingBackButton } from './shell/FloatingBackButton';
 export { default as SectionTitle } from './shell/SectionTitle';
 export { default as AppCard } from './shell/AppCard';
 export { default as AppButton } from './shell/AppButton';

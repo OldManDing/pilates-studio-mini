@@ -1,4 +1,4 @@
-@import '../../../styles/variables.scss';
+﻿@use '../../../styles/variables.scss' as *;
 
 .section-title-block {
   display: flex;
@@ -39,9 +39,29 @@
   &__action {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     margin-left: $spacing-md;
-    padding-bottom: $spacing-2xs;
+    border: 0;
+    min-width: 80px;
+    min-height: 80px;
+    padding: 0 8px;
+    background: transparent;
+    line-height: normal;
+
+    &::after {
+      border: 0;
+    }
+
+    &--hover {
+      opacity: 0.72;
+      background: transparent;
+    }
+
+    &--static {
+      min-width: 0;
+      min-height: 0;
+    }
 
     &--muted {
       .section-title-block__action-text,

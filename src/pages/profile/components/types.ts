@@ -18,6 +18,7 @@ export interface ProfileAccountCardData {
   membershipLabel: string;
   membershipTitle: string;
   membershipDescription: string;
+  syncNotice?: string;
   stats: ProfileStatData[];
 }
 

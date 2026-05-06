@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@use '../../styles/variables.scss' as *;
 
 .profile-page {
   &__content {
@@ -7,18 +7,105 @@
     gap: 0;
   }
 
-  &__header {
-    padding: 0;
-    margin-bottom: 42px;
+  &__hero {
+    position: relative;
+    min-height: 354px;
+    margin: 0 calc(-1 * #{$figma-page-x}) -58px;
+    overflow: hidden;
+  }
+
+  &__hero-image,
+  &__hero-mask {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__hero-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__hero-mask {
+    background:
+      linear-gradient(180deg, rgba($black, 0.14) 0%, rgba($black, 0.16) 42%, rgba($black, 0.62) 100%),
+      linear-gradient(90deg, rgba($black, 0.42) 0%, rgba($black, 0.08) 62%, rgba($black, 0.2) 100%);
+  }
+
+  &__hero-inner {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 354px;
+    flex-direction: column;
+    padding: 112px $figma-page-x 92px;
+  }
+
+  &__hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  &__hero-main {
+    margin-top: auto;
+  }
+
+  &__hero-title,
+  &__hero-subtitle,
+  &__hero-badge {
+    display: block;
+  }
+
+  &__hero-title {
+    margin-bottom: 10px;
+    color: $white;
+    font-size: 46px;
+    font-weight: $font-weight-medium;
+    line-height: 1.16;
+    letter-spacing: 0;
+  }
+
+  &__hero-subtitle {
+    color: rgba($white, 0.72);
+    font-size: $figma-caption;
+    line-height: $line-height-normal;
+    letter-spacing: 0;
+  }
+
+  &__hero-badge {
+    flex-shrink: 0;
+    min-height: 34px;
+    padding: 0 16px;
+    border: 0.5px solid rgba($white, 0.28);
+    border-radius: $radius-full;
+    color: rgba($white, 0.82);
+    font-size: $figma-caption;
+    line-height: 34px;
+    background: rgba($black, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   &__eyebrow {
     display: block;
-    color: #c8c8c8;
+    min-width: 0;
+    overflow: hidden;
+    color: rgba($white, 0.74);
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
     text-transform: uppercase;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .profile-account-card {
+    position: relative;
+    z-index: 2;
   }
 
   &__login-panel {
@@ -159,7 +246,7 @@
     color: $accent;
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;
-    letter-spacing: 0.18em;
+    letter-spacing: 0;
     line-height: 1;
   }
 
@@ -246,7 +333,7 @@
     color: #cdcdcd;
     font-size: 16px;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     line-height: 1.2;
   }
 
@@ -273,7 +360,7 @@
     color: #cdcdcd;
     font-size: 16px;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
     text-transform: uppercase;
   }
 
@@ -394,7 +481,7 @@
   color: #cdcdcd;
   font-size: $figma-body;
   font-weight: $font-weight-normal;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   box-shadow: none;
   gap: 14px;
 

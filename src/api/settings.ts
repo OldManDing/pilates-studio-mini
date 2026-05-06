@@ -7,6 +7,7 @@ export interface StudioSettings {
   email?: string;
   businessHours?: string;
   address?: string;
+  imageUrl?: string;
 }
 
 export const settingsApi = {

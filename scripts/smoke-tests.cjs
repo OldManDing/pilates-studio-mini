@@ -23,11 +23,17 @@ function assertNotIncludes(file, forbidden) {
   assert(!content.includes(forbidden), `${file} 不应包含: ${forbidden}`);
 }
 
+function assertFileExists(relativePath) {
+  assert(fs.existsSync(path.join(root, relativePath)), `${relativePath} is missing`);
+}
+
 const appConfig = read('src/app.config.ts');
+const navigation = read('src/constants/navigation.ts');
 const taroConfig = read('config/index.js');
 const envExample = read('.env.example');
 const projectConfig = JSON.parse(read('project.config.json'));
 const packageJson = JSON.parse(read('package.json'));
+const registeredPagePaths = Array.from(appConfig.matchAll(/'pages\/[a-z-]+\/index'/g)).map((match) => match[0].slice(1, -1));
 
 assertIncludes('config/index.js', "isProductionRelease = process.env.APP_ENV === 'production'");
 assertIncludes('config/index.js', 'loadLocalEnv();');
@@ -57,8 +63,37 @@ assert(projectConfig.miniprogramRoot === 'dist/', `project.config.json miniprogr
 assert(packageJson.scripts.test === 'npm run verify', 'package.json test 应执行完整 verify');
 assert(packageJson.scripts['test:api'] === 'node scripts/api-smoke.cjs', 'package.json 缺少 test:api 脚本');
 
+assert(packageJson.scripts.lint === 'eslint src', 'package.json missing lint script');
+assert(packageJson.scripts.verify.includes('npm run lint'), 'package.json verify must include lint');
+assert(packageJson.scripts['clean:dist'] === 'node scripts/clean-dist.cjs', 'package.json missing clean:dist script');
+assert(packageJson.scripts['prebuild:weapp'] === 'npm run clean:dist', 'package.json build:weapp must clean dist first');
+assertFileExists('src/index.html');
+
 const registeredPages = appConfig.match(/'pages\/[a-z-]+\/index'/g) || [];
 assert(registeredPages.length === 18, `app.config.ts 页面数量异常: ${registeredPages.length}`);
+registeredPagePaths.forEach((pagePath) => {
+  assertFileExists(`src/${pagePath}.tsx`);
+  assertFileExists(`src/${pagePath}.scss`);
+});
+
+const pageDirectories = fs.readdirSync(path.join(root, 'src/pages'), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => `pages/${entry.name}/index`)
+  .sort();
+assert(
+  JSON.stringify(pageDirectories) === JSON.stringify([...registeredPagePaths].sort()),
+  'src/pages directories and app.config.ts pages are out of sync',
+);
+
+Array.from(navigation.matchAll(/pagePath: '([^']+)'/g)).forEach((match) => {
+  const pagePath = match[1];
+  assert(registeredPagePaths.includes(pagePath), `navigation pagePath is not registered: ${pagePath}`);
+});
+
+Array.from(navigation.matchAll(/(?:iconPath|selectedIconPath): '([^']+)'/g)).forEach((match) => {
+  assertFileExists(`src/${match[1]}`);
+});
+
 assertIncludes('src/app.config.ts', 'custom: true');
 assertIncludes('src/constants/navigation.ts', "pagePath: 'pages/index/index'");
 assertIncludes('src/constants/navigation.ts', "pagePath: 'pages/courses/index'");
@@ -99,16 +134,18 @@ assertNotIncludes('src/pages/settings/index.tsx', 'Taro.clearStorageSync');
 assertIncludes('src/pages/my-bookings/index.tsx', "fetchAllBookingsByStatuses(['PENDING', 'CONFIRMED'])");
 assertIncludes('src/pages/my-bookings/index.tsx', "fetchAllBookingsByStatuses(['CANCELLED', 'NO_SHOW'])");
 assertIncludes('src/pages/my-bookings/index.tsx', '取消失败，请稍后重试');
-assertIncludes('src/pages/membership/index.tsx', 'membership.totalCredits <= 0');
-assertIncludes('src/pages/index/index.tsx', '当前权益为无限次');
-assertIncludes('src/pages/profile/index.tsx', '无限次权益');
+assertIncludes('src/utils/membership.ts', '当前权益为无限次');
+assertIncludes('src/utils/membership.ts', '无限次权益');
+assertIncludes('src/utils/membership.ts', 'remainingCredits > totalCredits');
 assertIncludes('src/pages/courses/index.tsx', 'handleCourseItemClick');
 assertIncludes('src/pages/courses/index.tsx', 'formatDateKey(date) === selectedDate?.dateValue');
 assertIncludes('src/pages/courses/index.tsx', "['MAT', 'REFORMER', 'CADILLAC', 'CHAIR', 'BARREL']");
 assertIncludes('src/pages/courses/index.tsx', 'courseSessionsApi.getUpcoming');
 assertNotIncludes('src/pages/courses/index.tsx', 'coursesApi.getAll');
 assertIncludes('src/pages/course-detail/index.tsx', 'profileLoadFailed');
-assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.requestRenewal');
+assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.createRenewalPayment');
+assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.completeMockRenewalPayment');
+assertIncludes('src/pages/membership-renew/index.tsx', 'Taro.requestPayment');
 assertIncludes('src/pages/membership-renew/index.tsx', 'submittedPlanId');
 assertIncludes('src/pages/account-security/index.tsx', '当前账号通过微信授权登录');
 assertNotIncludes('src/pages/account-security/index.tsx', 'membersApi.changePassword');
@@ -135,13 +172,20 @@ assertIncludes('src/pages/notifications/index.tsx', '消息加载失败');
 assertIncludes('src/pages/index/index.tsx', "progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '待开通'");
 assertIncludes('src/pages/index/index.tsx', 'progressPercent: activeMembership ? getMembershipProgressPercent(activeMembership) : 0');
 assertIncludes('src/pages/my-coaches/index.tsx', "loadFailed ? '--' : summaries.length");
-assertIncludes('src/pages/training-records/index.tsx', "status: 'COMPLETED'");
-assertIncludes('src/pages/training-records/index.tsx', 'currentPage += 1');
+assertIncludes('src/pages/my-coaches/index.tsx', 'coachesApi.getMine');
+assertIncludes('src/pages/training-records/index.tsx', 'bookingsApi.getMyTrainingRecords');
+assertIncludes('src/api/bookings.ts', '/bookings/my/training-records');
+assertIncludes('src/api/transactions.ts', 'completedRevenue');
+assertIncludes('src/pages/transactions/index.tsx', 'summary?.completedRevenue');
 assertIncludes('src/pages/coaches/index.tsx', '/pages/coach-detail/index?id=');
 assertIncludes('src/pages/coach-detail/index.tsx', "if (options?.id)");
+assertIncludes('src/pages/coach-detail/index.tsx', 'coachesApi.getById(id)');
+assertIncludes('src/pages/coach-detail/index.tsx', 'courseSummaryMap');
 assertIncludes('src/pages/coach-detail/index.tsx', 'loadFailed');
 assertIncludes('src/pages/coach-detail/index.tsx', '教练加载失败');
 assertIncludes('src/pages/coach-detail/index.tsx', '教练不存在');
+assertIncludes('src/api/coaches.ts', 'type BackendCoachSchedulePayload');
+assertIncludes('src/api/coaches.ts', 'normalizeCoachSchedulePayload(response.data)');
 assertIncludes('src/api/request.ts', 'ApiBusinessError');
 assertIncludes('src/api/request.ts', 'normalizedParams.pageSize = value');
 assertIncludes('src/api/request.ts', 'wrapListData');
@@ -154,8 +198,8 @@ assertIncludes('src/api/auth.ts', 'ensureMiniProgramAuth');
 assertIncludes('src/api/auth.ts', 'getRuntimeApiBaseUrl');
 assertIncludes('src/api/auth.ts', 'DEVTOOLS_API_BASE_URL');
 assertIncludes('src/api/auth.ts', 'AUTH_FAILURE_COOLDOWN_MS = 5000');
-assertIncludes('src/api/auth.ts', 'API_BASE_URL 未配置，无法完成小程序登录');
-assertIncludes('src/api/auth.ts', '真机无法访问本地 API 地址');
+assertIncludes('src/api/auth.ts', '接口地址未配置，无法完成小程序登录');
+assertIncludes('src/api/auth.ts', '真机无法访问本地接口地址');
 assertIncludes('src/api/auth.ts', '真机请求必须使用 HTTPS 合法域名');
 assertIncludes('src/api/auth.ts', 'if (ALLOW_INSECURE_REAL_DEVICE_API)');
 assertIncludes('src/api/auth.ts', 'shouldUseForcedMiniOpenIdLogin');
@@ -164,6 +208,7 @@ assertIncludes('src/api/auth.ts', "platform === 'devtools'");
 assertIncludes('src/api/request.ts', 'getRuntimeApiBaseUrl()');
 assertIncludes('src/api/auth.ts', 'Taro.login().catch');
 assertIncludes('src/api/auth.ts', 'confirmLoginAuthorization');
+assertIncludes('src/api/auth.ts', 'if (options.interactive && !forceMiniOpenIdLogin)');
 assertIncludes('src/api/auth.ts', '授权登录');
 assertIncludes('src/api/auth.ts', 'getUserProfile');
 assertIncludes('src/api/request.ts', 'ensureMiniProgramAuth({ interactive: true })');
@@ -186,7 +231,10 @@ assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.se
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.controller.ts', "@Controller('membership-renewals')");
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'MEMBERSHIP_RENEWAL');
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'TransactionStatus.PENDING');
-assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'Math.random()');
+assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'createPendingRenewalTransaction');
+assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.controller.ts', "@Post('pay')");
+assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.controller.ts', "@Post('wechat/notify')");
+assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.controller.ts', "@Post(':transactionId/mock-complete')");
 assertNotIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/dto/create-membership-renewal.dto.ts', 'IsUUID');
 assertNotIncludes('../pilates-studio-admin/backend/src/modules/bookings/dto/create-booking.dto.ts', 'IsUUID');
 assertIncludes('../pilates-studio-admin/backend/src/modules/support/support.controller.ts', "@Post('feedback')");
@@ -201,6 +249,10 @@ assertIncludes('../pilates-studio-admin/backend/src/modules/coaches/coaches.cont
 assertIncludes('src/api/transactions.ts', '/transactions/my');
 assertIncludes('src/api/transactions.ts', '/transactions/my-summary');
 assertIncludes('src/utils/storage.ts', "value === '' || value === undefined || value === null ? fallback : value");
+assertIncludes('src/utils/membership.ts', 'formatMembershipCreditsWithUnit');
+assertIncludes('src/pages/index/index.tsx', 'formatMembershipDescription(membership)');
+assertIncludes('src/pages/profile/index.tsx', 'formatMembershipCreditsWithUnit(activeMembership)');
+assertIncludes('src/pages/membership/index.tsx', 'formatMembershipCredits(currentMembership)');
 assertNotIncludes('src/pages/courses/index.tsx', 'static-demo');
 assertNotIncludes('src/pages/index/index.tsx', '静态壳阶段');
 assertNotIncludes('src/api/request.ts', ': any');

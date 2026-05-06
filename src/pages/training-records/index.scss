@@ -1,15 +1,15 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .training-records-page {
   &__summary {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 32px;
   }
 
   &__summary-card {
-    padding: 28px 12px;
+    padding: 34px 16px;
     text-align: center;
   }
 
@@ -24,7 +24,7 @@
   &__summary-label {
     display: block;
     color: #c8c8c8;
-    font-size: 16px;
+    font-size: $figma-caption;
   }
 
   &__summary-unit {
@@ -33,7 +33,7 @@
 
   &__summary-label {
     margin-top: 12px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__section {
@@ -41,7 +41,7 @@
   }
 
   &__empty {
-    padding: 42px 24px;
+    padding: $figma-card-y $figma-card-x;
   }
 }
 
@@ -53,7 +53,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding: 22px 28px;
+    padding: 30px 36px;
   }
 
   &__main {
@@ -93,7 +93,7 @@
   &__meta,
   &__status {
     color: #c8c8c8;
-    font-size: 18px;
+    font-size: $figma-body;
   }
 
   &__side {

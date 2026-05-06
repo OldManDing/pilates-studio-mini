@@ -3,9 +3,12 @@ import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
 import { CourseSession } from '../../api/courses';
-import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { getLabelByValue, CourseTypes, Weekdays } from '../../constants/enums';
+import { formatDurationMinutes } from '../../utils/ui';
 import './index.scss';
+
+const COACH_SCHEDULE_TIMEOUT_MS = 12000;
 
 function pad(value: number) {
   return String(value).padStart(2, '0');
@@ -65,30 +68,83 @@ function getWeekdayLabel(value?: string) {
   return weekday || '待定';
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+  });
+
+  return Promise.race([
+    promise.finally(() => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    }),
+    timeoutPromise,
+  ]);
+}
+
 export default function CoachDetail() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [schedule, setSchedule] = useState<CourseSession[]>([]);
+  const [scheduleLoading, setScheduleLoading] = useState(true);
+  const [scheduleLoadFailed, setScheduleLoadFailed] = useState(false);
   const [coachId, setCoachId] = useState('');
+  const [coachIdMissing, setCoachIdMissing] = useState(false);
+
+  const fetchScheduleData = useCallback(async (id: string) => {
+    try {
+      setScheduleLoading(true);
+      setScheduleLoadFailed(false);
+
+      const scheduleRes = await withTimeout(
+        coachesApi.getSchedule(id, { from: new Date().toISOString() }),
+        COACH_SCHEDULE_TIMEOUT_MS,
+        '教练排课加载超时',
+      );
+
+      setSchedule(scheduleRes.data.sessions || []);
+    } catch {
+      setSchedule([]);
+      setScheduleLoadFailed(true);
+    } finally {
+      setScheduleLoading(false);
+    }
+  }, []);
 
   const fetchData = useCallback(async (id: string) => {
     try {
       setLoading(true);
       setLoadFailed(false);
-      const [coachRes, scheduleRes] = await Promise.all([
-        coachesApi.getById(id),
-        coachesApi.getSchedule(id, { from: new Date().toISOString() }),
-      ]);
-      setCoach(coachRes.data.coach);
-      setSchedule(scheduleRes.data.sessions || []);
+      setCoachIdMissing(false);
+      setCoach(null);
+      setSchedule([]);
+      setScheduleLoading(true);
+      setScheduleLoadFailed(false);
+
+      const coachRes = await coachesApi.getById(id);
+      const selectedCoach = coachRes.data.coach;
+
+      if (!selectedCoach) {
+        throw new Error('教练不存在');
+      }
+
+      setCoach(selectedCoach);
+      void fetchScheduleData(id);
     } catch {
       setLoadFailed(true);
+      setCoach(null);
+      setSchedule([]);
+      setScheduleLoading(false);
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchScheduleData]);
 
   useLoad((options) => {
     if (options?.id) {
@@ -98,6 +154,7 @@ export default function CoachDetail() {
     }
 
     setLoading(false);
+    setCoachIdMissing(true);
   });
 
   const upcomingSchedule = useMemo(() => {
@@ -124,20 +181,33 @@ export default function CoachDetail() {
   }
 
   if (!coach) {
+    const emptyTitle = coachIdMissing ? '教练信息缺失' : loadFailed ? '教练加载失败' : '教练不存在';
+    const emptySubtitle = coachIdMissing
+      ? '缺少教练编号，请返回教练列表重新选择'
+      : loadFailed
+        ? '网络异常或教练信息暂时不可用'
+        : '该教练可能已下架或链接已失效';
+    const emptyDescription = coachIdMissing
+      ? '当前入口没有携带教练编号，无法定位要查看的教练。请返回教练列表重新选择。'
+      : loadFailed
+        ? '请检查网络后重试，或返回教练列表重新选择。'
+        : '请返回教练列表重新选择。';
+    const canRetryCoachLoad = loadFailed && Boolean(coachId);
+
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title={loadFailed ? '教练加载失败' : '教练不存在'} subtitle={loadFailed ? '网络异常或教练信息暂时不可用' : '该教练可能已下架或链接已失效'} fallbackUrl='/pages/coaches/index' />
+        <PageHeader title={emptyTitle} subtitle={emptySubtitle} fallbackUrl='/pages/coaches/index' />
         <AppCard>
-          <Empty title={loadFailed ? '教练加载失败' : '教练不存在'} description={loadFailed ? '请检查网络后重试，或返回教练列表重新选择。' : '请返回教练列表重新选择。'} />
-          {loadFailed ? (
+          <Empty title={emptyTitle} description={emptyDescription} />
+          {canRetryCoachLoad ? (
             <View className='coach-detail-page__error-action'>
-              <AppButton size='small' variant='primary' onClick={() => fetchData(coachId)}>
+              <AppButton size='medium' variant='primary' onClick={() => fetchData(coachId)}>
                 重新加载
               </AppButton>
             </View>
           ) : (
             <View className='coach-detail-page__error-action'>
-              <AppButton size='small' variant='primary' onClick={() => Taro.redirectTo({ url: '/pages/coaches/index' })}>
+              <AppButton size='medium' variant='outline' onClick={() => Taro.redirectTo({ url: '/pages/coaches/index' })}>
                 返回教练列表
               </AppButton>
             </View>
@@ -151,9 +221,27 @@ export default function CoachDetail() {
   const coachName = coach.name || '未命名教练';
   const specialties = coach.specialties || [];
   const certifications = coach.certifications || [];
-  const totalCourses = coach.courses?.length || 0;
+  const courseSummaryMap = new Map<string, { type?: string }>();
+  (coach.courses || []).forEach((course) => {
+    if (course.id) {
+      courseSummaryMap.set(course.id, course);
+    }
+  });
+  upcomingSchedule.forEach((session) => {
+    const sessionCourseId = session.course?.id || session.courseId;
+    if (sessionCourseId) {
+      courseSummaryMap.set(sessionCourseId, { type: session.course?.type });
+    }
+  });
+  const totalCourses = courseSummaryMap.size;
 
-  const trainingTypeTags = Array.from(new Set((coach.courses || []).map((course) => getLabelByValue(CourseTypes, course.type))));
+  const trainingTypeTags = Array.from(
+    new Set(
+      Array.from(courseSummaryMap.values())
+        .map((course) => (course.type ? getLabelByValue(CourseTypes, course.type) : ''))
+        .filter(Boolean),
+    ),
+  );
 
   const handlePhoneClick = () => {
     if (!coach.phone) {
@@ -180,26 +268,12 @@ export default function CoachDetail() {
 
   return (
     <View className='coach-detail-page'>
+      <FloatingBackButton fallbackUrl='/pages/coaches/index' theme='light' />
       <View className='coach-detail-page__hero'>
         <Image className='coach-detail-page__hero-image' src={heroImage} mode='aspectFill' />
         <View className='coach-detail-page__hero-mask' />
-
-        <View
-          className='coach-detail-page__back'
-          onClick={async () => {
-            try {
-              await Taro.navigateBack({ delta: 1 });
-            } catch {
-              Taro.redirectTo({ url: '/pages/coaches/index' });
-            }
-          }}
-        >
-          <Icon name='chevron-left' className='coach-detail-page__back-icon' />
-          <Text className='coach-detail-page__back-label'>返回</Text>
-        </View>
-
         <View className='coach-detail-page__hero-text'>
-          <Text className='coach-detail-page__subtitle'>COACH PROFILE</Text>
+          <Text className='coach-detail-page__subtitle'>教练档案</Text>
           <Text className='coach-detail-page__title'>{coachName}</Text>
         </View>
       </View>
@@ -240,7 +314,7 @@ export default function CoachDetail() {
 
         <View className='coach-detail-page__section'>
           <SectionTitle
-            eyebrow='ABOUT'
+            eyebrow='介绍'
             title='教练介绍'
             subtitle='基于当前公开资料与排课信息'
           />
@@ -254,7 +328,7 @@ export default function CoachDetail() {
 
         <View className='coach-detail-page__section'>
           <SectionTitle
-            eyebrow='QUALIFICATIONS'
+            eyebrow='认证'
             title='认证与专长'
             subtitle='展示认证、专长方向与授课类型'
           />
@@ -301,13 +375,26 @@ export default function CoachDetail() {
 
         <View className='coach-detail-page__section'>
           <SectionTitle
-            eyebrow='SCHEDULE'
+            eyebrow='排课'
             title='近期排课'
             subtitle='按时间升序展示即将开始的课程场次'
           />
 
           <AppCard padding='none' className='coach-detail-page__schedule-card'>
-            {upcomingSchedule.length > 0 ? (
+            {scheduleLoading ? (
+              <View className='coach-detail-page__empty-wrap'>
+                <Loading compact />
+              </View>
+            ) : scheduleLoadFailed ? (
+              <View className='coach-detail-page__empty-wrap'>
+                <Empty
+                  title='近期排课加载失败'
+                  description='请检查网络后重试，或返回教练列表重新选择。'
+                  actionLabel='重新加载'
+                  onActionClick={() => void fetchScheduleData(coachId || coach.id)}
+                />
+              </View>
+            ) : upcomingSchedule.length > 0 ? (
               upcomingSchedule.map((session, index) => {
                 const startDate = new Date(session.startsAt);
                 const monthDay = Number.isNaN(startDate.getTime())
@@ -329,7 +416,7 @@ export default function CoachDetail() {
                         <View className='coach-detail-page__schedule-meta-row'>
                           <Icon name='clock' className='coach-detail-page__schedule-meta-icon' />
                           <Text className='coach-detail-page__schedule-meta'>
-                            {formatTimeRange(session.startsAt, session.endsAt)} · {duration > 0 ? `${duration}min` : '--min'}
+                            {formatTimeRange(session.startsAt, session.endsAt)} · {formatDurationMinutes(duration)}
                           </Text>
                         </View>
                         <View className='coach-detail-page__schedule-meta-row'>

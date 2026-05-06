@@ -1,57 +1,102 @@
-@import '../../../styles/variables.scss';
+@use '../../../styles/variables.scss' as *;
 
 .page-header {
-  margin-bottom: $spacing-lg;
+  position: relative;
+  display: flex;
+  min-height: 236px;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  margin: calc(-1 * var(--page-shell-top-inset, 0px)) calc(-1 * #{$figma-page-x}) $figma-section-title-gap;
+  padding: calc(var(--page-shell-top-inset, 0px) + #{$spacing-sm}) $figma-page-x 34px;
+  overflow: hidden;
+  background: $primary;
+  color: $white;
+  margin-bottom: $figma-section-title-gap;
+
+  &__image,
+  &__mask {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__mask {
+    background:
+      linear-gradient(180deg, rgba($black, 0.44) 0%, rgba($black, 0.22) 42%, rgba($black, 0.66) 100%),
+      linear-gradient(90deg, rgba($black, 0.44) 0%, rgba($black, 0.1) 62%, rgba($black, 0.24) 100%);
+  }
 
   &__top {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
     min-height: 56px;
-    margin-bottom: $spacing-xs;
+    gap: $spacing-md;
   }
 
   &__back {
-    background: transparent;
-    border: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: flex-start;
+    flex: 0 0 auto;
     gap: 4px;
-    min-height: 56px;
+    width: auto;
+    min-width: 108px;
+    height: 88px;
+    min-height: 88px;
+    margin: 0 0 0 -4px;
+    padding: 0 28px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba($white, 0.96);
     line-height: 1;
-    margin-left: -4px;
-    padding: 0 $spacing-md 0 0;
-    color: $text-primary;
+    box-shadow: none;
 
-    &--placeholder {
-      visibility: hidden;
-      pointer-events: none;
+    &::after {
+      border: 0;
+    }
+
+    &:active {
+      opacity: 0.88;
+      transform: translateY(1px);
     }
   }
 
   &__back-icon {
-    color: $text-primary;
-    width: 22px;
-    height: 22px;
+    width: 36px;
+    height: 36px;
+    color: currentColor;
   }
 
   &__back-text {
-    color: $text-muted;
+    color: rgba($white, 0.74);
     font-size: $figma-body;
     font-weight: $font-weight-normal;
     letter-spacing: 0.04em;
   }
 
   &__content {
+    position: relative;
+    z-index: 1;
     min-width: 0;
-    padding-top: $spacing-xs;
+    padding-top: 0;
     text-align: left;
   }
 
   &__eyebrow {
     display: block;
     margin-bottom: $spacing-xs;
-    color: $accent;
+    color: rgba($white, 0.7);
     font-size: $font-size-2xs;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wide;
@@ -59,26 +104,31 @@
 
   &__title {
     display: block;
-    color: $text-primary;
-    font-size: $figma-title;
+    color: $white;
+    font-size: 40px;
     font-weight: $font-weight-medium;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
+    line-height: 1.16;
+    letter-spacing: 0;
+    word-break: break-word;
   }
 
   &__subtitle {
     display: block;
     margin-top: $spacing-xs;
-    color: $gray-500;
+    max-width: 88%;
+    color: rgba($white, 0.74);
     font-size: $figma-body;
     line-height: 1.5;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 
   &__right {
     display: inline-flex;
     align-items: center;
     justify-content: flex-end;
+    flex: 0 0 auto;
     min-height: 56px;
+    min-width: 0;
+    max-width: 100%;
   }
 }

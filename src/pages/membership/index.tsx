@@ -3,10 +3,10 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { membersApi, Membership as MembershipType } from '../../api/members';
-import { membershipPlansApi, MembershipPlan } from '../../api/membershipPlans';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Icon, Loading, PageHeader, PageShell } from '../../components';
+import { formatMembershipCredits, formatMembershipCreditsWithUnit, getUsedMembershipCredits } from '../../utils/membership';
 import './index.scss';
 
 type BenefitItem = {
@@ -159,32 +159,33 @@ function getMembershipDisplayName(membership: MembershipType | null) {
 export default function Membership() {
   const [loading, setLoading] = useState(true);
   const [memberships, setMemberships] = useState<MembershipType[]>([]);
-  const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [completedTrainingMinutes, setCompletedTrainingMinutes] = useState(0);
   const [loadFailed, setLoadFailed] = useState(false);
   const [authRequired, setAuthRequired] = useState(false);
+  const [trainingStatsSyncFailed, setTrainingStatsSyncFailed] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
       setAuthRequired(false);
-      const [membershipsRes, plansRes, completedBookings] = await Promise.all([
+      setTrainingStatsSyncFailed(false);
+      const [membershipsRes, completedBookingsRes] = await Promise.all([
         membersApi.getMyMemberships(),
-        membershipPlansApi.getActive(),
-        fetchAllCompletedBookings().catch(() => [] as Booking[]),
+        fetchAllCompletedBookings()
+          .then((bookings) => ({ bookings, failed: false }))
+          .catch(() => ({ bookings: [] as Booking[], failed: true })),
       ]);
 
       const membershipsData = membershipsRes.data.memberships || [];
-      const plansData = plansRes.data.plans || [];
 
       setMemberships(membershipsData);
-      setPlans(plansData);
-      setCompletedTrainingMinutes(completedBookings.reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0));
+      setCompletedTrainingMinutes(completedBookingsRes.bookings.reduce((sum, booking) => sum + calculateMinutes(booking.session?.startsAt, booking.session?.endsAt), 0));
+      setTrainingStatsSyncFailed(completedBookingsRes.failed);
     } catch (error) {
       setMemberships([]);
-      setPlans([]);
       setCompletedTrainingMinutes(0);
+      setTrainingStatsSyncFailed(false);
       Taro.showToast({ title: getApiErrorMessage(error, '加载失败'), icon: 'none' });
       setLoadFailed(true);
       setAuthRequired(isUnauthorizedApiError(error));
@@ -235,7 +236,7 @@ export default function Membership() {
   }, [memberships]);
 
   const totalUsedCredits = memberships.reduce(
-    (sum, membership) => sum + (membership.totalCredits > 0 ? Math.max(0, membership.totalCredits - membership.remainingCredits) : 0),
+    (sum, membership) => sum + getUsedMembershipCredits(membership),
     0,
   );
 
@@ -244,7 +245,7 @@ export default function Membership() {
   const membershipMonths = earliestMembership ? getDurationMonths(earliestMembership.startDate) : 0;
   const estimatedHours = completedTrainingMinutes > 0 ? Math.round(completedTrainingMinutes / 60) : 0;
   const hasMemberships = memberships.length > 0;
-  const statusBadgeLabel = currentMembership ? 'GOLD' : 'GUEST';
+  const statusBadgeLabel = currentMembership ? '会员' : '访客';
   const statusFlag = currentMembership ? getMembershipStatusLabel(currentMembership) : '待开通';
   const renewActionLabel = currentMembership ? '续费会员' : '查看会员方案';
 
@@ -316,7 +317,7 @@ export default function Membership() {
       rows.push({
         id: `${membership.id}-credits`,
         date: membership.endDate || membership.startDate,
-        title: membership.totalCredits <= 0 ? `${name} 权益无限次` : `${name} 剩余 ${membership.remainingCredits}/${membership.totalCredits} 次`,
+        title: `${name} ${formatMembershipCreditsWithUnit(membership)}`,
         type: 'renew',
       });
     });
@@ -386,7 +387,7 @@ export default function Membership() {
                 <View className='membership-page__status-right'>
                   <Text className='membership-page__status-stat-label'>课程权益</Text>
                   <Text className='membership-page__status-stat-value'>
-                    {currentMembership ? (currentMembership.totalCredits <= 0 ? '无限次' : `${currentMembership.remainingCredits}/${currentMembership.totalCredits}次`) : '--'}
+                    {currentMembership ? formatMembershipCredits(currentMembership) : '--'}
                   </Text>
                 </View>
               </View>
@@ -414,7 +415,7 @@ export default function Membership() {
         <View className='membership-page__section'>
           <View className='membership-page__section-title'>
             <Text className='membership-page__section-name'>会员权益</Text>
-            <Text className='membership-page__section-en'>BENEFITS</Text>
+            <Text className='membership-page__section-en'>权益</Text>
           </View>
           <AppCard padding='none'>
             {benefitItems.map((item, index) => (
@@ -437,11 +438,11 @@ export default function Membership() {
         <View className='membership-page__section'>
           <View className='membership-page__section-title'>
             <Text className='membership-page__section-name'>训练总览</Text>
-            <Text className='membership-page__section-en'>OVERVIEW</Text>
+            <Text className='membership-page__section-en'>总览</Text>
           </View>
           <AppCard className='membership-page__overview'>
             <View className='membership-page__overview-main'>
-              <Text className='membership-page__overview-label'>TOTAL</Text>
+              <Text className='membership-page__overview-label'>总计</Text>
               <View className='membership-page__overview-value-row'>
                 <Text className='membership-page__overview-value'>{memberships.length > 0 ? totalUsedCredits : '--'}</Text>
                 <Text className='membership-page__overview-unit'>节课</Text>
@@ -454,8 +455,8 @@ export default function Membership() {
               <View>
                 <Text className='membership-page__overview-side-label'>累计</Text>
                 <View className='membership-page__overview-side-row'>
-                  <Text className='membership-page__overview-side-value'>{memberships.length > 0 ? estimatedHours : '--'}</Text>
-                  <Text className='membership-page__overview-side-unit'>h</Text>
+                  <Text className='membership-page__overview-side-value'>{memberships.length > 0 ? (trainingStatsSyncFailed ? '--' : estimatedHours) : '--'}</Text>
+                  <Text className='membership-page__overview-side-unit'>小时</Text>
                 </View>
               </View>
 
@@ -468,12 +469,22 @@ export default function Membership() {
               </View>
             </View>
           </AppCard>
+          {trainingStatsSyncFailed ? (
+            <View className='membership-page__empty-wrap'>
+              <Empty
+                title='训练统计同步失败'
+                description='累计训练时长暂未更新，会员权益数据已保留，请下拉重试。'
+                actionLabel='重新同步'
+                onActionClick={fetchData}
+              />
+            </View>
+          ) : null}
         </View>
 
         <View className='membership-page__section'>
           <View className='membership-page__section-title'>
             <Text className='membership-page__section-name'>近期记录</Text>
-            <Text className='membership-page__section-en'>ACTIVITY</Text>
+            <Text className='membership-page__section-en'>记录</Text>
           </View>
           <View className='membership-page__activity-action'>
             <AppButton size='small' variant='outline' onClick={() => Taro.navigateTo({ url: '/pages/transactions/index' })}>

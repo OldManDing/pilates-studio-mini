@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { useDidShow, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import { AppButton, Loading, PageShell, SectionTitle } from '../../components';
@@ -25,9 +25,10 @@ import type {
   HomeUpcomingItemData,
 } from './components/types';
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
+import { formatMembershipCredits, formatMembershipDescription } from '../../utils/membership';
+import { formatDurationMinutes, getSafeMiniImageSrc, getWeekdayLabel } from '../../utils/ui';
 import './index.scss';
 
-const WEEKDAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
 const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
 const BOOKING_STATUS_LABEL_MAP: Record<Booking['status'], string> = {
   PENDING: '待确认',
@@ -42,7 +43,7 @@ function padNumber(value: number) {
 }
 
 function formatShellDate(date: Date) {
-  return `${date.getFullYear()} · ${padNumber(date.getMonth() + 1)} · ${padNumber(date.getDate())} ${WEEKDAY_LABELS[date.getDay()]}`;
+  return `${date.getFullYear()}年${padNumber(date.getMonth() + 1)}月${padNumber(date.getDate())}日 ${getWeekdayLabel(date)}`;
 }
 
 function getGreeting(date: Date) {
@@ -55,7 +56,7 @@ function getGreeting(date: Date) {
 
 function getDisplayMemberName(name?: string | null) {
   if (!name) {
-    return '会员';
+    return '访客';
   }
 
   return name;
@@ -113,9 +114,9 @@ function calculateMinutes(start?: string, end?: string) {
   return Math.round(diff / (1000 * 60));
 }
 
-function formatDurationLabel(start?: string, end?: string, fallback = '--min') {
+function formatDurationLabel(start?: string, end?: string, fallback = '时长待定') {
   const duration = calculateMinutes(start, end);
-  return duration > 0 ? `${duration}min` : fallback;
+  return formatDurationMinutes(duration, fallback);
 }
 
 function formatRelativeDayLabel(dateString?: string) {
@@ -146,7 +147,11 @@ function getUpcomingWeekday(dateString?: string) {
   if (!dateString) return '--';
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return '--';
-  return WEEKDAY_LABELS[date.getDay()];
+  return getWeekdayLabel(date);
+}
+
+function formatRefreshTime(date: Date) {
+  return `${padNumber(date.getHours())}:${padNumber(date.getMinutes())}`;
 }
 
 function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemData {
@@ -162,7 +167,7 @@ function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemDa
     label: formatRelativeDayLabel(startsAt),
     title: booking.session?.course?.name || '课程安排',
     description: '',
-    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${duration > 0 ? duration : '--'}min`,
+    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${formatDurationMinutes(duration)}`,
     routeUrl: courseId ? `/pages/course-detail/index?id=${courseId}` : undefined,
   };
 }
@@ -180,7 +185,7 @@ function toHomeRecentItem(booking: Booking, index: number): HomeUpcomingItemData
     label: BOOKING_STATUS_LABEL_MAP[booking.status],
     title: booking.session?.course?.name || '课程安排',
     description: '',
-    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${duration > 0 ? duration : '--'}min`,
+    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${formatDurationMinutes(duration)}`,
     routeUrl: courseId ? `/pages/course-detail/index?id=${courseId}` : undefined,
   };
 }
@@ -201,8 +206,7 @@ function getMembershipStatus(membership?: Membership | null) {
 
 function getMembershipDescription(membership?: Membership | null) {
   if (!membership) return '当前还没有已生效会员卡，可前往会员中心选择适合的训练方案。';
-  if (membership.totalCredits <= 0) return `${membership.planName || '会员卡'} 当前权益为无限次，可继续安排训练。`;
-  return `${membership.planName || '会员卡'} 当前剩余 ${membership.remainingCredits}/${membership.totalCredits} 次，可继续安排训练。`;
+  return formatMembershipDescription(membership);
 }
 
 function calculateDurationDays(startDate?: string, endDate?: string) {
@@ -223,8 +227,7 @@ function calculateDurationDays(startDate?: string, endDate?: string) {
 
 function getMembershipCreditsText(membership?: Membership | null) {
   if (!membership) return '--';
-  if (membership.totalCredits <= 0) return '无限次';
-  return `${membership.remainingCredits}/${membership.totalCredits}次`;
+  return formatMembershipCredits(membership);
 }
 
 function getMembershipProgressPercent(membership?: Membership | null) {
@@ -248,8 +251,8 @@ function getCourseDisplayMeta(course?: Course | null, studioName?: string) {
 }
 
 function getCourseCaption(course?: Course | null) {
-  if (!course) return 'COURSE UPDATE';
-  const duration = course.durationMinutes > 0 ? `${course.durationMinutes}min` : '时长待定';
+  if (!course) return '课程更新';
+  const duration = formatDurationMinutes(course.durationMinutes);
   return `${course.level || '适合你的训练'} · ${duration}`;
 }
 
@@ -257,7 +260,7 @@ function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: M
   if (todayBooking) {
     return {
       heroSubtitle: '今日已安排 1 节课程',
-      courseLabel: 'TODAY COURSE',
+      courseLabel: '今日课程',
       courseStatus: todayBooking.status === 'PENDING' ? '待确认' : '已为你留位',
       courseSubtitle: '今日训练安排',
       note: '到店前 15 分钟签到，课程结束后可直接续约下一节同主题训练。',
@@ -267,7 +270,7 @@ function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: M
   if (activeMembership) {
     return {
       heroSubtitle: `${activeMembership.planName || '会员权益'} 已生效`,
-      courseLabel: 'NEXT COURSE',
+      courseLabel: '下一节课程',
       courseStatus: '下一节待安排',
       courseSubtitle: '近期最近可预约场次',
       note: '今天还没有预约课程，可先浏览课程页，选择适合当前节奏的下一节训练。',
@@ -276,7 +279,7 @@ function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: M
 
   return {
     heroSubtitle: '从一节舒展课程开始今天的练习。',
-    courseLabel: 'COURSE PICK',
+    courseLabel: '课程推荐',
     courseStatus: '等待预约',
     courseSubtitle: '推荐你先完成第一节体验课',
     note: '还没有会员与预约记录，先从课程页选择一节入门课程开启练习。',
@@ -306,25 +309,37 @@ async function fetchAllMyBookings() {
 
 export default function Index() {
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [lastRefreshLabel, setLastRefreshLabel] = useState('');
   const [member, setMember] = useState<Member | null>(null);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [studioSettings, setStudioSettings] = useState<StudioSettings | null>(null);
+  const initialFetchCompletedRef = useRef(false);
 
   useShareAppMessage(() => ({
-    title: 'Pilates Studio - 专业普拉提工作室',
+    title: '普拉提工作室｜专业训练预约',
     path: '/pages/index/index',
   }));
 
   useDidShow(() => {
     syncCustomTabBarSelected(0);
+
+    if (initialFetchCompletedRef.current) {
+      void fetchData('resume');
+    }
   });
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (source: 'initial' | 'pull' | 'manual' | 'resume' = 'initial') => {
     try {
-      setLoading(true);
+      if (source === 'initial') {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+
       const [profileRes, membershipsRes, bookingsRes, coursesRes, studioRes] = await Promise.allSettled([
         membersApi.getProfile({ showLoading: false }),
         membersApi.getMyMemberships({ showLoading: false }),
@@ -341,21 +356,36 @@ export default function Index() {
       setBookings(bookingsRes.status === 'fulfilled' ? bookingsRes.value.data.bookings || [] : []);
       setCourses(coursesRes.status === 'fulfilled' ? coursesRes.value.data.courses || [] : []);
       setStudioSettings(studioRes.status === 'fulfilled' ? studioRes.value.data : null);
+
+      if (source === 'pull' || source === 'manual') {
+        setLastRefreshLabel(formatRefreshTime(new Date()));
+        Taro.showToast({
+          title: hasFailedSection ? '已刷新，部分内容未同步' : '页面已刷新',
+          icon: 'none',
+        });
+      } else if (source === 'resume') {
+        setLastRefreshLabel(formatRefreshTime(new Date()));
+      }
     } catch {
       setLoadFailed(true);
       Taro.showToast({ title: '加载失败', icon: 'none' });
     } finally {
-      setLoading(false);
+      if (source === 'initial') {
+        setLoading(false);
+      } else {
+        setRefreshing(false);
+      }
+      initialFetchCompletedRef.current = true;
       Taro.stopPullDownRefresh();
     }
   }, []);
 
   useEffect(() => {
-    fetchData();
+    void fetchData('initial');
   }, [fetchData]);
 
   usePullDownRefresh(() => {
-    fetchData();
+    void fetchData('pull');
   });
 
   const serviceItems: HomeServiceItemData[] = [
@@ -363,28 +393,28 @@ export default function Index() {
       key: 'booking',
       accent: 'mint',
       label: '预约课程',
-      subtitle: 'BOOKING',
+      subtitle: '快速预约',
       description: '快速进入课程页',
     },
     {
       key: 'records',
       accent: 'violet',
       label: '训练记录',
-      subtitle: 'RECORD',
+      subtitle: '训练记录',
       description: '查看近期安排',
     },
     {
       key: 'coaches',
       accent: 'orange',
       label: '我的教练',
-      subtitle: 'COACH',
+      subtitle: '教练',
       description: '查看常用教练',
     },
     {
       key: 'courses',
       accent: 'pink',
       label: '课程表',
-      subtitle: 'SCHEDULE',
+      subtitle: '课表',
       description: '进入课程安排',
     },
   ];
@@ -424,14 +454,15 @@ export default function Index() {
 
   const heroData: HomeHeroData = {
     dateLabel: formatShellDate(now),
-    badgeLabel: activeMembership ? 'GOLD' : 'GUEST',
+    badgeLabel: activeMembership ? '会员' : '访客',
     badgeTone: activeMembership ? 'accent' : 'muted',
     title: `${getGreeting(now)}，${getDisplayMemberName(member?.name)}`,
     subtitle: todayCourseSummary.heroSubtitle,
+    imageUrl: getSafeMiniImageSrc(studioSettings?.imageUrl, '/assets/ui/hero-studio.jpg'),
   };
 
   const membershipData: HomeMembershipData = {
-    label: 'MEMBERSHIP',
+    label: '会员权益',
     status: activeMembership ? '详情' : getMembershipStatus(activeMembership),
     planName: activeMembership?.planName || '尚未开通会员',
     description: getMembershipDescription(activeMembership),
@@ -442,8 +473,8 @@ export default function Index() {
     progressLabel: activeMembership ? '进度' : '状态',
     progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '待开通',
     progressPercent: activeMembership ? getMembershipProgressPercent(activeMembership) : 0,
-    primaryAction: '立即预约课程',
-    secondaryAction: activeMembership ? '查看详情' : '开通会员',
+    primaryAction: activeMembership ? '立即预约课程' : '开通会员',
+    secondaryAction: activeMembership ? '查看详情' : '先看课程',
   };
 
   const todayCourseData: HomeTodayCourseData = {
@@ -461,7 +492,7 @@ export default function Index() {
   };
 
   const monthlySummaryData: HomeMonthlySummaryData = {
-    label: 'SESSIONS',
+    label: '本月课程',
     value: String(monthlySessions),
     unit: '次',
     description: '本月训练概览',
@@ -471,7 +502,7 @@ export default function Index() {
         key: 'duration',
         label: '时长',
         value: String(monthlyHours),
-        unit: 'h',
+        unit: '小时',
         detail: '',
       },
       {
@@ -485,14 +516,14 @@ export default function Index() {
   };
 
   const curatedData: HomeCuratedData = {
-    eyebrow: 'CURATED',
+    eyebrow: '精选课程',
     caption: getCourseCaption(curatedCourse),
     title: curatedCourse?.name || '暂无推荐课程',
     description: '',
     meta: getCourseDisplayMeta(curatedCourse, studioName),
     cta: '预约',
     monogram: '',
-    imageUrl: '/assets/ui/booking-pilates.svg',
+    imageUrl: getSafeMiniImageSrc(curatedCourse?.coverImageUrl, '/assets/ui/booking-pilates.svg'),
     fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
@@ -506,12 +537,13 @@ export default function Index() {
   const usingRecentBookingFallback = upcomingBookings.length === 0 && recentBookings.length > 0;
 
   const studioData: HomeStudioData = {
-    label: 'YOUR STUDIO',
+    label: '我的门店',
     name: studioName,
     address: studioAddress,
     hours: studioBusinessHours ? `营业时间 ${studioBusinessHours}` : '营业时间待更新',
     note: '',
     actionLabel: '导航前往',
+    imageUrl: studioSettings?.imageUrl?.trim() || undefined,
   };
 
   const handleMembershipPrimary = () => {
@@ -582,24 +614,40 @@ export default function Index() {
   }
 
   return (
-    <PageShell className='home-page' reserveTabBarSpace>
+    <PageShell className='home-page' reserveTabBarSpace flushTop>
         <View className='home-page__content'>
-        {loadFailed ? (
-          <View className='home-page__notice'>
-            <Text className='home-page__notice-text'>部分数据暂时加载失败，下拉刷新可重新同步。</Text>
-            <View className='home-page__notice-action'>
-              <AppButton size='small' variant='outline' onClick={fetchData}>重新同步</AppButton>
+        <HomeHero data={heroData} />
+
+        {loadFailed || refreshing || lastRefreshLabel ? (
+          <View className={`home-page__notice ${refreshing ? 'home-page__notice--refreshing' : ''}`}>
+            <View className='home-page__notice-main'>
+              <Text className='home-page__notice-text'>
+                {refreshing ? '正在刷新首页内容…' : loadFailed ? '部分内容暂未同步' : '首页内容已更新'}
+              </Text>
+              <Text className='home-page__notice-meta'>
+                {refreshing
+                  ? '请稍候，刷新完成后会自动更新内容。'
+                  : loadFailed
+                    ? `下拉或轻触重试可重新同步${lastRefreshLabel ? `，上次尝试 ${lastRefreshLabel}` : ''}`
+                    : `最近刷新 ${lastRefreshLabel}`}
+              </Text>
             </View>
+            {loadFailed ? (
+              <View className='home-page__notice-action'>
+                <AppButton size='small' variant='outline' onClick={() => void fetchData('manual')} disabled={refreshing}>
+                  {refreshing ? '同步中' : '重试'}
+                </AppButton>
+              </View>
+            ) : null}
           </View>
         ) : null}
-
-        <HomeHero data={heroData} />
 
         <View className='home-page__section'>
           <HomeMembershipCard
             data={membershipData}
-            onPrimaryClick={handleMembershipPrimary}
+            onPrimaryClick={activeMembership ? handleCoursesEntry : handleMembershipPrimary}
             onDetailClick={handleMembershipPrimary}
+            onSecondaryClick={activeMembership ? handleMembershipPrimary : handleCoursesEntry}
           />
         </View>
 
@@ -632,7 +680,7 @@ export default function Index() {
         <View className='home-page__section'>
           <SectionTitle
             title='精选推荐'
-            actionLabel='CURATED'
+            actionLabel='精选'
             actionTone='muted'
           />
           <HomeCuratedCard data={curatedData} onClick={handleCoursesEntry} />

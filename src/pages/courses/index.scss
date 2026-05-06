@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .booking-page {
   &__content {
@@ -14,12 +14,12 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    margin-top: 28px;
+    margin-top: 4px;
     margin-left: calc(-1 * #{$spacing-xs});
     margin-right: calc(-1 * #{$spacing-xs});
     padding: 14px $spacing-xs 10px;
     border-radius: $radius-xl;
-    background: rgba($background, 0.92);
+    background: rgba($background, 0.96);
     backdrop-filter: blur(10px);
     box-shadow: 0 1px 0 rgba($gray-300, 0.6);
   }
@@ -48,19 +48,127 @@
       color: $gray-500;
       font-size: $figma-caption;
       font-weight: $font-weight-normal;
-      letter-spacing: 0.04em;
+      letter-spacing: 0;
     }
+  }
+
+  &__headline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px 0 22px;
+  }
+
+  &__headline-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__headline-title,
+  &__headline-subtitle {
+    display: block;
+  }
+
+  &__headline-title {
+    color: $text-primary;
+    font-size: 42px;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0;
+    line-height: 1.18;
+  }
+
+  &__headline-subtitle {
+    margin-top: 10px;
+    color: $text-muted;
+    font-size: $figma-body;
+    line-height: 1.35;
+  }
+
+  &__my-bookings {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: auto;
+    min-width: 150px;
+    min-height: 80px;
+    margin: 0;
+    padding: 0 22px;
+    border: 1px solid rgba($accent, 0.34);
+    border-radius: $radius-full;
+    background: rgba($surface, 0.9);
+    line-height: 1;
+
+    &::after {
+      border: 0;
+    }
+
+    &:active {
+      background: rgba($accent-soft, 0.72);
+    }
+  }
+
+  &__my-bookings-text {
+    color: $accent-strong;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    line-height: 1;
+  }
+
+  &__my-bookings-icon {
+    width: 18px;
+    height: 18px;
+    color: $accent-strong;
   }
 }
 
 .booking-hero {
-  padding-top: 35px;
+  position: relative;
+  min-height: 328px;
+  margin: 0 calc(-1 * #{$figma-page-x}) 0;
+  overflow: hidden;
+  background: #1a1a1a;
+
+  &__image,
+  &__mask {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__mask {
+    background:
+      linear-gradient(180deg, rgba($black, 0.06) 0%, rgba($black, 0.08) 52%, rgba($black, 0.22) 100%),
+      linear-gradient(90deg, rgba($black, 0.1) 0%, rgba($black, 0.02) 64%, rgba($black, 0.08) 100%);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 356px;
+    flex-direction: column;
+    padding: 112px $figma-page-x 34px;
+  }
 
   &__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 7px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  &__main {
+    margin-top: auto;
   }
 
   &__eyebrow,
@@ -69,26 +177,52 @@
   }
 
   &__eyebrow {
-    color: #c8c8c8;
+    min-width: 0;
+    overflow: hidden;
+    color: rgba($white, 0.72);
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__action {
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 1px;
+    max-width: 48%;
+    width: auto;
+    height: 82px;
+    min-height: 82px;
+    margin: 0;
+    padding: 0 18px 0 16px;
+    border: 1px solid rgba($white, 0.26);
+    border-radius: $radius-full;
+    background: rgba($black, 0.18);
+    color: $white;
+    line-height: 1;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    &::after {
+      border: 0;
+    }
   }
 
   &__action-text {
-    color: #bcbcbc;
+    overflow: hidden;
+    color: rgba($white, 0.82);
     font-size: $figma-small;
     font-weight: $font-weight-normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__action-arrow {
-    color: #d0d0d0;
+    color: rgba($white, 0.72);
     width: 16px;
     height: 16px;
   }
@@ -96,19 +230,19 @@
   &__title {
     display: block;
     margin-bottom: 14px;
-    color: $text-primary;
+    color: $white;
     font-size: 42px;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
     line-height: 1.2;
   }
 
   &__subtitle {
     display: block;
-    color: $gray-500;
+    color: rgba($white, 0.76);
     font-size: $figma-body;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 }
 
@@ -160,13 +294,13 @@
   &__label {
     color: $text-muted;
     font-size: $figma-micro;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__weekday {
     margin-bottom: 10px;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.09em;
+    letter-spacing: 0;
   }
 
   &__label {
@@ -193,8 +327,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 45px;
-    padding: 12px 28px;
+    min-height: 78px;
+    padding: 0 24px;
     border-radius: $radius-full;
     border: 1px solid #ebebeb;
     background: transparent;
@@ -217,7 +351,7 @@
     color: $text-secondary;
     font-size: $figma-body;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 }
 
@@ -290,7 +424,7 @@
     color: $text-inverse;
     font-size: 16px;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.1em;
+    letter-spacing: 0;
   }
 
   &__body {
@@ -377,7 +511,7 @@
     color: $accent;
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
 
     &--full {
       color: #d0d0d0;

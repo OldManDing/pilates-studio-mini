@@ -132,6 +132,18 @@ const config = {
         }
       }
     },
+    webpackChain(chain) {
+      chain.performance.maxEntrypointSize(380 * 1024);
+      chain.performance.maxAssetSize(1024 * 1024);
+      chain.merge({
+        ignoreWarnings: [
+          {
+            module: /@tarojs[\\/]components[\\/]dist[\\/]components[\\/]taro-video-core\.js$/,
+            message: /webpackExports/,
+          },
+        ],
+      });
+    },
     devServer: {
       port: process.env.DEV_PORT || 10086
     }

@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from 'react';
-import Taro from '@tarojs/taro';
-import { Button, Text, View } from '@tarojs/components';
-import { getDefaultTabPageUrl, TAB_NAV_ITEMS, toTabPageUrl } from '../../../constants/navigation';
+import { Button, Image, Text, View } from '@tarojs/components';
+import { navigateBackWithFallback } from '../../../utils/navigation';
+import { getMiniCapsuleAvoidanceStyle } from '../../../utils/ui';
 import Icon from '../Icon';
 import './index.scss';
 
@@ -13,66 +13,60 @@ interface PageHeaderProps extends PropsWithChildren {
   fallbackUrl?: string;
   onBack?: () => void;
   rightSlot?: ReactNode;
+  imageSrc?: string;
 }
 
-function isTabPageUrl(url: string) {
-  return TAB_NAV_ITEMS.some((item) => toTabPageUrl(item.pagePath) === url);
+function getHeaderImageSrc(title: string, imageSrc?: string) {
+  if (imageSrc) {
+    return imageSrc;
+  }
+
+  if (/课程|预约|训练|教练/.test(title)) {
+    return '/assets/ui/hero-courses.jpg';
+  }
+
+  if (/会员|账户|消息|设置|隐私|协议|消费/.test(title)) {
+    return '/assets/ui/hero-profile.jpg';
+  }
+
+  return '/assets/ui/hero-studio.jpg';
 }
 
 export default function PageHeader({
   title,
-  subtitle,
-  eyebrow,
   showBack = true,
   fallbackUrl,
   onBack,
   rightSlot,
   children,
+  imageSrc,
 }: PageHeaderProps) {
   const rightContent = rightSlot ?? children;
+  const topStyle = getMiniCapsuleAvoidanceStyle();
+  const headerImageSrc = getHeaderImageSrc(title, imageSrc);
 
-  const handleBack = async () => {
+  const handleBack = () => {
     if (onBack) {
       onBack();
       return;
     }
 
-    const safeFallbackUrl = fallbackUrl || getDefaultTabPageUrl();
-    const pages = Taro.getCurrentPages();
-
-    if (pages.length > 1) {
-      const navigatedBack = await Taro.navigateBack({ delta: 1 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (navigatedBack) {
-        return;
-      }
-    }
-
-    if (isTabPageUrl(safeFallbackUrl)) {
-      const switchedTab = await Taro.switchTab({ url: safeFallbackUrl })
-        .then(() => true)
-        .catch(() => false);
-
-      if (switchedTab) {
-        return;
-      }
-    }
-
-    await Taro.reLaunch({ url: safeFallbackUrl });
+    void navigateBackWithFallback(fallbackUrl);
   };
 
   return (
     <View className='page-header'>
-      <View className='page-header__top'>
+      <Image className='page-header__image' src={headerImageSrc} mode='aspectFill' />
+      <View className='page-header__mask' />
+
+      <View className='page-header__top' style={topStyle}>
         {showBack ? (
           <Button className='page-header__back' hoverClass='none' onClick={handleBack}>
             <Icon name='chevron-left' className='page-header__back-icon' />
             <Text className='page-header__back-text'>返回</Text>
           </Button>
         ) : (
-          <View className='page-header__back page-header__back--placeholder' />
+          <View />
         )}
 
         {rightContent ? (
@@ -83,9 +77,7 @@ export default function PageHeader({
       </View>
 
       <View className='page-header__content'>
-        {eyebrow ? <Text className='page-header__eyebrow'>{eyebrow}</Text> : null}
         <Text className='page-header__title'>{title}</Text>
-        {subtitle ? <Text className='page-header__subtitle'>{subtitle}</Text> : null}
       </View>
     </View>
   );

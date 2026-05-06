@@ -1,0 +1,55 @@
+@use '../../../styles/variables.scss' as *;
+
+.floating-back-button {
+  position: fixed;
+  left: $figma-page-x;
+  top: 56px;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  width: auto;
+  min-width: 108px;
+  height: 88px;
+  min-height: 88px;
+  margin: 0 0 0 -4px;
+  padding: 0 28px 0 0;
+  border: 0;
+  border-radius: 0;
+  line-height: 1;
+  box-shadow: none;
+  background: transparent;
+
+  &::after {
+    border: 0;
+  }
+
+  &--light {
+    color: rgba($white, 0.96);
+
+    .floating-back-button__text {
+      color: rgba($white, 0.74);
+    }
+  }
+
+  &--dark {
+    color: $text-primary;
+
+    .floating-back-button__text {
+      color: $text-muted;
+    }
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    color: currentColor;
+  }
+
+  &__text {
+    font-size: $figma-body;
+    font-weight: $font-weight-normal;
+    letter-spacing: 0.04em;
+  }
+}

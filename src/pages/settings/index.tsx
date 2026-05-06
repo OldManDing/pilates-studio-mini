@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Button, Image, Text, View } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
@@ -29,12 +29,31 @@ interface SettingSection {
 }
 
 type ToggleKey = 'courseReminder' | 'systemNotification' | 'darkMode' | 'biometric';
+type DeletionRequestStatus = 'NONE' | 'PENDING' | 'SUBMITTED' | 'PROCESSING' | 'PROCESSED' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | string;
 
 const CACHE_KEYS = ['taro-cache', 'pilates:page-cache'];
 
+function normalizeDeletionRequestStatus(status?: string, requested?: boolean): DeletionRequestStatus {
+  const normalizedStatus = status?.trim().toUpperCase();
+
+  if (normalizedStatus === 'NO_REQUEST') {
+    return 'NONE';
+  }
+
+  if (normalizedStatus) {
+    return normalizedStatus;
+  }
+
+  return requested ? 'PENDING' : 'NONE';
+}
+
+function hasActiveDeletionRequest(status: DeletionRequestStatus) {
+  return !['NONE', 'REJECTED', 'CANCELLED'].includes(status);
+}
+
 const SECTIONS: SettingSection[] = [
   {
-    label: 'ACCOUNT',
+    label: '账户',
     items: [
       {
         icon: '/assets/ui/icon-settings.svg',
@@ -60,7 +79,7 @@ const SECTIONS: SettingSection[] = [
     ],
   },
   {
-    label: 'NOTIFICATION',
+    label: '通知',
     items: [
       {
         icon: '/assets/ui/icon-notifications.svg',
@@ -79,7 +98,7 @@ const SECTIONS: SettingSection[] = [
     ],
   },
   {
-    label: 'PREFERENCE',
+    label: '偏好',
     items: [
       {
         icon: '/assets/ui/icon-settings.svg',
@@ -98,7 +117,7 @@ const SECTIONS: SettingSection[] = [
     ],
   },
   {
-    label: 'DATA',
+    label: '数据',
     items: [
       {
         icon: '/assets/ui/icon-settings.svg',
@@ -147,7 +166,9 @@ export default function Settings() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [submittingDeletionRequest, setSubmittingDeletionRequest] = useState(false);
-  const [deletionRequested, setDeletionRequested] = useState(false);
+  const [deletionRequestStatus, setDeletionRequestStatus] = useState<DeletionRequestStatus>('NONE');
+  const toggleInFlightRef = useRef<Partial<Record<ToggleKey, boolean>>>({});
+  const deletionRequested = hasActiveDeletionRequest(deletionRequestStatus);
 
   const syncProfile = useCallback(async () => {
     if (!Taro.getStorageSync('token')) {
@@ -183,6 +204,7 @@ export default function Settings() {
     try {
       await ensureMiniProgramAuth({ interactive: true });
       await syncProfile();
+      await syncDeletionRequestStatus();
       Taro.showToast({ title: successMessage, icon: 'success' });
       return true;
     } catch (error) {
@@ -190,6 +212,22 @@ export default function Settings() {
       return false;
     }
   };
+
+  const syncDeletionRequestStatus = useCallback(async () => {
+    if (!Taro.getStorageSync('token')) {
+      setDeletionRequestStatus('NONE');
+      return 'NONE' as DeletionRequestStatus;
+    }
+
+    try {
+      const response = await supportApi.getAccountDeletionRequestStatus();
+      const nextStatus = normalizeDeletionRequestStatus(response.data.status, response.data.requested);
+      setDeletionRequestStatus(nextStatus);
+      return nextStatus;
+    } catch {
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     setToggles(readStorage(STORAGE_KEYS.settings, {
@@ -216,19 +254,25 @@ export default function Settings() {
       }
     };
     void syncMemberPreferences();
-  }, [syncProfile]);
+    void syncDeletionRequestStatus();
+  }, [syncDeletionRequestStatus, syncProfile]);
 
   const handleToggle = async (key: ToggleKey) => {
     const current = toggles[key];
     const nextValue = !current;
 
     if (key === 'courseReminder' || key === 'systemNotification') {
-      const authenticated = await ensureAuthenticated('已登录，正在同步通知偏好');
-      if (!authenticated) {
+      if (toggleInFlightRef.current[key]) {
         return;
       }
 
+      toggleInFlightRef.current[key] = true;
       try {
+        const authenticated = await ensureAuthenticated('已登录，正在同步通知偏好');
+        if (!authenticated) {
+          return;
+        }
+
         const response = await membersApi.updatePreferences({ [key]: nextValue });
         setToggles((previous) => ({
           ...previous,
@@ -243,6 +287,8 @@ export default function Settings() {
         Taro.showToast({ title: '通知偏好已同步', icon: 'success' });
       } catch (error) {
         Taro.showToast({ title: getApiErrorMessage(error, '通知偏好同步失败'), icon: 'none' });
+      } finally {
+        toggleInFlightRef.current[key] = false;
       }
       return;
     }
@@ -287,7 +333,7 @@ export default function Settings() {
     try {
       setSubmittingDeletionRequest(true);
       await supportApi.submitAccountDeletionRequest();
-      setDeletionRequested(true);
+      setDeletionRequestStatus('PENDING');
       setShowDeleteConfirm(false);
       Taro.showToast({ title: '注销申请已提交', icon: 'success' });
     } catch (error) {
@@ -300,6 +346,12 @@ export default function Settings() {
   const handleOpenDeleteConfirm = async () => {
     const authenticated = await ensureAuthenticated('已登录，请确认注销申请');
     if (!authenticated) {
+      return;
+    }
+
+    const latestStatus = await syncDeletionRequestStatus();
+    if (latestStatus && hasActiveDeletionRequest(latestStatus)) {
+      Taro.showToast({ title: '注销申请已提交，等待处理', icon: 'none' });
       return;
     }
 
@@ -316,7 +368,7 @@ export default function Settings() {
     <View key={`${item.title}-${index}`}>
       {item.type === 'toggle' || item.type === 'navigate' || item.action === 'clear-cache' ? (
       <Button
-        className={`settings-row ${item.type === 'navigate' ? 'settings-row--clickable' : ''}`}
+        className={`settings-row ${item.type === 'toggle' || item.type === 'navigate' || item.action ? 'settings-row--clickable' : ''}`}
         hoverClass='none'
         onClick={() => {
           if (item.type === 'toggle' && item.toggleKey) {
@@ -412,7 +464,7 @@ export default function Settings() {
       ))}
 
       <View className='settings-page__section'>
-        <Text className='settings-page__section-label'>ABOUT</Text>
+        <Text className='settings-page__section-label'>关于</Text>
         <AppCard className='settings-group' padding='none'>
           {ABOUT_ROWS.map((item, index) => renderAboutRow(item, index, ABOUT_ROWS.length))}
         </AppCard>
@@ -437,6 +489,8 @@ export default function Settings() {
                 hoverClass='none'
                 onClick={() => {
                   setShowLogoutConfirm(false);
+                  setShowDeleteConfirm(false);
+                  setDeletionRequestStatus('NONE');
                   clearAuthState();
                   Taro.switchTab({ url: '/pages/index/index' });
                 }}
@@ -480,7 +534,7 @@ export default function Settings() {
                 onClick={handleSubmitAccountDeletionRequest}
                 disabled={submittingDeletionRequest}
               >
-                <Text className='danger-confirm__button-text'>{submittingDeletionRequest ? '提交中...' : '确认提交'}</Text>
+                <Text className='danger-confirm__button-text'>{submittingDeletionRequest ? '提交中…' : '确认提交'}</Text>
               </Button>
             </View>
           </AppCard>

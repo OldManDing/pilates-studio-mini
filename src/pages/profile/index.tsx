@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
-import { View, Text } from '@tarojs/components';
+import { Image, View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
 import { ensureMiniProgramAuth } from '../../api/auth';
@@ -18,6 +18,8 @@ import type {
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { clearAuthState, writeStorage } from '../../utils/storage';
+import { formatMembershipCreditsWithUnit } from '../../utils/membership';
+import { getMiniHeroContentStyle } from '../../utils/ui';
 import './index.scss';
 
 function getMaskedPhone(phone?: string) {
@@ -114,6 +116,7 @@ export default function Profile() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [profileLoadFailed, setProfileLoadFailed] = useState(false);
+  const [statsSyncFailed, setStatsSyncFailed] = useState(false);
 
   useDidShow(() => {
     syncCustomTabBarSelected(2);
@@ -122,6 +125,7 @@ export default function Profile() {
   const fetchProfile = useCallback(async (options: FetchProfileOptions = {}) => {
     try {
       setLoading(true);
+      setStatsSyncFailed(false);
 
       const profileRes = await membersApi.getProfile({ showLoading: false });
       const nextMember = profileRes.data.member;
@@ -135,19 +139,30 @@ export default function Profile() {
         });
       }
 
-      const [membershipsRes, bookingItems] = await Promise.all([
-        membersApi.getMyMemberships({ showLoading: false })
-          .catch(() => ({ data: { memberships: nextMember?.memberships || [] } })),
-        fetchAllMyBookings().catch(() => []),
+      const [membershipsRes, bookingsRes] = await Promise.allSettled([
+        membersApi.getMyMemberships({ showLoading: false }),
+        fetchAllMyBookings(),
       ]);
 
-      setMemberships(membershipsRes.data.memberships || nextMember?.memberships || []);
-      setBookings(bookingItems);
+      if (membershipsRes.status === 'fulfilled') {
+        setMemberships(membershipsRes.value.data.memberships || nextMember?.memberships || []);
+      } else {
+        setMemberships(nextMember?.memberships || []);
+        setStatsSyncFailed(true);
+      }
+
+      if (bookingsRes.status === 'fulfilled') {
+        setBookings(bookingsRes.value);
+      } else {
+        setBookings([]);
+        setStatsSyncFailed(true);
+      }
     } catch {
       setMember(null);
       setMemberships([]);
       setBookings([]);
       setProfileLoadFailed(true);
+      setStatsSyncFailed(false);
       Taro.showToast({ title: '加载失败', icon: 'none' });
       if (options.throwOnError) {
         throw new Error('个人资料同步失败');
@@ -179,14 +194,14 @@ export default function Profile() {
     const stats: ProfileStatData[] = [
       {
         key: 'courses',
-        value: member ? String(completedBookings || totalBookings) : '--',
+        value: member ? (statsSyncFailed ? '--' : String(completedBookings || totalBookings)) : '--',
         unit: '节',
         label: '累计课程',
       },
       {
         key: 'hours',
-        value: member ? String(Math.round(completedMinutes / 60) || 0) : '--',
-        unit: 'h',
+        value: member ? (statsSyncFailed ? '--' : String(Math.round(completedMinutes / 60) || 0)) : '--',
+        unit: '小时',
         label: '训练时长',
       },
       {
@@ -201,21 +216,22 @@ export default function Profile() {
       avatarText: getMemberInitial(member),
       avatarUrl: member?.avatar,
       name: getDisplayName(member),
-      badgeLabel: activeMembership ? 'GOLD' : 'GUEST',
+      badgeLabel: activeMembership ? '会员' : '访客',
       phone: getMaskedPhone(member?.phone),
-      membershipLabel: activeMembership ? 'ACTIVE MEMBERSHIP' : 'GUEST MODE',
+      membershipLabel: activeMembership ? '会员权益' : '访客模式',
       membershipTitle: activeMembership?.planName || '尚未开通会员',
       membershipDescription: activeMembership
-        ? `${activeMembership.totalCredits <= 0 ? '无限次权益' : `剩余 ${activeMembership.remainingCredits}/${activeMembership.totalCredits} 次`} · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
+        ? `${formatMembershipCreditsWithUnit(activeMembership)} · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
         : '登录后即可同步会员权益、课次余额与训练记录。',
+      syncNotice: member && statsSyncFailed ? '训练统计同步失败，累计课程与训练时长暂未更新，请下拉重试。' : undefined,
       stats,
     };
-  }, [activeMembership, bookings, member]);
+  }, [activeMembership, bookings, member, statsSyncFailed]);
 
   const menuSections = useMemo<ProfileMenuSectionData[]>(() => [
     {
       key: 'service',
-      label: 'SERVICE',
+      label: '服务',
       items: [
         {
           key: 'bookings',
@@ -245,7 +261,7 @@ export default function Profile() {
     },
     {
       key: 'support',
-      label: 'SUPPORT',
+      label: '支持',
       items: [
         {
           key: 'notifications',
@@ -276,6 +292,7 @@ export default function Profile() {
   const signOutData: ProfileSignOutData = {
     label: '退出登录',
   };
+  const heroContentStyle = getMiniHeroContentStyle();
 
   const handleMenuClick = async (item: ProfileMenuItemData) => {
     if (item.requiresLogin) {
@@ -340,6 +357,7 @@ export default function Profile() {
     setMemberships([]);
     setBookings([]);
     setProfileLoadFailed(false);
+    setStatsSyncFailed(false);
     Taro.showToast({ title: '已退出登录', icon: 'success' });
     Taro.switchTab({ url: '/pages/index/index' });
   };
@@ -353,10 +371,17 @@ export default function Profile() {
   }
 
   return (
-    <PageShell className='profile-page' reserveTabBarSpace>
+    <PageShell className='profile-page' reserveTabBarSpace flushTop>
       <View className='profile-page__content'>
-        <View className='profile-page__header'>
-          <Text className='profile-page__eyebrow'>MY ACCOUNT</Text>
+        <View className='profile-page__hero'>
+          <Image className='profile-page__hero-image' src='/assets/ui/hero-profile.jpg' mode='aspectFill' />
+          <View className='profile-page__hero-mask' />
+          <View className='profile-page__hero-inner' style={heroContentStyle}>
+            <View className='profile-page__hero-main'>
+              <Text className='profile-page__hero-title'>{getDisplayName(member)}</Text>
+              <Text className='profile-page__hero-subtitle'>{member ? getMaskedPhone(member.phone) : '登录后同步会员资料'}</Text>
+            </View>
+          </View>
         </View>
 
         <ProfileAccountCard data={accountCardData} />
@@ -375,7 +400,7 @@ export default function Profile() {
             <Text className='profile-page__login-title'>登录同步会员资料</Text>
             <Text className='profile-page__login-desc'>使用微信登录后，可同步会员权益、预约记录和训练数据。</Text>
             <AppButton className='profile-page__login-button' size='large' loading={loggingIn} disabled={loggingIn} onClick={handleLogin}>
-              {loggingIn ? '登录中...' : '微信登录'}
+              {loggingIn ? '登录中…' : '微信登录'}
             </AppButton>
           </View>
         ) : null}

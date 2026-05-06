@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .my-bookings-page {
   .page-shell__inner {
@@ -43,7 +43,7 @@
   &__tab-text {
     color: $text-muted;
     font-size: $font-size-sm;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     font-weight: $font-weight-normal;
     transition: color $duration-fast $ease-in-out;
   }
@@ -66,7 +66,7 @@
   &__count-value {
     color: $gray-600;
     font-size: $font-size-2xs;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__list {
@@ -113,8 +113,23 @@
         color: $gray-500;
       }
 
+        .my-bookings-page__title {
+          text-decoration: line-through;
+        }
+      }
+
+    &--no-show {
+      .my-bookings-page__accent {
+        background: rgba(#ff7875, 0.7);
+      }
+
+      .my-bookings-page__day,
       .my-bookings-page__title {
-        text-decoration: line-through;
+        color: $text-primary;
+      }
+
+      .my-bookings-page__meta {
+        color: #d94841;
       }
     }
 
@@ -139,14 +154,14 @@
     font-size: $font-size-xl;
     font-weight: $font-weight-medium;
     line-height: 1;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   &__weekday {
     color: $gray-500;
     font-size: $font-size-2xs;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
     line-height: 1;
   }
 
@@ -177,10 +192,11 @@
     line-height: 1.25;
     flex: 1;
     min-width: 0;
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+     display: -webkit-box;
+     overflow: hidden;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
   }
 
   &__status-badge {
@@ -192,7 +208,7 @@
     border-radius: $radius-full;
     font-size: $font-size-2xs;
     font-weight: $font-weight-normal;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
     line-height: 1;
 
     &--today {
@@ -210,16 +226,23 @@
       color: $gray-600;
       background: rgba($gray-200, 0.74);
     }
+
+    &--no-show {
+      color: #d94841;
+      background: rgba(#fff1f0, 0.96);
+      border: 1px solid rgba(#ff7875, 0.24);
+    }
   }
 
   &__meta {
     display: block;
     color: $gray-500;
     font-size: $font-size-xs;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
     line-height: $line-height-normal;
     display: -webkit-box;
     overflow: hidden;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }

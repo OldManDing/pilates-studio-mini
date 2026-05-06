@@ -12,3 +12,12 @@ project.private.config.json
 .vscode/
 *.swp
 *.swo
+
+# Local verification artifacts
+/.swc/
+/*.png
+/docs/*.png
+/docs/*.json
+/docs/*.txt
+/docs/wechat-devtools/
+/docs/weapp-devtools-screenshots-*/

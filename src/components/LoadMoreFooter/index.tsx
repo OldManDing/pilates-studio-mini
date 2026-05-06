@@ -17,7 +17,7 @@ export default function LoadMoreFooter({ loading = false, hasMore = false }: Loa
 
   return (
     <View className='load-more-footer'>
-      <Text className='load-more-footer__text'>{loading ? '加载中...' : '上拉加载更多'}</Text>
+      <Text className='load-more-footer__text'>{loading ? '加载中…' : '上拉加载更多'}</Text>
     </View>
   );
 }

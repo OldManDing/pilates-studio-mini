@@ -1,24 +1,32 @@
-import { Text, View } from '@tarojs/components';
+import { Image, Text, View } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import type { HomeHeroData } from './types';
+import { getMiniHeroContentStyle } from '../../../utils/ui';
 
 interface HomeHeroProps {
   data: HomeHeroData;
 }
 
 export default function HomeHero({ data }: HomeHeroProps) {
+  const fallbackImageSrc = '/assets/ui/hero-studio.jpg';
+  const [imageSrc, setImageSrc] = useState(data.imageUrl || fallbackImageSrc);
+  const contentStyle = getMiniHeroContentStyle();
+
+  useEffect(() => {
+    setImageSrc(data.imageUrl || fallbackImageSrc);
+  }, [data.imageUrl]);
+
   return (
     <View className='home-hero'>
-      <View className='home-hero__top'>
-        <Text className='home-hero__date'>{data.dateLabel}</Text>
+      <Image className='home-hero__image' src={imageSrc} mode='aspectFill' onError={() => setImageSrc(fallbackImageSrc)} />
+      <View className='home-hero__mask' />
 
-        <View className={`home-hero__badge ${data.badgeTone === 'muted' ? 'home-hero__badge--muted' : ''}`}>
-          <View className='home-hero__badge-dot' />
-          <Text className='home-hero__badge-text'>{data.badgeLabel}</Text>
+      <View className='home-hero__inner' style={contentStyle}>
+        <View className='home-hero__main'>
+          <Text className='home-hero__title'>{data.title}</Text>
+          <Text className='home-hero__subtitle'>{data.subtitle}</Text>
         </View>
       </View>
-
-      <Text className='home-hero__title'>{data.title}</Text>
-      <Text className='home-hero__subtitle'>{data.subtitle}</Text>
     </View>
   );
 }

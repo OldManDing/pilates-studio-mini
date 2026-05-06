@@ -1,24 +1,23 @@
-import { Text, View } from '@tarojs/components';
-import { Icon } from '../../../components';
+import { Image, View } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import type { BookingHeroData } from './types';
 
 interface BookingHeroProps {
   data: BookingHeroData;
-  onActionClick?: () => void;
 }
 
-export default function BookingHero({ data, onActionClick }: BookingHeroProps) {
+export default function BookingHero({ data }: BookingHeroProps) {
+  const fallbackImageSrc = '/assets/ui/hero-courses.jpg';
+  const [imageSrc, setImageSrc] = useState(data.imageUrl || fallbackImageSrc);
+
+  useEffect(() => {
+    setImageSrc(data.imageUrl || fallbackImageSrc);
+  }, [data.imageUrl]);
+
   return (
     <View className='booking-hero'>
-      <View className='booking-hero__top'>
-        <Text className='booking-hero__eyebrow'>{data.eyebrow}</Text>
-        <View className='booking-hero__action' onClick={onActionClick}>
-          <Text className='booking-hero__action-text'>{data.actionLabel}</Text>
-          <Icon name='chevron-right' className='booking-hero__action-arrow' />
-        </View>
-      </View>
-      <Text className='booking-hero__title'>{data.title}</Text>
-      <Text className='booking-hero__subtitle'>{data.subtitle}</Text>
+      <Image className='booking-hero__image' src={imageSrc} mode='aspectFill' onError={() => setImageSrc(fallbackImageSrc)} />
+      <View className='booking-hero__mask' />
     </View>
   );
 }

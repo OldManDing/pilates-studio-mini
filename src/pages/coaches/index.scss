@@ -1,13 +1,41 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .coaches-page {
-  &__section {
-    margin-bottom: $spacing-md;
+  &__summary {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
   }
 
-  &__list-card,
+  &__summary-title,
+  &__summary-count {
+    display: block;
+  }
+
+  &__summary-title {
+    color: $text-primary;
+    font-size: $figma-section-title;
+    font-weight: $font-weight-medium;
+    line-height: 1.2;
+  }
+
+  &__summary-count {
+    color: $text-muted;
+    font-size: $figma-body;
+    line-height: 1.3;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
   &__empty-card {
-    border-radius: $radius-xl;
+    padding: $figma-card-y $figma-card-x;
+    border-radius: $figma-radius-card;
     overflow: hidden;
     background: rgba($surface, 0.98);
   }
@@ -15,10 +43,6 @@
   &__item {
     display: flex;
     align-items: stretch;
-  }
-
-  &__empty-card {
-    padding: $spacing-md;
   }
 
   &__loading-more {

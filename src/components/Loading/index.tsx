@@ -10,7 +10,7 @@ function joinClasses(classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Loading({ text = '加载中...', compact = false }: LoadingProps) {
+export default function Loading({ text = '加载中…', compact = false }: LoadingProps) {
   return (
     <View className={joinClasses(['loading', compact && 'loading--compact'])}>
       <View className='loading__panel'>

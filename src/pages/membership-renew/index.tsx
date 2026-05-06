@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Button, Text, View } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
+import { transactionsApi } from '../../api/transactions';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import './index.scss';
@@ -15,14 +16,21 @@ function getPlanCredits(plan: MembershipPlan) {
   return plan.totalCredits > 0 ? `${plan.totalCredits} 次` : '不限次';
 }
 
+function isPaymentConfigUnavailableError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error || '');
+  return message.includes('Missing WeChat Pay config') || message.includes('wechat.appId');
+}
+
 export default function MembershipRenew() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [authRequired, setAuthRequired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submittedPlanId, setSubmittedPlanId] = useState('');
+  const [paymentStatusHint, setPaymentStatusHint] = useState('');
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState('');
+  const renewInFlightRef = useRef(false);
 
   const fetchPlans = useCallback(async () => {
     try {
@@ -53,6 +61,21 @@ export default function MembershipRenew() {
 
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId) || null;
 
+  const waitForTransactionCompletion = async (transactionId: string) => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await transactionsApi.getById(transactionId);
+      const transaction = response.data.transaction;
+      if (transaction?.status === 'COMPLETED') {
+        return 'COMPLETED';
+      }
+      if (transaction?.status === 'FAILED' || transaction?.status === 'REFUNDED') {
+        return transaction.status;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    }
+    return 'PENDING';
+  };
+
   const handleAuthRecover = async () => {
     try {
       await ensureMiniProgramAuth({ interactive: true });
@@ -64,9 +87,18 @@ export default function MembershipRenew() {
   };
 
   const handleSubmitRenew = async () => {
-    if (authRequired) {
-      await handleAuthRecover();
+    if (submitting || renewInFlightRef.current) {
       return;
+    }
+
+    if (authRequired) {
+      renewInFlightRef.current = true;
+      try {
+        await handleAuthRecover();
+        return;
+      } finally {
+        renewInFlightRef.current = false;
+      }
     }
 
     if (loadFailed) {
@@ -79,24 +111,67 @@ export default function MembershipRenew() {
       return;
     }
 
-    const result = await Taro.showModal({
-      title: '确认续费',
-      content: `${selectedPlan.name} · ${formatPrice(selectedPlan.priceCents)}`,
-      confirmText: '确认',
-      confirmColor: '#C4A574',
-    });
+    renewInFlightRef.current = true;
+    try {
+      const result = await Taro.showModal({
+        title: '确认续费',
+        content: `${selectedPlan.name} · ${formatPrice(selectedPlan.priceCents)}`,
+        confirmText: '确认',
+        confirmColor: '#C4A574',
+      });
 
-    if (result.confirm) {
+      if (!result.confirm) {
+        return;
+      }
+
       try {
         setSubmitting(true);
-        await membershipPlansApi.requestRenewal(selectedPlan.id);
+        setPaymentStatusHint('正在创建支付订单…');
+        let paymentOrder: Awaited<ReturnType<typeof membershipPlansApi.createRenewalPayment>> | null = null;
+
+        try {
+          paymentOrder = await membershipPlansApi.createRenewalPayment(selectedPlan.id);
+        } catch (error) {
+          if (!isPaymentConfigUnavailableError(error)) {
+            throw error;
+          }
+
+          setPaymentStatusHint('支付通道暂不可用，已转为门店人工续费申请');
+          await membershipPlansApi.requestRenewal(selectedPlan.id);
+          setSubmittedPlanId(selectedPlan.id);
+          Taro.showToast({ title: '已提交续费申请', icon: 'success' });
+          return;
+        }
+
+        if (!paymentOrder) {
+          throw new Error('支付订单创建失败，请稍后重试');
+        }
+
+        if (paymentOrder.data.mode === 'MOCK') {
+          setPaymentStatusHint('正在模拟支付完成…');
+          await membershipPlansApi.completeMockRenewalPayment(paymentOrder.data.transactionId);
+        } else {
+          setPaymentStatusHint('请在微信支付弹窗中完成支付…');
+          await Taro.requestPayment(paymentOrder.data.paymentParams);
+        }
+
+        setPaymentStatusHint('正在同步支付结果…');
+        const finalStatus = await waitForTransactionCompletion(paymentOrder.data.transactionId);
+        if (finalStatus !== 'COMPLETED') {
+          throw new Error(finalStatus === 'FAILED' ? '支付失败，请稍后重试' : '支付结果确认中，请稍后到交易记录查看');
+        }
+
         setSubmittedPlanId(selectedPlan.id);
-        Taro.showToast({ title: '续费申请已提交', icon: 'success' });
+        setPaymentStatusHint('支付成功，续费订单已提交');
+        Taro.showToast({ title: '支付成功，续费已提交', icon: 'success' });
       } catch (error) {
+        setPaymentStatusHint('');
         Taro.showToast({ title: getApiErrorMessage(error, '续费提交失败，请稍后重试'), icon: 'none' });
       } finally {
         setSubmitting(false);
       }
+    } finally {
+      renewInFlightRef.current = false;
     }
   };
 
@@ -116,13 +191,14 @@ export default function MembershipRenew() {
       <PageHeader title='续费会员' subtitle='选择适合你的会员方案' fallbackUrl='/pages/membership/index' />
 
       <View className='membership-renew-page__hero'>
-        <Text className='membership-renew-page__hero-label'>MEMBERSHIP PLAN</Text>
+        <Text className='membership-renew-page__hero-label'>会员方案</Text>
         <Text className='membership-renew-page__hero-title'>{selectedPlan?.name || '会员方案'}</Text>
         <Text className='membership-renew-page__hero-desc'>{selectedPlan?.description || '当前会籍未到期时，仅支持同方案续费顺延；如需更换方案，请待当前会籍结束后处理。'}</Text>
+        {paymentStatusHint ? <Text className='membership-renew-page__hero-desc'>{paymentStatusHint}</Text> : null}
       </View>
 
       <View className='membership-renew-page__section'>
-        <SectionTitle title='可选方案' actionLabel='PLANS' actionTone='muted' />
+        <SectionTitle title='可选方案' actionLabel='方案' actionTone='muted' />
         {loadFailed && plans.length === 0 ? (
           <AppCard className='membership-renew-page__empty'>
             <Empty
@@ -174,7 +250,7 @@ export default function MembershipRenew() {
           disabled={loadFailed || !selectedPlan || submitting || submittedPlanId === selectedPlan?.id}
           onClick={handleSubmitRenew}
         >
-          {submitting ? '提交中...' : submittedPlanId === selectedPlan?.id ? '已提交，等待处理' : loadFailed ? '请先同步最新方案' : '确认续费'}
+          {submitting ? '提交中…' : submittedPlanId === selectedPlan?.id ? '已提交，等待处理' : loadFailed ? '请先同步最新方案' : '确认续费'}
         </AppButton>
       </View>
     </PageShell>

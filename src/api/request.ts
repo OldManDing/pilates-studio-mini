@@ -12,6 +12,7 @@ interface RequestConfig {
   headers?: Record<string, string>;
   showLoading?: boolean;
   loadingText?: string;
+  skipAuth?: boolean;
 }
 
 export interface PaginationMeta {
@@ -91,7 +92,7 @@ function resolveNetworkFailureMessage(errorMessage: string, errMsg?: string) {
   const combined = `${errorMessage || ''} ${errMsg || ''}`.toLowerCase();
 
   if (combined.includes('not in domain list') || combined.includes('url not in domain list')) {
-    return 'request 合法域名未配置，请检查微信开发者工具域名校验设置';
+    return '请求合法域名未配置，请检查微信开发者工具域名校验设置';
   }
 
   if (combined.includes('timeout')) {
@@ -103,7 +104,7 @@ function resolveNetworkFailureMessage(errorMessage: string, errMsg?: string) {
   }
 
   if (combined.includes('ssl') || combined.includes('certificate') || combined.includes('tls')) {
-    return 'HTTPS 证书校验失败，请检查合法域名与证书配置';
+    return '安全证书校验失败，请检查合法域名与证书配置';
   }
 
   return '网络连接失败，请检查网络';
@@ -118,6 +119,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     headers = {},
     showLoading = true,
     loadingText = '加载中...',
+    skipAuth = false,
   } = config;
 
   if (showLoading) {
@@ -140,7 +142,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     }
 
     let token = getToken();
-    if (!token && url !== '/mini-auth/login') {
+    if (!token && url !== '/mini-auth/login' && !skipAuth) {
       token = await ensureMiniProgramAuth({ interactive: true });
     }
 

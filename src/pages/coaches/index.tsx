@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
-import { View } from '@tarojs/components';
+import { Text, View } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
-import { AppButton, AppCard, CoachCard, Divider, Empty, LoadMoreFooter, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppCard, CoachCard, Empty, LoadMoreFooter, Loading, PageHeader, PageShell } from '../../components';
 import './index.scss';
 
 export default function Coaches() {
@@ -78,37 +78,28 @@ export default function Coaches() {
     <PageShell className='coaches-page' safeAreaBottom>
       <PageHeader
         title='教练团队'
-        subtitle='查看教练专长与近期可预约排课'
-        eyebrow='COACHES'
         fallbackUrl='/pages/courses/index'
       />
 
-      <View className='coaches-page__section'>
-        <SectionTitle
-          eyebrow='TEAM'
-          title='在岗教练'
-          subtitle={coaches.length > 0 ? `当前共 ${coaches.length} 位` : '按专长选择更适合你的训练指导'}
-        />
+      <View className='coaches-page__summary'>
+        <Text className='coaches-page__summary-title'>在岗教练</Text>
+        <Text className='coaches-page__summary-count'>{loadFailed ? '--' : `${coaches.length} 位`}</Text>
       </View>
 
-        {loading && page === 1 ? (
-          <Loading compact />
-        ) : loadFailed ? (
-          <AppCard className='coaches-page__empty-card'>
-            <Empty title='教练加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={() => fetchCoaches(1, false)} />
-          </AppCard>
-        ) : coaches.length > 0 ? (
-        <AppCard padding='none' className='coaches-page__list-card'>
-          {coaches.map((coach, index) => (
-            <View key={coach.id}>
-              <View className='coaches-page__item'>
-                <CoachCard coach={coach} compact onClick={() => handleCoachClick(coach)} />
-              </View>
-
-              {index < coaches.length - 1 ? <Divider spacing='none' /> : null}
+      {loading && page === 1 ? (
+        <Loading compact />
+      ) : loadFailed ? (
+        <AppCard className='coaches-page__empty-card'>
+          <Empty title='教练加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={() => fetchCoaches(1, false)} />
+        </AppCard>
+      ) : coaches.length > 0 ? (
+        <View className='coaches-page__list'>
+          {coaches.map((coach) => (
+            <View key={coach.id} className='coaches-page__item'>
+              <CoachCard coach={coach} onClick={() => handleCoachClick(coach)} />
             </View>
           ))}
-        </AppCard>
+        </View>
       ) : (
         <AppCard className='coaches-page__empty-card'>
           <Empty

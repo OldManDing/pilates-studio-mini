@@ -1,4 +1,5 @@
 import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
+import type { CourseSession } from './courses';
 
 // Coach interfaces
 export interface Coach {
@@ -23,7 +24,18 @@ export interface CoachFilter {
   isActive?: boolean;
 }
 
+export interface MyCoachSummary {
+  coach: Coach;
+  bookingCount: number;
+  completedCount: number;
+  upcomingCount: number;
+  lastBookingAt?: string | null;
+  lastCourseName?: string | null;
+}
+
 type RawCoachTag = string | { value?: string };
+type BackendCoachSchedulePayload = CourseSession[] | { sessions?: CourseSession[] };
+type BackendMyCoachesPayload = { coaches?: RawMyCoachSummary[] };
 
 interface RawCoach extends Omit<Coach, 'specialties' | 'certifications' | 'isActive'> {
   status?: 'ACTIVE' | 'ON_LEAVE' | 'INACTIVE';
@@ -31,6 +43,10 @@ interface RawCoach extends Omit<Coach, 'specialties' | 'certifications' | 'isAct
   certificates?: RawCoachTag[];
   certifications?: RawCoachTag[];
   isActive?: boolean;
+}
+
+interface RawMyCoachSummary extends Omit<MyCoachSummary, 'coach'> {
+  coach: RawCoach;
 }
 
 function normalizeTagList(items?: RawCoachTag[]) {
@@ -48,6 +64,17 @@ function mapCoach(raw: RawCoach): Coach {
   };
 }
 
+function normalizeCoachSchedulePayload(payload: BackendCoachSchedulePayload): CourseSession[] {
+  return Array.isArray(payload) ? payload : payload.sessions || [];
+}
+
+function mapMyCoachSummary(raw: RawMyCoachSummary): MyCoachSummary {
+  return {
+    ...raw,
+    coach: mapCoach(raw.coach),
+  };
+}
+
 // Coach APIs
 export const coachesApi = {
   // Get all coaches
@@ -61,6 +88,16 @@ export const coachesApi = {
       'coaches',
     ),
 
+  // Get my coach relationship summaries
+  getMine: async () =>
+    http.get<BackendMyCoachesPayload>('/coaches/my', undefined, { showLoading: false })
+      .then((response) => ({
+        ...response,
+        data: {
+          coaches: (response.data.coaches || []).map(mapMyCoachSummary),
+        },
+      })),
+
   // Get coach by ID
   getById: async (id: string) =>
     wrapObjectData(
@@ -72,6 +109,8 @@ export const coachesApi = {
     ),
 
   // Get coach schedule
-  getSchedule: async (id: string, params?: { from?: string; to?: string }) =>
-    wrapListData(await http.get<import('./courses').CourseSession[]>(`/coaches/${id}/schedule`, params), 'sessions'),
+  getSchedule: async (id: string, params?: { from?: string; to?: string }) => {
+    const response = await http.get<BackendCoachSchedulePayload>(`/coaches/${id}/schedule`, params);
+    return wrapListData({ ...response, data: normalizeCoachSchedulePayload(response.data) }, 'sessions');
+  },
 };

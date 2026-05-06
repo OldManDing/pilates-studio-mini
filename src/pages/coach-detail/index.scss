@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .coach-detail-page {
   min-height: 100vh;
@@ -7,7 +7,7 @@
   &__hero {
     position: relative;
     height: 42vh;
-    min-height: 320px;
+    min-height: 360px;
     max-height: 460px;
     overflow: hidden;
   }
@@ -24,60 +24,31 @@
   }
 
   &__hero-mask {
-    background: linear-gradient(180deg, rgba($black, 0.28) 0%, rgba($black, 0.14) 46%, rgba($black, 0.42) 100%);
-  }
-
-  &__back {
-    position: absolute;
-    left: $spacing-md;
-    top: calc(#{$spacing-xl} + constant(safe-area-inset-top));
-    top: calc(#{$spacing-xl} + env(safe-area-inset-top));
-    width: 44px;
-    height: 44px;
-    border-radius: $radius-full;
-    border: none;
-    background: rgba($white, 0.14);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(20px);
-  }
-
-  &__back-icon {
-    color: $white;
-    width: 18px;
-    height: 18px;
-  }
-
-  &__back-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    background:
+      linear-gradient(180deg, rgba($black, 0.18) 0%, rgba($black, 0.08) 44%, rgba($black, 0.5) 100%),
+      linear-gradient(90deg, rgba($black, 0.32) 0%, rgba($black, 0.06) 66%, rgba($black, 0.14) 100%);
   }
 
   &__hero-text {
     position: absolute;
-    left: $spacing-md;
-    right: $spacing-md;
-    bottom: $spacing-lg;
+    left: $figma-page-x;
+    right: $figma-page-x;
+    bottom: 42px;
   }
 
   &__subtitle {
     display: block;
-    color: rgba($white, 0.58);
-    font-size: $font-size-2xs;
+    color: rgba($white, 0.72);
+    font-size: $figma-body;
     font-weight: $font-weight-medium;
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
+    letter-spacing: 0;
+    margin-bottom: 12px;
   }
 
   &__title {
     display: block;
     color: $white;
-    font-size: 30px;
+    font-size: 46px;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -85,25 +56,27 @@
   &__body {
     position: relative;
     z-index: 2;
-    margin-top: -$spacing-md;
-    padding: 0 $spacing-md;
+    margin-top: -30px;
+    padding: 0 $figma-page-x;
   }
 
   &__info-card {
-    margin-bottom: $spacing-lg;
+    margin-bottom: 38px;
+    box-shadow: $shadow-soft;
   }
 
   &__identity {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-sm;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
   }
 
   &__avatar-wrap {
-    width: 84px;
-    height: 84px;
-    border-radius: $radius-full;
+    width: 112px;
+    height: 112px;
+    border-radius: 24px;
     overflow: hidden;
     background: rgba($gray-200, 0.8);
     border: 1px solid $border-faint;
@@ -120,7 +93,7 @@
 
   &__avatar-text {
     color: $text-muted;
-    font-size: $font-size-base;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
   }
 
@@ -131,26 +104,27 @@
 
   &__identity-name {
     display: block;
-    margin-bottom: $spacing-2xs;
+    margin-bottom: 10px;
     color: $text-primary;
-    font-size: 22px;
-    font-weight: $font-weight-normal;
+    font-size: $figma-section-title;
+    font-weight: $font-weight-medium;
     line-height: $line-height-snug;
   }
 
   &__identity-meta {
     display: block;
     color: $text-muted;
-    font-size: $font-size-xs;
-    letter-spacing: $letter-spacing-wide;
+    font-size: $figma-body;
+    letter-spacing: 0;
+    line-height: 1.45;
   }
 
   &__meta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: $spacing-md;
-    padding: $spacing-md 0;
+    gap: 24px;
+    padding: 24px 0;
 
     &--clickable:active {
       opacity: 0.82;
@@ -159,23 +133,23 @@
 
   &__meta-label {
     color: $text-muted;
-    font-size: $font-size-xs;
-    letter-spacing: $letter-spacing-wide;
+    font-size: $figma-body;
+    letter-spacing: 0;
   }
 
   &__meta-value {
     min-width: 0;
-    max-width: 65%;
+    max-width: 68%;
     text-align: right;
     white-space: normal;
     word-break: break-all;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
   }
 
   &__section {
-    margin-bottom: $spacing-lg;
+    margin-bottom: 40px;
   }
 
   &__error-action {
@@ -186,15 +160,15 @@
   &__about {
     display: block;
     color: $text-secondary;
-    font-size: $font-size-sm;
+    font-size: $figma-body;
     line-height: $line-height-relaxed;
   }
 
   &__qualification-list {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-md;
+    gap: 18px;
+    margin-bottom: 28px;
   }
 
   &__qualification-item {
@@ -213,32 +187,33 @@
 
   &__qualification-text {
     color: $text-secondary;
-    font-size: $font-size-base;
+    font-size: $figma-body;
+    line-height: 1.5;
   }
 
   &__tag-groups {
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
+    gap: 14px;
   }
 
   &__tag-row {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-xs;
+    gap: 12px;
   }
 
   &__tag {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
-    padding: 0 $spacing-sm;
+    min-height: 46px;
+    padding: 0 18px;
     border-radius: $radius-full;
     background: rgba($accent-soft, 0.84);
     border: 1px solid rgba($accent, 0.2);
     color: $accent-strong;
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
 
     &--muted {
       background: rgba($gray-200, 0.8);
@@ -251,30 +226,31 @@
     display: block;
     margin-bottom: $spacing-sm;
     color: $text-muted;
-    font-size: $font-size-xs;
+    font-size: $figma-body;
   }
 
   &__schedule-card {
-    border-radius: $radius-xl;
+    border-radius: $figma-radius-card;
     overflow: hidden;
   }
 
   &__schedule-item {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
-    padding: 20px 24px;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 30px 36px;
   }
 
   &__schedule-date {
-    min-width: 38px;
+    min-width: 72px;
     flex-shrink: 0;
   }
 
   &__schedule-day {
     display: block;
     color: $text-primary;
-    font-size: 24px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -283,9 +259,9 @@
     display: block;
     margin-top: $spacing-2xs;
     color: $text-muted;
-    font-size: $font-size-3xs;
+    font-size: $figma-caption;
     line-height: 1;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
   }
 
   &__schedule-content {
@@ -296,7 +272,7 @@
   &__schedule-course {
     display: block;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -309,8 +285,8 @@
   }
 
   &__schedule-meta-icon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     color: $text-muted;
     flex-shrink: 0;
   }
@@ -319,7 +295,7 @@
   &__schedule-date-label {
     display: block;
     color: $text-muted;
-    font-size: $font-size-xs;
+    font-size: $figma-body;
     line-height: 1.25;
   }
 
@@ -328,17 +304,17 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 32px;
-    padding: 0 8px;
+    min-height: 42px;
+    padding: 0 16px;
     border-radius: $radius-full;
     background: rgba($violet-light, 0.9);
     color: $violet-dark;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     line-height: 1;
   }
 
   &__empty-wrap {
-    padding: $spacing-md;
+    padding: $figma-card-y $figma-card-x;
   }
 
   &__spacer {

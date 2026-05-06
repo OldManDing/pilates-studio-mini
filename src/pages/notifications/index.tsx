@@ -71,6 +71,12 @@ function toNotificationItem(notification: ApiNotificationItem): NotificationItem
   };
 }
 
+function hasUnauthorizedRejection(results: PromiseSettledResult<string>[]) {
+  return results.some(
+    (result) => result.status === 'rejected' && isUnauthorizedApiError(result.reason),
+  );
+}
+
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -181,8 +187,17 @@ export default function Notifications() {
       }
 
       if (succeededIds.length < unreadIds.length) {
+        if (hasUnauthorizedRejection(results)) {
+          setAuthRequired(true);
+        }
+
         const firstRejected = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
-        Taro.showToast({ title: getApiErrorMessage(firstRejected?.reason, succeededIds.length > 0 ? '部分消息标记失败' : '标记失败，请稍后重试'), icon: 'none' });
+        Taro.showToast({
+          title: hasUnauthorizedRejection(results)
+            ? '登录已过期，请先重新登录'
+            : getApiErrorMessage(firstRejected?.reason, succeededIds.length > 0 ? '部分消息标记失败' : '标记失败，请稍后重试'),
+          icon: 'none',
+        });
       }
     } catch (error) {
       if (isUnauthorizedApiError(error)) {
@@ -277,7 +292,7 @@ export default function Notifications() {
         </View>
       ) : unread.length > 0 ? (
         <View className='notifications-page__section'>
-          <SectionTitle title='未读' actionLabel='UNREAD' actionTone='muted' />
+          <SectionTitle title='未读' actionLabel='未读' actionTone='muted' />
           <AppCard className='notifications-list' padding='none'>
             {unread.map((notification, index) => (
               <View key={notification.id}>
@@ -306,7 +321,7 @@ export default function Notifications() {
       ) : null}
 
         {!(loadFailed && notifications.length === 0) ? <View className='notifications-page__section'>
-          <SectionTitle title='已读' actionLabel='EARLIER' actionTone='muted' />
+          <SectionTitle title='已读' actionLabel='历史' actionTone='muted' />
           <AppCard className='notifications-list' padding='none'>
             {read.length === 0 && unread.length === 0 ? (
               <View className='notifications-list__empty'>

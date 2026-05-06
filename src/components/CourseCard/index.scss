@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .course-card {
   background: $white;
@@ -42,7 +42,10 @@
     color: $text-secondary;
     line-height: $line-height-normal;
     margin-bottom: $spacing-sm;
-    display: block;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   &__coach {

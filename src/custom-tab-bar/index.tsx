@@ -20,8 +20,6 @@ function getSelectedIndex() {
 }
 
 export default class CustomTabBar extends Component<Record<string, never>, CustomTabBarState> {
-  private switching = false;
-
   state: CustomTabBarState = {
     selected: 0,
   };
@@ -33,6 +31,8 @@ export default class CustomTabBar extends Component<Record<string, never>, Custo
   componentDidShow() {
     this.setSelected(getSelectedIndex());
   }
+
+  private switching = false;
 
   setSelected(selected: number) {
     this.setState({ selected });

@@ -7,13 +7,13 @@ export interface Member {
   name: string;
   email: string;
   phone: string;
+  status: 'ACTIVE' | 'PENDING' | 'EXPIRED' | 'SUSPENDED';
   avatar?: string;
   birthday?: string;
   gender?: 'MALE' | 'FEMALE' | 'OTHER';
   emergencyContact?: string;
   emergencyPhone?: string;
   notes?: string;
-  isActive: boolean;
   joinedAt: string;
   memberships?: Membership[];
 }

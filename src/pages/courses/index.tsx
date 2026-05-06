@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro';
-import { View } from '@tarojs/components';
-import { AppButton, AppCard, Empty, Loading, PageShell, SectionTitle } from '../../components';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Taro, { useDidShow, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
+import { Button, Text, View } from '@tarojs/components';
+import { AppCard, Empty, Icon, Loading, PageShell, SectionTitle } from '../../components';
 import { courseSessionsApi, type Course, type CourseSession } from '../../api/courses';
 import BookingCategoryPills from './components/BookingCategoryPills';
 import BookingCourseCard from './components/BookingCourseCard';
@@ -14,6 +14,7 @@ import type {
   BookingHeroData,
 } from './components/types';
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
+import { formatDurationMinutes, getSafeMiniImageSrc, getWeekdayLabel } from '../../utils/ui';
 import './index.scss';
 
 function formatDateKey(date: Date) {
@@ -74,14 +75,19 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [sessions, setSessions] = useState<CourseSession[]>([]);
+  const initialFetchCompletedRef = useRef(false);
 
   useShareAppMessage(() => ({
-    title: 'Pilates Studio - 预约课程',
+    title: '普拉提工作室｜预约课程',
     path: '/pages/courses/index',
   }));
 
   useDidShow(() => {
     syncCustomTabBarSelected(1);
+
+    if (initialFetchCompletedRef.current) {
+      void fetchCourses();
+    }
   });
 
   const fetchCourses = useCallback(async () => {
@@ -95,23 +101,29 @@ export default function Courses() {
       Taro.showToast({ title: '课程加载失败', icon: 'none' });
     } finally {
       setLoading(false);
+      initialFetchCompletedRef.current = true;
+      Taro.stopPullDownRefresh();
     }
   }, []);
 
   useEffect(() => {
-    fetchCourses();
+    void fetchCourses();
   }, [fetchCourses]);
 
+  usePullDownRefresh(() => {
+    void fetchCourses();
+  });
+
   const heroData: BookingHeroData = {
-    eyebrow: 'COURSE BOOKING',
+    eyebrow: '课程预约',
     title: '预约课程',
     subtitle: '选择日期与课程类型',
     actionLabel: '我的预约',
+    imageUrl: '/assets/ui/hero-courses.jpg',
   };
 
   const dateItems: BookingDateItemData[] = useMemo(
     () => {
-      const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       const today = new Date();
       return Array.from({ length: 14 }, (_, index) => {
         const date = new Date(today);
@@ -119,7 +131,7 @@ export default function Courses() {
         const key = `date-${index}`;
         return {
           key,
-          weekday: weekdays[date.getDay()],
+          weekday: getWeekdayLabel(date),
           day: String(date.getDate()).padStart(2, '0'),
           dateValue: formatDateKey(date),
           label: index === 0 ? '今天' : index === 1 ? '明天' : undefined,
@@ -179,8 +191,9 @@ export default function Courses() {
       key: session.id,
       courseId: session.courseId || course?.id,
       title: course?.name || '未命名课程',
+      imageUrl: getSafeMiniImageSrc(course?.coverImageUrl, imageKind === 'pilates' ? '/assets/ui/booking-pilates.svg' : imageKind === 'meditation' ? '/assets/ui/booking-meditation.svg' : '/assets/ui/booking-yoga.svg'),
       time: startsAt && !Number.isNaN(startsAt.getTime()) ? `${String(startsAt.getHours()).padStart(2, '0')}:${String(startsAt.getMinutes()).padStart(2, '0')}` : '--:--',
-      duration: durationMinutes > 0 ? `${durationMinutes}min` : '待定',
+      duration: formatDurationMinutes(durationMinutes, '待定'),
       instructor: session.coach?.name || '待安排',
       location: '门店待更新',
       spotsText: spots > 0 ? `余 ${spots} 位` : '已约满',
@@ -206,9 +219,20 @@ export default function Courses() {
   const courseCountLabel = `${filteredCourseItems.length} 节${hasActiveFilters ? ' · 可重置' : ''}`;
 
   return (
-    <PageShell className='booking-page' reserveTabBarSpace>
+    <PageShell className='booking-page' reserveTabBarSpace flushTop>
       <View className='booking-page__content'>
-        <BookingHero data={heroData} onActionClick={handleMyBookings} />
+        <BookingHero data={heroData} />
+
+        <View className='booking-page__headline'>
+          <View className='booking-page__headline-main'>
+            <Text className='booking-page__headline-title'>{heroData.title}</Text>
+            <Text className='booking-page__headline-subtitle'>{heroData.subtitle}</Text>
+          </View>
+          <Button className='booking-page__my-bookings' hoverClass='none' onClick={handleMyBookings}>
+            <Text className='booking-page__my-bookings-text'>{heroData.actionLabel}</Text>
+            <Icon name='chevron-right' className='booking-page__my-bookings-icon' />
+          </Button>
+        </View>
 
         <View className='booking-page__filters'>
           <BookingDateStrip items={dateItems} onSelect={handleDateSelect} />
@@ -228,8 +252,7 @@ export default function Courses() {
               <Loading />
             ) : loadFailed ? (
               <AppCard className='booking-page__empty-card'>
-                <Empty title='课程加载失败' description='请检查网络后重试。' />
-                <AppButton size='small' variant='primary' onClick={fetchCourses}>重新加载</AppButton>
+                <Empty title='课程加载失败' description='请检查网络后重试。' actionLabel='重新加载' onActionClick={fetchCourses} />
               </AppCard>
             ) : filteredCourseItems.length > 0 ? (
               filteredCourseItems.map((item) => (

@@ -2,6 +2,7 @@ import { View } from '@tarojs/components';
 import './index.scss';
 
 export type IconName =
+  | 'arrow-left'
   | 'chevron-left'
   | 'chevron-right'
   | 'check'
@@ -30,7 +31,7 @@ function joinClasses(classes: Array<string | false | undefined>) {
 }
 
 export default function Icon({ name, className }: IconProps) {
-  if (name === 'check' || name === 'chevron-left' || name === 'chevron-right' || name === 'mail' || name === 'logout' || name === 'send' || name === 'star' || name === 'bolt' || name === 'spark') {
+  if (name === 'check' || name === 'arrow-left' || name === 'chevron-left' || name === 'chevron-right' || name === 'mail' || name === 'logout' || name === 'send' || name === 'star' || name === 'bolt' || name === 'spark') {
     return (
       <View className={joinClasses(['app-icon', `app-icon--${name}`, className])}>
         <View className='app-icon__line app-icon__line--one' />

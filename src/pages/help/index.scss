@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 $support-dark: $primary;
 $support-gold: $accent;
@@ -38,7 +38,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &__title {
       font-size: $figma-section-title;
       font-weight: $font-weight-medium;
-      letter-spacing: 0.01em;
+      letter-spacing: 0;
     }
 
     &__action {
@@ -50,7 +50,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
       font-size: $figma-caption;
       font-weight: $font-weight-normal;
       color: #cdcdcd;
-      letter-spacing: 0.1em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
   }
@@ -70,8 +70,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 45px;
-    padding: 12px 28px;
+    min-height: 78px;
+    padding: 0 24px;
     border-radius: $radius-full;
     background: transparent;
     flex-shrink: 0;
@@ -96,7 +96,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body;
     font-weight: $font-weight-medium;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 }
 
@@ -112,6 +112,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     border: 0;
     background: transparent;
     padding: 36px $figma-card-x;
+    line-height: normal;
+    text-align: left;
 
     &::after {
       border: 0;
@@ -132,7 +134,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: 35px;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
 
   &__answer {
@@ -326,15 +328,15 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__submit {
     width: auto;
-    min-height: 56px;
-    padding: 17px 38px;
+    min-height: 78px;
+    padding: 0 28px;
     border-radius: $figma-radius-button;
     background: $support-dark;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 10px;
 
     &--disabled,
     &.app-button--disabled {
@@ -349,7 +351,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-body;
     font-weight: $font-weight-medium;
     line-height: 1;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 
   &__submit-icon {
@@ -375,6 +377,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     justify-content: space-between;
     gap: 21px;
     padding: 35px 49px;
+    line-height: normal;
+    text-align: left;
 
     &--clickable:active {
       background: $support-surface-muted;
@@ -446,7 +450,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
     line-height: 1;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
   }
 
   &__right {

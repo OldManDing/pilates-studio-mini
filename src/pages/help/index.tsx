@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { Button, ScrollView, Text, Textarea, View } from '@tarojs/components';
+import { knowledgeApi, type KnowledgeFaq } from '../../api/knowledge';
+import { settingsApi, type StudioSettings } from '../../api/settings';
 import { supportApi } from '../../api/support';
 import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Icon, PageHeader, PageShell, SectionTitle } from '../../components';
@@ -11,12 +13,12 @@ declare const SUPPORT_EMAIL: string;
 
 interface FaqItem {
   id: string;
-  category: FaqCategory;
+  category: string;
   question: string;
   answer: string;
 }
 
-type FaqCategory = 'all' | 'booking' | 'member' | 'account';
+type FaqCategory = string;
 
 type FeedbackStep = 'idle' | 'writing' | 'sent';
 
@@ -32,50 +34,23 @@ const CATEGORIES: CategoryItem[] = [
   { id: 'account', label: '账户问题' },
 ];
 
-const FAQ_ITEMS: FaqItem[] = [
-  {
-    id: 'f1',
-    category: 'booking',
-    question: '如何预约课程？',
-    answer: '进入「预约」页面，选择日期与课程类型，点击心仪课程即可查看详情并完成预约。GOLD 会员享受提前 48 小时优先预约权。',
-  },
-  {
-    id: 'f2',
-    category: 'booking',
-    question: '如何取消或改约？',
-    answer: '课程开始前 4 小时可在「我的预约」中取消或改约。超过时限将扣除一次课程权益，敬请留意。',
-  },
-  {
-    id: 'f3',
-    category: 'booking',
-    question: '课程已满可以候补吗？',
-    answer: '目前暂不支持候补功能。建议在课程开放预约时尽早预约，或关注消息通知获取临时空位提醒。',
-  },
-  {
-    id: 'f4',
-    category: 'member',
-    question: '会员卡如何续费？',
-    answer: '进入「会员中心」页面，点击「续费会员」即可选择续费方案。当前会籍未到期时，仅支持同方案续费顺延；如需更换方案，请待当前会籍结束后处理。',
-  },
-  {
-    id: 'f5',
-    category: 'member',
-    question: 'GOLD 会员有哪些专属权益？',
-    answer: 'GOLD 年度金卡享受全课程无限次预约、提前 48 小时优先预约、免费季度体态评估、私教课程 85 折优惠等专属权益。',
-  },
-  {
-    id: 'f6',
-    category: 'account',
-    question: '如何修改绑定手机号？',
-    answer: '当前手机号用于会员身份核验。如需变更，请在「帮助与反馈」提交说明或联系客服，由门店完成身份确认后处理。',
-  },
-  {
-    id: 'f7',
-    category: 'account',
-    question: '如何修改账号信息或注销账户？',
-    answer: '当前小程序账号基于微信授权登录，不支持在小程序内单独修改密码。如需注销账号，可在设置页提交申请，门店客服会在核实身份与历史权益后人工处理。',
-  },
-];
+const CATEGORY_LABEL_MAP: Record<string, string> = CATEGORIES.reduce((map, item) => ({
+  ...map,
+  [item.id]: item.label,
+}), {} as Record<string, string>);
+
+function normalizeCategory(category?: string) {
+  return category?.trim() || 'general';
+}
+
+function toFaqItem(item: KnowledgeFaq): FaqItem {
+  return {
+    id: item.id,
+    category: normalizeCategory(item.category),
+    question: item.question,
+    answer: item.answer,
+  };
+}
 
 export default function Help() {
   const [activeCategory, setActiveCategory] = useState<FaqCategory>('all');
@@ -83,6 +58,10 @@ export default function Help() {
   const [feedbackStep, setFeedbackStep] = useState<FeedbackStep>('idle');
   const [feedbackText, setFeedbackText] = useState('');
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [faqLoading, setFaqLoading] = useState(true);
+  const [faqLoadFailed, setFaqLoadFailed] = useState(false);
+  const [studioSettings, setStudioSettings] = useState<StudioSettings | null>(null);
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -90,6 +69,47 @@ export default function Help() {
       if (feedbackTimer.current) {
         clearTimeout(feedbackTimer.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadHelpData = async () => {
+      try {
+        setFaqLoading(true);
+        setFaqLoadFailed(false);
+
+        const [faqsRes, studioRes] = await Promise.allSettled([
+          knowledgeApi.getFaqs(undefined, { showLoading: false }),
+          settingsApi.getStudio(),
+        ]);
+
+        if (cancelled) {
+          return;
+        }
+
+        if (faqsRes.status === 'fulfilled') {
+          setFaqItems((faqsRes.value.data || []).map(toFaqItem));
+        } else {
+          setFaqItems([]);
+          setFaqLoadFailed(true);
+        }
+
+        if (studioRes.status === 'fulfilled') {
+          setStudioSettings(studioRes.value.data);
+        }
+      } finally {
+        if (!cancelled) {
+          setFaqLoading(false);
+        }
+      }
+    };
+
+    void loadHelpData();
+
+    return () => {
+      cancelled = true;
     };
   }, []);
 
@@ -119,19 +139,34 @@ export default function Help() {
     }, 3000);
   };
 
+  const categoryItems = useMemo(() => {
+    const categorySet = new Set(faqItems.map((item) => item.category));
+    const knownCategories = CATEGORIES.filter((category) => category.id === 'all' || categorySet.has(category.id));
+    const extraCategories = Array.from(categorySet)
+      .filter((category) => !CATEGORY_LABEL_MAP[category])
+      .map((category) => ({
+        id: category,
+        label: category,
+      }));
+
+    return faqItems.length ? [...knownCategories, ...extraCategories] : CATEGORIES;
+  }, [faqItems]);
+
   const filteredFaqs = useMemo(
-    () => FAQ_ITEMS.filter((item) => activeCategory === 'all' || item.category === activeCategory),
-    [activeCategory],
+    () => faqItems.filter((item) => activeCategory === 'all' || item.category === activeCategory),
+    [activeCategory, faqItems],
   );
 
   const feedbackCount = feedbackText.length;
   const feedbackDisabled = !feedbackText.trim() || submittingFeedback;
+  const supportPhone = studioSettings?.phone?.trim() || SUPPORT_PHONE;
+  const supportEmail = studioSettings?.email?.trim() || SUPPORT_EMAIL;
   const contactItems = [
-    SUPPORT_PHONE
-      ? { label: '客服热线', value: SUPPORT_PHONE, displayValue: SUPPORT_PHONE, description: '工作日 09:00 – 18:00', icon: 'info' as const }
+    supportPhone
+      ? { label: '客服热线', value: supportPhone, displayValue: supportPhone, description: studioSettings?.businessHours ? `营业时间 ${studioSettings.businessHours}` : '工作日 09:00 – 18:00', icon: 'info' as const }
       : null,
-    SUPPORT_EMAIL
-      ? { label: '电子邮箱', value: SUPPORT_EMAIL, displayValue: SUPPORT_EMAIL, description: '1-3 个工作日内回复', icon: 'mail' as const }
+    supportEmail
+      ? { label: '电子邮箱', value: supportEmail, displayValue: supportEmail, description: '1-3 个工作日内回复', icon: 'mail' as const }
       : null,
   ].filter((item): item is { label: string; value: string; displayValue: string; description: string; icon: 'info' | 'mail' } => Boolean(item));
 
@@ -146,7 +181,7 @@ export default function Help() {
       <View className='help-page__section'>
         <ScrollView scrollX showScrollbar={false} className='help-categories'>
           <View className='help-categories__row'>
-            {CATEGORIES.map((category) => {
+            {categoryItems.map((category) => {
               const isActive = category.id === activeCategory;
               return (
                 <Button
@@ -167,13 +202,18 @@ export default function Help() {
       </View>
 
       <View className='help-page__section'>
-        <SectionTitle title='常见问题' actionLabel={`${filteredFaqs.length} 个问题`} actionTone='muted' />
+        <SectionTitle title='常见问题' actionLabel={faqLoading ? '同步中' : `${filteredFaqs.length} 个问题`} actionTone='muted' />
 
         <AppCard className='help-faq' padding='none'>
-          {filteredFaqs.length === 0 ? (
+          {faqLoading ? (
             <View className='help-faq__empty'>
-              <Text className='help-faq__empty-title'>暂无相关问题</Text>
-              <Text className='help-faq__empty-description'>换个分类试试，或直接提交反馈</Text>
+              <Text className='help-faq__empty-title'>正在同步知识库</Text>
+              <Text className='help-faq__empty-description'>请稍候，正在获取门店最新帮助内容</Text>
+            </View>
+          ) : filteredFaqs.length === 0 ? (
+            <View className='help-faq__empty'>
+              <Text className='help-faq__empty-title'>{faqLoadFailed ? '知识库同步失败' : '暂无相关问题'}</Text>
+              <Text className='help-faq__empty-description'>{faqLoadFailed ? '请稍后重试，或直接提交反馈联系门店' : '换个分类试试，或直接提交反馈'}</Text>
             </View>
           ) : (
             filteredFaqs.map((item, index) => {
@@ -200,7 +240,7 @@ export default function Help() {
       </View>
 
       <View className='help-page__section'>
-        <SectionTitle title='意见反馈' actionLabel='FEEDBACK' actionTone='muted' />
+        <SectionTitle title='意见反馈' actionLabel='反馈' actionTone='muted' />
 
         <AppCard className='help-feedback' padding='none'>
           {feedbackStep === 'sent' ? (
@@ -227,7 +267,7 @@ export default function Help() {
                 className='help-feedback__textarea'
                 value={feedbackText}
                 maxlength={500}
-                placeholder='请描述你的问题或建议...'
+                placeholder='请描述你的问题或建议…'
                 placeholderClass='help-feedback__placeholder'
                 onInput={(event) => {
                   const value = event.detail.value;
@@ -253,7 +293,7 @@ export default function Help() {
                   onClick={handleSubmitFeedback}
                 >
                   <Icon name='send' className='help-feedback__submit-icon' />
-                  <Text className='help-feedback__submit-text'>{submittingFeedback ? '提交中...' : '提交'}</Text>
+                  <Text className='help-feedback__submit-text'>{submittingFeedback ? '提交中…' : '提交'}</Text>
                 </AppButton>
               </View>
             </>
@@ -262,7 +302,7 @@ export default function Help() {
       </View>
 
       <View className='help-page__section'>
-        <SectionTitle title='联系我们' actionLabel='CONTACT' actionTone='muted' />
+        <SectionTitle title='联系我们' actionLabel='联系' actionTone='muted' />
 
         <AppCard className='help-contact' padding='none'>
           {contactItems.length === 0 ? (
@@ -271,8 +311,8 @@ export default function Help() {
               <Text className='help-contact__empty-description'>请联系门店工作人员获取最新客服方式。</Text>
             </View>
           ) : contactItems.map((item, index) => (
-              <View key={item.label}>
-                <Button
+            <View key={item.label}>
+              <Button
                 className='help-contact__item help-contact__item--clickable'
                 hoverClass='none'
                 onClick={() => {

@@ -1,4 +1,4 @@
-import { http, PaginationParams, wrapListData, wrapObjectData } from './request';
+import { http, PaginationMeta, PaginationParams, wrapListData, wrapObjectData } from './request';
 
 // Booking interfaces
 export interface Booking {
@@ -47,6 +47,7 @@ function normalizeBooking(booking: Booking): Booking {
 export interface CreateBookingData {
   memberId: string;
   sessionId: string;
+  source?: 'ADMIN' | 'MINI_PROGRAM';
   notes?: string;
 }
 
@@ -56,6 +57,19 @@ export interface BookingFilter {
   sessionId?: string;
   from?: string;
   to?: string;
+}
+
+export interface TrainingRecordSummary {
+  sessions: number;
+  totalMinutes: number;
+  totalHours: number;
+  coachCount: number;
+}
+
+export interface TrainingRecordsPayload {
+  summary: TrainingRecordSummary;
+  records: Booking[];
+  meta?: PaginationMeta;
 }
 
 // Booking APIs
@@ -70,6 +84,18 @@ export const bookingsApi = {
   getMyBookings: async (params?: PaginationParams & BookingFilter, config?: { showLoading?: boolean }) => {
     const response = await http.get<Booking[]>('/bookings/my', params, config);
     return wrapListData({ ...response, data: response.data.map(normalizeBooking) }, 'bookings');
+  },
+
+  // Get my completed training records and aggregate summary
+  getMyTrainingRecords: async (params?: PaginationParams, config?: { showLoading?: boolean }) => {
+    const response = await http.get<TrainingRecordsPayload>('/bookings/my/training-records', params, config);
+    return {
+      ...response,
+      data: {
+        ...response.data,
+        records: response.data.records.map(normalizeBooking),
+      },
+    };
   },
 
   // Get booking by ID

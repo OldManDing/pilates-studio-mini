@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .privacy-page {
   &__section {
@@ -7,7 +7,7 @@
 }
 
 .privacy-hero {
-  padding: 36px 40px;
+  padding: $figma-card-y $figma-card-x;
   margin-bottom: 36px;
   background: linear-gradient(135deg, rgba($accent, 0.1), rgba($surface, 0.98));
 
@@ -19,15 +19,15 @@
 
   &__label {
     color: $accent;
-    font-size: 18px;
+    font-size: $figma-caption;
     font-weight: $font-weight-semibold;
-    letter-spacing: 0.16em;
+    letter-spacing: 0;
     margin-bottom: 20px;
   }
 
   &__title {
     color: $text-primary;
-    font-size: 30px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-normal;
     line-height: 1.35;
     margin-bottom: 10px;
@@ -35,18 +35,18 @@
 
   &__desc {
     color: #ababab;
-    font-size: 18px;
+    font-size: $figma-body;
     line-height: 1.5;
   }
 }
 
 .privacy-content {
-  padding: 28px 34px;
+  padding: 34px $figma-card-x;
 
   &__text {
     display: block;
     color: #7a7a7a;
-    font-size: 20px;
+    font-size: $figma-body;
     line-height: 1.72;
   }
 }

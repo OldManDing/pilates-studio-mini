@@ -1,12 +1,15 @@
-@import '../../styles/variables.scss';
+﻿@use '../../styles/variables.scss' as *;
 
 .coach-card {
   display: flex;
-  align-items: center;
-  gap: $spacing-md;
+  align-items: flex-start;
+  gap: 24px;
   width: 100%;
-  background: transparent;
-  padding: $spacing-lg $spacing-xl;
+  background: $surface;
+  padding: 34px 38px;
+  border: 1px solid rgba($gray-300, 0.68);
+  border-radius: $figma-radius-card;
+  box-shadow: $shadow-xs;
   transition: transform $duration-fast $ease-in-out, background-color $duration-fast $ease-in-out;
 
   &:active {
@@ -15,11 +18,11 @@
   }
 
   &--compact {
-    padding: $spacing-sm $spacing-md;
+    padding: 30px 34px;
 
     .coach-card__avatar {
-      width: 84px;
-      height: 84px;
+      width: 96px;
+      height: 96px;
       margin-right: 0;
     }
 
@@ -28,15 +31,15 @@
     }
 
     .coach-card__name {
-      font-size: $font-size-sm;
-      font-weight: $font-weight-normal;
+      font-size: $figma-body-lg;
+      font-weight: $font-weight-medium;
       margin-bottom: 0;
     }
 
     .coach-card__state {
       min-height: 24px;
-      padding: 0 $spacing-xs;
-      font-size: $font-size-3xs;
+      padding: 0 12px;
+      font-size: $figma-caption;
       background: rgba($accent-soft, 0.58);
     }
 
@@ -47,28 +50,28 @@
 
     .coach-card__tag {
       min-height: 28px;
-      padding: 0 $spacing-xs;
-      font-size: $font-size-3xs;
+      padding: 0 12px;
+      font-size: $figma-caption;
     }
 
     .coach-card__courses {
       margin-top: 0;
-      font-size: $font-size-3xs;
+      font-size: $figma-caption;
       color: $gray-600;
-      letter-spacing: 0.02em;
+      letter-spacing: 0;
     }
 
     .coach-card__arrow {
       color: rgba($gray-500, 0.72);
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
     }
   }
 
   &__avatar {
-    width: 112px;
-    height: 112px;
-    border-radius: $radius-lg;
+    width: 124px;
+    height: 124px;
+    border-radius: 24px;
     border: 1px solid $border-faint;
     background: $gray-200;
     flex-shrink: 0;
@@ -88,7 +91,7 @@
   }
 
   &__name {
-    font-size: 24px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     color: $text-primary;
     line-height: $line-height-tight;
@@ -102,12 +105,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 30px;
-    padding: 0 $spacing-sm;
+    min-height: 38px;
+    padding: 0 16px;
     border-radius: $radius-full;
     background: rgba($accent-soft, 0.72);
     color: $accent-strong;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     line-height: 1;
     flex-shrink: 0;
   }
@@ -115,17 +118,17 @@
   &__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-xs;
-    margin-bottom: $spacing-xs;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   &__tag {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
-    padding: 0 $spacing-sm;
-    font-size: $font-size-2xs;
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: $figma-caption;
     color: $violet-dark;
     background: rgba($violet-light, 0.92);
     border: 1px solid rgba($violet, 0.2);
@@ -133,8 +136,8 @@
   }
 
   &__courses {
-    margin-top: $spacing-xs;
-    font-size: $font-size-2xs;
+    margin-top: 12px;
+    font-size: $figma-body;
     color: $text-muted;
     display: block;
     overflow: hidden;
@@ -144,8 +147,8 @@
 
   &__arrow {
     color: $gray-500;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
   }
 }

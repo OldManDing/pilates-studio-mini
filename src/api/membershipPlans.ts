@@ -3,7 +3,7 @@ import { http, wrapListData, wrapObjectData } from './request';
 // Membership Plan interfaces
 export interface MembershipPlan {
   id: string;
-  code?: string;
+  code: string;
   planCode: string;
   name: string;
   description?: string;
@@ -13,6 +13,21 @@ export interface MembershipPlan {
   validityDays: number;
   priceCents: number;
   isActive: boolean;
+}
+
+export interface MiniPaymentParams {
+  timeStamp: string;
+  nonceStr: string;
+  package: string;
+  signType: 'RSA';
+  paySign: string;
+}
+
+export interface RenewalPaymentResponse {
+  transactionId: string;
+  transactionCode: string;
+  mode: 'WECHAT_PAY' | 'MOCK';
+  paymentParams: MiniPaymentParams;
 }
 
 type BackendMembershipPlan = Omit<MembershipPlan, 'planCode' | 'validityDays'> & {
@@ -52,4 +67,10 @@ export const membershipPlansApi = {
   // Submit renewal request for selected plan
   requestRenewal: (planId: string) =>
     http.post<{ submitted: boolean }>('/membership-renewals', { planId }),
+
+  createRenewalPayment: (planId: string) =>
+    http.post<RenewalPaymentResponse>('/membership-renewals/pay', { planId }),
+
+  completeMockRenewalPayment: (transactionId: string) =>
+    http.post<{ success: boolean; transactionId: string; status: 'COMPLETED' }>(`/membership-renewals/${transactionId}/mock-complete`, {}),
 };

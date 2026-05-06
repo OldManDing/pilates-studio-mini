@@ -1,4 +1,4 @@
-@import '../../../styles/variables.scss';
+﻿@use '../../../styles/variables.scss' as *;
 
 .app-icon {
   position: relative;
@@ -26,6 +26,7 @@
     border-radius: 2px;
   }
 
+  &--arrow-left,
   &--chevron-left,
   &--chevron-right,
   &--check,
@@ -46,8 +47,35 @@
   }
 
   &--chevron-left {
-    .app-icon__line--one { transform: translate(-45%, -140%) rotate(-45deg); }
-    .app-icon__line--two { transform: translate(-45%, 40%) rotate(45deg); }
+    .app-icon__line--one,
+    .app-icon__line--two {
+      width: 44%;
+      height: 2px;
+      left: 54%;
+      top: 50%;
+      transform-origin: left center;
+    }
+
+    .app-icon__line--one { transform: translate(-50%, 0) rotate(-45deg); }
+    .app-icon__line--two { transform: translate(-50%, 0) rotate(45deg); }
+  }
+
+  &--arrow-left {
+    .app-icon__line--one {
+      width: 11px;
+      transform: translate(-34%, -50%);
+    }
+
+    .app-icon__line--two {
+      width: 6px;
+      height: 6px;
+      left: 4px;
+      border-left: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      background: transparent;
+      border-radius: 1px;
+      transform: translate(0, -50%) rotate(45deg);
+    }
   }
 
   &--chevron-right {

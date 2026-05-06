@@ -1,12 +1,12 @@
-@import '../../../styles/variables.scss';
+@use '../../../styles/variables.scss' as *;
 
 .page-shell {
+  --page-shell-top-inset: 0px;
+
   width: 100%;
   max-width: 100%;
   min-height: 100vh;
   background: $background;
-  padding-top: constant(safe-area-inset-top);
-  padding-top: env(safe-area-inset-top);
 
   &__inner {
     width: 100%;
@@ -19,6 +19,12 @@
     .page-shell__inner {
       padding-top: $spacing-md;
       padding-bottom: $spacing-md;
+    }
+  }
+
+  &--flush-top {
+    .page-shell__inner {
+      padding-top: 0;
     }
   }
 

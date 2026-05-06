@@ -76,7 +76,7 @@ export function getLabelByValue<T extends readonly { value: string | number; lab
   array: T,
   value: string | number
 ): string {
-  const item = array.find((item) => item.value === value);
+  const item = array.find((option) => option.value === value);
   return item?.label || String(value);
 }
 
@@ -84,6 +84,6 @@ export function getColorByValue<T extends readonly { value: string | number; col
   array: T,
   value: string | number
 ): string {
-  const item = array.find((item) => item.value === value);
+  const item = array.find((option) => option.value === value);
   return item?.color || '#6f8198';
 }

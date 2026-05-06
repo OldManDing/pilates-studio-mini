@@ -4,10 +4,12 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { bookingsApi, Booking } from '../../api/bookings';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
-import { AppButton, AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageShell, PageHeader } from '../../components';
+import { AppCard, Divider, Empty, Icon, LoadMoreFooter, Loading, PageShell, PageHeader } from '../../components';
+import { formatDurationMinutes, getWeekdayLabel } from '../../utils/ui';
 import './index.scss';
 
 type BookingTab = 'upcoming' | 'completed' | 'cancelled';
+type BookingVisualStatus = BookingTab | 'no-show';
 
 const TABS = [
   { value: 'upcoming', label: '待上课', emptyTitle: '暂无预约', emptyDesc: '去预约一节课程开始你的训练吧' },
@@ -21,34 +23,33 @@ function pad(value: number) {
 
 function formatTimeRange(start?: string, end?: string) {
   if (!start || !end) {
-    return '--:-- · --min';
+    return '--:-- · 时长待定';
   }
 
   const startDate = new Date(start);
   const endDate = new Date(end);
 
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return '--:-- · --min';
+    return '--:-- · 时长待定';
   }
 
   const startTime = `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`;
   const durationMinutes = Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60)));
 
-  return `${startTime} · ${durationMinutes}min`;
+  return `${startTime} · ${formatDurationMinutes(durationMinutes)}`;
 }
 
 function formatDateMeta(value?: string) {
   if (!value) {
-    return { day: '--', weekday: '---', isToday: false };
+    return { day: '--', weekday: '--', isToday: false };
   }
 
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return { day: '--', weekday: '---', isToday: false };
+    return { day: '--', weekday: '--', isToday: false };
   }
 
-  const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const now = new Date();
   const isToday =
     now.getFullYear() === date.getFullYear()
@@ -57,7 +58,7 @@ function formatDateMeta(value?: string) {
 
   return {
     day: pad(date.getDate()),
-    weekday: weekdays[date.getDay()],
+    weekday: getWeekdayLabel(date),
     isToday,
   };
 }
@@ -73,12 +74,50 @@ function getInstructorAndTime(booking: Booking) {
   return `${instructor} · ${timeRange}`;
 }
 
-function getVisualStatus(booking: Booking): BookingTab {
+function getBookingStatusLabel(booking: Booking) {
+  if (booking.status === 'NO_SHOW') {
+    return '未到场（已扣次）';
+  }
+
+  if (booking.status === 'CANCELLED') {
+    return '已取消';
+  }
+
+  if (booking.status === 'COMPLETED') {
+    return '已完成';
+  }
+
+  if (booking.status === 'CONFIRMED') {
+    return '已确认';
+  }
+
+  if (booking.status === 'PENDING') {
+    return '待确认';
+  }
+
+  return booking.status;
+}
+
+function getBookingMeta(booking: Booking) {
+  const baseMeta = getInstructorAndTime(booking);
+
+  if (booking.status === 'NO_SHOW') {
+    return `${baseMeta} · 已扣次`;
+  }
+
+  return baseMeta;
+}
+
+function getVisualStatus(booking: Booking): BookingVisualStatus {
   if (booking.status === 'COMPLETED') {
     return 'completed';
   }
 
-  if (booking.status === 'CANCELLED' || booking.status === 'NO_SHOW') {
+  if (booking.status === 'NO_SHOW') {
+    return 'no-show';
+  }
+
+  if (booking.status === 'CANCELLED') {
     return 'cancelled';
   }
 
@@ -220,7 +259,7 @@ export default function MyBookings() {
 
     Taro.showModal({
       title: '预约详情',
-      content: `${getCourseName(booking)}\n${getInstructorAndTime(booking)}\n预约编号: ${booking.bookingCode}\n状态: ${booking.status}`,
+      content: `${getCourseName(booking)}\n${getBookingMeta(booking)}\n预约编号：${booking.bookingCode}\n状态：${getBookingStatusLabel(booking)}`,
       showCancel: booking.status === 'CONFIRMED' || booking.status === 'PENDING',
       cancelText: '取消预约',
       confirmText: '确定',
@@ -262,7 +301,6 @@ export default function MyBookings() {
       <PageHeader
         title='我的预约'
         subtitle='管理你的课程安排'
-        showBack
         fallbackUrl='/pages/profile/index'
       />
 
@@ -333,9 +371,13 @@ export default function MyBookings() {
                             {visualStatus === 'cancelled' ? (
                               <Text className='my-bookings-page__status-badge my-bookings-page__status-badge--cancelled'>已取消</Text>
                             ) : null}
+
+                            {visualStatus === 'no-show' ? (
+                              <Text className='my-bookings-page__status-badge my-bookings-page__status-badge--no-show'>未到场</Text>
+                            ) : null}
                           </View>
 
-                          <Text className='my-bookings-page__meta'>{getInstructorAndTime(booking)}</Text>
+                          <Text className='my-bookings-page__meta'>{getBookingMeta(booking)}</Text>
                         </View>
 
                         <Icon name='chevron-right' className='my-bookings-page__arrow' />

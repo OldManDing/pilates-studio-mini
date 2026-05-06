@@ -1,8 +1,9 @@
-/* ========================================
+﻿/* ========================================
    Common Component Styles
    ======================================== */
 
-@import './variables.scss';
+@forward './variables.scss';
+@use './variables.scss' as *;
 
 .page-container {
   width: 100%;
@@ -85,15 +86,22 @@
 }
 
 .btn {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: $spacing-xs;
   min-height: 80px;
-  padding: 0 $spacing-md;
-  border-radius: $radius-md;
+  max-width: 100%;
+  padding: 0 28px;
+  overflow: hidden;
+  border-radius: 22px;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  line-height: 1;
+  line-height: $line-height-tight;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: opacity $duration-fast $ease-in-out, transform $duration-fast $ease-in-out;
 
   &:active {
@@ -102,9 +110,9 @@
   }
 
   &-primary {
-    background: $primary;
+    background: linear-gradient(180deg, #242424 0%, $primary-strong 100%);
     color: $primary-foreground;
-    box-shadow: $shadow-xs;
+    box-shadow: 0 8px 16px rgba($ink, 0.1), 0 1px 2px rgba($ink, 0.08);
 
     &[disabled] {
       background: $gray-500;
@@ -114,15 +122,17 @@
   }
 
   &-secondary {
-    background: rgba($accent-soft, 0.42);
+    background: rgba($surface, 0.96);
     color: $primary;
-    border: 1px solid $border-light;
+    border: 1px solid rgba($gray-300, 0.88);
+    box-shadow: 0 2px 8px rgba($ink, 0.03);
   }
 
   &-outline {
-    background: $surface;
-    border: 1px solid $border-strong;
-    color: $accent;
+    background: rgba($surface, 0.92);
+    border: 1px solid rgba($accent, 0.32);
+    color: $accent-strong;
+    box-shadow: none;
   }
 
   &-ghost {
@@ -131,14 +141,16 @@
   }
 
   &-small {
-    min-height: 60px;
-    padding: 0 $spacing-sm;
+    min-height: 78px;
+    padding: 0 28px;
     font-size: $font-size-sm;
+    border-radius: 18px;
   }
 
   &-large {
-    min-height: 92px;
+    min-height: 88px;
     font-size: $font-size-md;
+    border-radius: 24px;
   }
 }
 

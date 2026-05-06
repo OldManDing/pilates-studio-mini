@@ -4,11 +4,14 @@ import AppButton from '../shell/AppButton';
 import Icon, { type IconName } from '../shell/Icon';
 import './index.scss';
 
+type EmptyActionVariant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
+
 interface EmptyProps extends PropsWithChildren {
   title?: string;
   description?: string;
   image?: string;
   actionLabel?: string;
+  actionVariant?: EmptyActionVariant;
   onActionClick?: () => void;
 }
 
@@ -17,6 +20,7 @@ export default function Empty({
   description = '',
   image,
   actionLabel,
+  actionVariant = 'primary',
   onActionClick,
   children,
 }: EmptyProps) {
@@ -34,13 +38,11 @@ export default function Empty({
         </View>
       )}
       <Text className='empty__title'>{title}</Text>
-      {description && (
-        <Text className='empty__desc'>{description}</Text>
-      )}
+      {description ? <Text className='empty__desc'>{description}</Text> : null}
       {children}
       {actionLabel && onActionClick ? (
         <View className='empty__action'>
-          <AppButton size='small' variant='primary' onClick={onActionClick}>{actionLabel}</AppButton>
+          <AppButton size='medium' variant={actionVariant} onClick={onActionClick}>{actionLabel}</AppButton>
         </View>
       ) : null}
     </View>

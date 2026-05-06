@@ -51,7 +51,7 @@ export function getRuntimeApiBaseUrl() {
 
 export function getApiBaseUrlUnavailableMessage(apiBaseUrl = getRuntimeApiBaseUrl()): string | null {
   if (!apiBaseUrl) {
-    return 'API_BASE_URL 未配置，无法完成小程序登录';
+    return '接口地址未配置，无法完成小程序登录';
   }
 
   if (ALLOW_INSECURE_REAL_DEVICE_API) {
@@ -59,11 +59,11 @@ export function getApiBaseUrlUnavailableMessage(apiBaseUrl = getRuntimeApiBaseUr
   }
 
   if (LOCAL_API_BASE_URL_PATTERN.test(apiBaseUrl) && !isWeChatDeveloperTool()) {
-    return '真机无法访问本地 API 地址，请将 API_BASE_URL 配置为 HTTPS 合法域名';
+    return '真机无法访问本地接口地址，请将接口地址配置为 HTTPS 合法域名';
   }
 
   if (HTTP_API_BASE_URL_PATTERN.test(apiBaseUrl) && !isWeChatDeveloperTool()) {
-    return '真机请求必须使用 HTTPS 合法域名，请检查 API_BASE_URL 和微信 request 合法域名';
+    return '真机请求必须使用 HTTPS 合法域名，请检查接口地址和微信请求合法域名';
   }
 
   return null;
@@ -74,7 +74,7 @@ function getStoredToken(): string | null {
 }
 
 function shouldUseForcedMiniOpenIdLogin() {
-  return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID) && isWeChatDeveloperTool();
+  return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID) && (isWeChatDeveloperTool() || ALLOW_INSECURE_REAL_DEVICE_API);
 }
 
 async function confirmLoginAuthorization() {
@@ -118,10 +118,6 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
     return storedToken;
   }
 
-  if (options.interactive) {
-    await confirmLoginAuthorization();
-  }
-
   const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
   const apiBaseUrlUnavailableMessage = getApiBaseUrlUnavailableMessage(runtimeApiBaseUrl);
   if (apiBaseUrlUnavailableMessage) {
@@ -129,6 +125,10 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
   }
 
   const forceMiniOpenIdLogin = shouldUseForcedMiniOpenIdLogin();
+
+  if (options.interactive && !forceMiniOpenIdLogin) {
+    await confirmLoginAuthorization();
+  }
 
   if (forceMiniOpenIdLogin) {
     const response = await Taro.request<MiniAuthPayload>({

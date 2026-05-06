@@ -5,7 +5,7 @@ export interface Transaction {
   id: string;
   transactionCode: string;
   memberId: string;
-  membershipId?: string;
+  planId?: string;
   kind: 'MEMBERSHIP_PURCHASE' | 'MEMBERSHIP_RENEWAL' | 'CLASS_PACKAGE_PURCHASE' | 'PRIVATE_CLASS_PURCHASE' | 'REFUND' | 'ADJUSTMENT';
   amountCents: number;
   paymentMethod?: 'CASH' | 'CREDIT_CARD' | 'WECHAT_PAY' | 'ALIPAY' | 'TRANSFER';
@@ -28,6 +28,12 @@ export interface TransactionFilter {
 
 export interface TransactionSummary {
   totalRevenue: number;
+  completedRevenue?: number;
+  totalAmount?: number;
+  pendingAmount?: number;
+  processingAmount?: number;
+  refundedAmount?: number;
+  failedAmount?: number;
   transactionCount: number;
   byKind: Record<string, { count: number; total: number }>;
   byStatus: Record<string, { count: number; total: number }>;

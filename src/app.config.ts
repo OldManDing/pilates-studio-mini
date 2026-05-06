@@ -45,7 +45,7 @@ export default defineAppConfig({
     navigationBarBackgroundColor: NAVIGATION_BAR_BACKGROUND_COLOR,
     navigationBarTitleText: 'Pilates Studio',
     navigationBarTextStyle: 'black',
-    navigationStyle: 'default'
+    navigationStyle: 'custom'
   },
   networkTimeout: {
     request: 30000,

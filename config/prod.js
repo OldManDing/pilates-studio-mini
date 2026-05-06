@@ -46,6 +46,10 @@ module.exports = {
         },
       },
     },
+    performance: {
+      maxEntrypointSize: 380 * 1024,
+      maxAssetSize: 1024 * 1024,
+    },
   },
   // Logger configuration
   logger: {

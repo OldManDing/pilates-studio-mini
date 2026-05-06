@@ -40,14 +40,14 @@ export default function Agreement() {
       <PageHeader title='用户协议' subtitle='服务规则与账户责任' fallbackUrl='/pages/settings/index' />
 
       <AppCard className='legal-hero'>
-        <Text className='legal-hero__label'>TERMS</Text>
+        <Text className='legal-hero__label'>条款</Text>
         <Text className='legal-hero__title'>Pilates Studio 用户服务协议</Text>
         <Text className='legal-hero__desc'>更新日期：2026.04.25</Text>
       </AppCard>
 
       {SECTIONS.map((section, index) => (
         <View key={section.title} className='agreement-page__section'>
-          <SectionTitle title={`${index + 1}. ${section.title}`} actionLabel='TERMS' actionTone='muted' />
+          <SectionTitle title={`${index + 1}. ${section.title}`} actionLabel='条款' actionTone='muted' />
           <AppCard className='legal-content'>
             <Text className='legal-content__text'>{section.content}</Text>
           </AppCard>

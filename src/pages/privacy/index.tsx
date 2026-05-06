@@ -44,14 +44,14 @@ export default function Privacy() {
       <PageHeader title='隐私政策' subtitle='个人信息收集与保护说明' fallbackUrl='/pages/settings/index' />
 
       <AppCard className='privacy-hero'>
-        <Text className='privacy-hero__label'>PRIVACY</Text>
+        <Text className='privacy-hero__label'>隐私</Text>
         <Text className='privacy-hero__title'>Pilates Studio 隐私政策</Text>
         <Text className='privacy-hero__desc'>更新日期：2026.04.25</Text>
       </AppCard>
 
       {SECTIONS.map((section, index) => (
         <View key={section.title} className='privacy-page__section'>
-          <SectionTitle title={`${index + 1}. ${section.title}`} actionLabel='POLICY' actionTone='muted' />
+          <SectionTitle title={`${index + 1}. ${section.title}`} actionLabel='隐私' actionTone='muted' />
           <AppCard className='privacy-content'>
             <Text className='privacy-content__text'>{section.content}</Text>
           </AppCard>

@@ -1,7 +1,8 @@
-@import '../../../styles/common.scss';
+﻿@use '../../../styles/common.scss' as *;
 
 .app-button {
   @extend .btn;
+  box-sizing: border-box;
   width: 100%;
   margin: 0;
   border: none;

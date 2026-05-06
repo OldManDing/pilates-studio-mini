@@ -1,4 +1,5 @@
 import { Image, Text, View } from '@tarojs/components';
+import { useState } from 'react';
 import { AppCard } from '../../../components';
 import type { BookingCourseCardData } from './types';
 
@@ -15,12 +16,13 @@ export default function BookingCourseCard({ data, onClick }: BookingCourseCardPr
     dark: '/assets/ui/booking-dark.svg',
   };
 
-  const imageSrc = thumbImageMap[data.imageKind] || thumbImageMap.yoga;
+  const fallbackImageSrc = thumbImageMap[data.imageKind] || thumbImageMap.yoga;
+  const [imageSrc, setImageSrc] = useState(data.imageUrl || fallbackImageSrc);
 
   return (
     <AppCard className={`booking-course-card ${data.full ? 'booking-course-card--full' : ''}`} padding='none' onClick={onClick}>
       <View className={`booking-course-card__thumb booking-course-card__thumb--${data.imageKind}`}>
-        <Image className='booking-course-card__thumb-image' src={imageSrc} mode='aspectFill' />
+        <Image className='booking-course-card__thumb-image' src={imageSrc} mode='aspectFill' onError={() => setImageSrc(fallbackImageSrc)} />
         {data.full ? <View className='booking-course-card__full-badge'>已满</View> : null}
       </View>
 

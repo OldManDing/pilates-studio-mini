@@ -1,4 +1,5 @@
-import { Button, Text, View } from '@tarojs/components';
+import { Button, Image, Text, View } from '@tarojs/components';
+import { useState } from 'react';
 import { AppCard, Icon } from '../../../components';
 import type { HomeStudioData } from './types';
 
@@ -8,8 +9,19 @@ interface HomeStudioCardProps {
 }
 
 export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
+  const [imageSrc, setImageSrc] = useState(data.imageUrl || '');
+
   return (
     <AppCard className='home-studio-card' padding='none'>
+      {imageSrc ? (
+        <Image
+          className='home-studio-card__visual-image'
+          src={imageSrc}
+          mode='aspectFill'
+          onError={() => setImageSrc('')}
+        />
+      ) : null}
+
       <View className='home-studio-card__top'>
         <View>
           <Text className='home-studio-card__label'>{data.label}</Text>

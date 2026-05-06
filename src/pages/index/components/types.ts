@@ -7,6 +7,7 @@ export interface HomeHeroData {
   badgeTone?: 'accent' | 'muted';
   title: string;
   subtitle: string;
+  imageUrl?: string;
 }
 
 /** Future mapping: membersApi.getMyMemberships() */
@@ -98,4 +99,5 @@ export interface HomeStudioData {
   hours: string;
   note: string;
   actionLabel: string;
+  imageUrl?: string;
 }

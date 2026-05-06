@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
-import { bookingsApi, type Booking } from '../../api/bookings';
+import { bookingsApi, type Booking, type TrainingRecordSummary } from '../../api/bookings';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
-import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { formatDurationMinutes } from '../../utils/ui';
 import './index.scss';
 
 function pad(value: number) {
@@ -25,32 +26,32 @@ function calculateMinutes(start?: string, end?: string) {
   return Math.round(diff / 60000);
 }
 
+const emptySummary: TrainingRecordSummary = {
+  sessions: 0,
+  totalMinutes: 0,
+  totalHours: 0,
+  coachCount: 0,
+};
+
 export default function TrainingRecords() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [authRequired, setAuthRequired] = useState(false);
   const [records, setRecords] = useState<Booking[]>([]);
+  const [summary, setSummary] = useState<TrainingRecordSummary>(emptySummary);
 
   const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
       setLoadFailed(false);
       setAuthRequired(false);
-      const pageSize = 50;
-      const allRecords: Booking[] = [];
-      let currentPage = 1;
-      let totalPages = 1;
+      const response = await bookingsApi.getMyTrainingRecords({ page: 1, limit: 100 }, { showLoading: false });
 
-      do {
-        const response = await bookingsApi.getMyBookings({ page: currentPage, limit: pageSize, status: 'COMPLETED' }, { showLoading: false });
-        allRecords.push(...(response.data.bookings || []));
-        totalPages = response.data.meta?.totalPages || (response.data.bookings?.length === pageSize ? currentPage + 1 : currentPage);
-        currentPage += 1;
-      } while (currentPage <= totalPages);
-
-      setRecords(allRecords);
+      setRecords(response.data.records || []);
+      setSummary(response.data.summary || emptySummary);
     } catch (error) {
       setRecords([]);
+      setSummary(emptySummary);
       setLoadFailed(true);
       setAuthRequired(isUnauthorizedApiError(error));
       Taro.showToast({ title: getApiErrorMessage(error, '训练记录加载失败，请重试'), icon: 'none' });
@@ -67,16 +68,6 @@ export default function TrainingRecords() {
   usePullDownRefresh(() => {
     fetchRecords();
   });
-
-  const summary = useMemo(() => {
-    const minutes = records.reduce((total, item) => total + calculateMinutes(item.session?.startsAt, item.session?.endsAt), 0);
-    const coaches = new Set(records.map((item) => item.session?.coach?.name).filter(Boolean));
-    return {
-      sessions: records.length,
-      hours: Math.round(minutes / 60),
-      coaches: coaches.size,
-    };
-  }, [records]);
 
   const handleAuthRecover = async () => {
     try {
@@ -106,8 +97,8 @@ export default function TrainingRecords() {
       <View className='training-records-page__summary'>
         {[
           { label: '累计课程', value: summary.sessions, unit: '节' },
-          { label: '训练时长', value: summary.hours, unit: 'h' },
-          { label: '合作教练', value: summary.coaches, unit: '位' },
+          { label: '训练时长', value: summary.totalHours, unit: '小时' },
+          { label: '合作教练', value: summary.coachCount, unit: '位' },
         ].map((item) => (
           <AppCard key={item.label} className='training-records-page__summary-card'>
             <Text className='training-records-page__summary-value'>{item.value}</Text>
@@ -118,7 +109,7 @@ export default function TrainingRecords() {
       </View>
 
       <View className='training-records-page__section'>
-        <SectionTitle title='近期训练' actionLabel='TRAINING' actionTone='muted' />
+        <SectionTitle title='近期训练' actionLabel='训练' actionTone='muted' />
         {loadFailed ? (
           <AppCard className='training-records-page__empty'>
             <Empty
@@ -138,7 +129,7 @@ export default function TrainingRecords() {
                     <Text className='training-records-list__meta'>{record.session?.coach?.name || '教练待同步'} · {formatDate(record.session?.startsAt || record.bookingTime || record.bookedAt)}</Text>
                   </View>
                   <View className='training-records-list__side'>
-                    <Text className='training-records-list__duration'>{calculateMinutes(record.session?.startsAt, record.session?.endsAt) || '--'}min</Text>
+                    <Text className='training-records-list__duration'>{formatDurationMinutes(calculateMinutes(record.session?.startsAt, record.session?.endsAt))}</Text>
                     <Text className='training-records-list__status'>已完成</Text>
                   </View>
                 </View>

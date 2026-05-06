@@ -1,4 +1,4 @@
-@import '../../../styles/common.scss';
+﻿@use '../../../styles/common.scss' as *;
 
 .app-shell-card {
   background: $surface;
@@ -37,10 +37,10 @@
   }
 
   &--padding-medium {
-    padding: $spacing-md;
+    padding: 32px 36px;
   }
 
   &--padding-large {
-    padding: $spacing-lg;
+    padding: $figma-card-y $figma-card-x;
   }
 }
