@@ -435,8 +435,10 @@ function cases() {
     { id: 'BTN-S10', module: '设置', entry: '退出登录（取消弹窗路径）', start: '/pages/settings/index', selector: '.danger-action', index: 0, expectNative: 'showModal' },
     { id: 'BTN-S11', module: '设置', entry: '账号注销申请入口', start: '/pages/settings/index', selector: '.danger-confirm__button--confirm', index: 0, optional: true, expectText: '设置' },
 
-    { id: 'BTN-A01', module: '账号安全', entry: '面容/指纹解锁偏好', start: '/pages/account-security/index', selector: '.security-row--clickable', index: 0, expectText: '账号安全' },
-    { id: 'BTN-A02', module: '账号安全', entry: '异地登录提醒偏好', start: '/pages/account-security/index', selector: '.security-row--clickable', index: 1, expectText: '账号安全' },
+    { id: 'BTN-A01', module: '账户安全', entry: '面容/指纹解锁偏好', start: '/pages/account-security/index', selector: '.security-row--clickable', index: 0, expectText: '账户安全' },
+    { id: 'BTN-A02', module: '账户安全', entry: '异地登录提醒偏好', start: '/pages/account-security/index', selector: '.security-row--clickable', index: 1, expectText: '账户安全' },
+    { id: 'BTN-A03', module: '账户安全', entry: '更换手机号说明', start: '/pages/account-security/index', selector: '.account-security-page__phone-actions .app-button', index: 0, expectNative: 'showModal' },
+    { id: 'BTN-A04', module: '账户安全', entry: '解除绑定说明', start: '/pages/account-security/index', selector: '.account-security-page__phone-actions .app-button', index: 1, expectNative: 'showModal' },
     { id: 'HDR-A01', module: '页头', entry: '账号安全返回设置页', start: '/pages/account-security/index', selector: '.page-header__back', expectPath: '/pages/settings/index' },
 
     { id: 'BTN-MC01', module: '我的教练', entry: '常用教练第 1 项', start: '/pages/my-coaches/index', selector: '.coach-card', index: 0, expectPath: '/pages/coach-detail/index' },

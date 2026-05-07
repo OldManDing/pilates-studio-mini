@@ -105,8 +105,8 @@ export const bookingsApi = {
   },
 
   // Create booking
-  create: async (data: CreateBookingData) => {
-    const response = await http.post<Booking>('/bookings', data);
+  create: async (data: CreateBookingData, config?: { showLoading?: boolean }) => {
+    const response = await http.post<Booking>('/bookings', data, config);
     return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
   },
 

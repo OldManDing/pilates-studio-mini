@@ -43,7 +43,7 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'dark',
     navigationBarBackgroundColor: NAVIGATION_BAR_BACKGROUND_COLOR,
-    navigationBarTitleText: 'Pilates Studio',
+    navigationBarTitleText: '愈己CareMe工作室',
     navigationBarTextStyle: 'black',
     navigationStyle: 'custom'
   },

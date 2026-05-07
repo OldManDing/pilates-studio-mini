@@ -1,5 +1,7 @@
 import Taro from '@tarojs/taro';
 import { ensureMiniProgramAuth, getApiBaseUrlUnavailableMessage, getRuntimeApiBaseUrl } from './auth';
+import { getLocalizedErrorMessage, localizeErrorMessage } from '../utils/errorMessages';
+import { hideLoadingSafely, showLoadingSafely, showSafeToast } from '../utils/feedback';
 import { clearAuthState } from '../utils/storage';
 
 type RequestData = object;
@@ -48,7 +50,7 @@ export function isUnauthorizedApiError(error: unknown) {
 }
 
 export function getApiErrorMessage(error: unknown, fallback: string) {
-  return error instanceof Error && error.message ? error.message : fallback;
+  return getLocalizedErrorMessage(error, fallback);
 }
 
 function getToken(): string | null {
@@ -110,6 +112,29 @@ function resolveNetworkFailureMessage(errorMessage: string, errMsg?: string) {
   return '网络连接失败，请检查网络';
 }
 
+let globalLoadingCount = 0;
+
+function acquireGlobalLoading(title: string) {
+  if (globalLoadingCount === 0) {
+    showLoadingSafely({ title, mask: true });
+  }
+
+  globalLoadingCount += 1;
+}
+
+function releaseGlobalLoading() {
+  if (globalLoadingCount <= 0) {
+    globalLoadingCount = 0;
+    return;
+  }
+
+  globalLoadingCount -= 1;
+
+  if (globalLoadingCount === 0) {
+    hideLoadingSafely();
+  }
+}
+
 async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<T>> {
   const {
     url,
@@ -122,8 +147,20 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     skipAuth = false,
   } = config;
 
+  let loadingAcquired = false;
+
+  const closeLoading = () => {
+    if (!loadingAcquired) {
+      return;
+    }
+
+    loadingAcquired = false;
+    releaseGlobalLoading();
+  };
+
   if (showLoading) {
-    Taro.showLoading({ title: loadingText, mask: true });
+    loadingAcquired = true;
+    acquireGlobalLoading(loadingText);
   }
 
   try {
@@ -158,18 +195,16 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
       timeout: 30000,
     });
 
-    if (showLoading) {
-      Taro.hideLoading();
-    }
+    closeLoading();
 
     const result = response.data as ApiResponse<T>;
 
     if (!result.success) {
-      const errorMsg = result.error?.message || '请求失败';
+      const errorMsg = localizeErrorMessage(result.error?.message, '请求失败');
 
       if (result.error?.code === 'UNAUTHORIZED' || response.statusCode === 401) {
         clearAuthState();
-        Taro.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
+        showSafeToast({ title: '登录已过期，请重新登录', icon: 'none' });
       }
 
       throw new ApiBusinessError(errorMsg, result.error?.code);
@@ -180,22 +215,20 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
         meta: normalizePaginationMeta(result.meta),
       };
   } catch (error) {
-    if (showLoading) {
-      Taro.hideLoading();
-    }
+    closeLoading();
 
     const requestError = error instanceof Error ? error : new Error('请求失败');
-    const errorMessage = requestError.message;
+    const errorMessage = localizeErrorMessage(requestError.message, '请求失败');
     const errorWithMessage = error as { errMsg?: string; message?: string };
 
     const apiBaseUrlUnavailableMessage = getApiBaseUrlUnavailableMessage(getRuntimeApiBaseUrl());
 
     if (apiBaseUrlUnavailableMessage) {
-      Taro.showToast({ title: apiBaseUrlUnavailableMessage, icon: 'none' });
+      showSafeToast({ title: apiBaseUrlUnavailableMessage, icon: 'none' });
     } else if (errorWithMessage.errMsg?.includes('fail') || errorMessage.includes('Network')) {
-      Taro.showToast({ title: resolveNetworkFailureMessage(errorMessage, errorWithMessage.errMsg), icon: 'none' });
+      showSafeToast({ title: resolveNetworkFailureMessage(errorMessage, errorWithMessage.errMsg), icon: 'none' });
     } else if (!(requestError instanceof ApiBusinessError) && !errorMessage.includes('UNAUTHORIZED')) {
-      Taro.showToast({ title: errorMessage || '请求失败', icon: 'none' });
+      showSafeToast({ title: errorMessage || '请求失败', icon: 'none' });
     }
 
     throw requestError;

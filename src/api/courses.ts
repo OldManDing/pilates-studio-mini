@@ -80,14 +80,14 @@ export const coursesApi = {
   },
 
   // Get course by ID
-  getById: async (id: string) => {
-    const response = await http.get<BackendCourse>(`/courses/${id}`);
+  getById: async (id: string, config?: { showLoading?: boolean }) => {
+    const response = await http.get<BackendCourse>(`/courses/${id}`, undefined, config);
     return wrapObjectData({ ...response, data: normalizeCourse(response.data) }, 'course');
   },
 
   // Get course sessions
-  getSessions: async (courseId: string, params?: { upcoming?: boolean; from?: string; to?: string }) => {
-    const response = await http.get<BackendSessionsPayload>(`/courses/${courseId}/sessions`, params);
+  getSessions: async (courseId: string, params?: { upcoming?: boolean; from?: string; to?: string }, config?: { showLoading?: boolean }) => {
+    const response = await http.get<BackendSessionsPayload>(`/courses/${courseId}/sessions`, params, config);
     return wrapListData({ ...response, data: normalizeSessionsPayload(response.data) }, 'sessions');
   },
 };

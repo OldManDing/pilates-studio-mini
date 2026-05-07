@@ -14,7 +14,7 @@ const SECTIONS = [
   },
   {
     title: '服务主体',
-    content: '本政策适用于 Pilates Studio 小程序提供的课程预约、会员服务、训练记录、消息通知与客服反馈功能。',
+    content: '本政策适用于愈己CareMe工作室小程序提供的课程预约、会员服务、训练记录、消息通知与客服反馈功能。',
   },
   {
     title: '信息使用',
@@ -45,7 +45,7 @@ export default function Privacy() {
 
       <AppCard className='privacy-hero'>
         <Text className='privacy-hero__label'>隐私</Text>
-        <Text className='privacy-hero__title'>Pilates Studio 隐私政策</Text>
+        <Text className='privacy-hero__title'>愈己CareMe工作室隐私政策</Text>
         <Text className='privacy-hero__desc'>更新日期：2026.04.25</Text>
       </AppCard>
 

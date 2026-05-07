@@ -70,7 +70,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 78px;
+    min-height: 88px;
     padding: 0 24px;
     border-radius: $radius-full;
     background: transparent;
@@ -328,7 +328,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__submit {
     width: auto;
-    min-height: 78px;
+    min-height: 88px;
     padding: 0 28px;
     border-radius: $figma-radius-button;
     background: $support-dark;
@@ -376,6 +376,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     align-items: center;
     justify-content: space-between;
     gap: 21px;
+    min-height: 88px;
     padding: 35px 49px;
     line-height: normal;
     text-align: left;

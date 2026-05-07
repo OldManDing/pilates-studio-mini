@@ -46,8 +46,8 @@ export const transactionsApi = {
     wrapListData(await http.get<Transaction[]>('/transactions/my', params), 'transactions'),
 
   // Get transaction by ID
-  getById: async (id: string) =>
-    wrapObjectData(await http.get<Transaction>(`/transactions/${id}`), 'transaction'),
+  getById: async (id: string, config?: { showLoading?: boolean }) =>
+    wrapObjectData(await http.get<Transaction>(`/transactions/${id}`, undefined, config), 'transaction'),
 
   // Get my transaction summary
   getMySummary: (params?: { from?: string; to?: string }) =>

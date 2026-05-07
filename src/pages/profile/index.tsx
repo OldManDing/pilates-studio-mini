@@ -4,6 +4,7 @@ import { Image, View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
 import { ensureMiniProgramAuth } from '../../api/auth';
+import { getApiErrorMessage } from '../../api/request';
 import { AppButton, Empty, Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
 import ProfileMenuSection from './components/ProfileMenuSection';
@@ -302,8 +303,7 @@ export default function Profile() {
         await fetchProfile({ throwOnError: true });
         Taro.showToast({ title: '登录成功', icon: 'success' });
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
-        Taro.showToast({ title: errorMessage, icon: 'none' });
+        Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
         return;
       } finally {
         setLoggingIn(false);
@@ -326,8 +326,7 @@ export default function Profile() {
       await fetchProfile({ throwOnError: true });
       Taro.showToast({ title: '登录成功', icon: 'success' });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
-      Taro.showToast({ title: errorMessage, icon: 'none' });
+      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
     } finally {
       setLoggingIn(false);
     }

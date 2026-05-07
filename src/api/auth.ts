@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro';
+import { localizeErrorMessage } from '../utils/errorMessages';
 
 declare const API_BASE_URL: string;
 declare const DEVTOOLS_API_BASE_URL: string;
@@ -142,7 +143,7 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
     });
 
     if (!response.data?.success || !response.data.data?.accessToken) {
-      throw new Error(response.data?.error?.message || '小程序登录失败');
+      throw new Error(localizeErrorMessage(response.data?.error?.message, '小程序登录失败'));
     }
 
     Taro.setStorageSync('token', response.data.data.accessToken);
@@ -177,7 +178,7 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
   });
 
   if (!response.data?.success || !response.data.data?.accessToken) {
-    throw new Error(response.data?.error?.message || '小程序登录失败');
+    throw new Error(localizeErrorMessage(response.data?.error?.message, '小程序登录失败'));
   }
 
   Taro.setStorageSync('token', response.data.data.accessToken);

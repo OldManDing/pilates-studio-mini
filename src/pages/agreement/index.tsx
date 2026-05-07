@@ -41,7 +41,7 @@ export default function Agreement() {
 
       <AppCard className='legal-hero'>
         <Text className='legal-hero__label'>条款</Text>
-        <Text className='legal-hero__title'>Pilates Studio 用户服务协议</Text>
+        <Text className='legal-hero__title'>愈己CareMe工作室用户服务协议</Text>
         <Text className='legal-hero__desc'>更新日期：2026.04.25</Text>
       </AppCard>
 

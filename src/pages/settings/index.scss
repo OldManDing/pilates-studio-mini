@@ -61,6 +61,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   display: flex;
   align-items: center;
   gap: 20px;
+  min-height: 88px;
   padding: 24px 36px;
   line-height: normal;
   text-align: left;
@@ -153,7 +154,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
 .settings-about-row {
   width: 100%;
-  min-height: 82px;
+  min-height: 88px;
   margin: 0;
   border: 0;
   background: transparent;
@@ -250,7 +251,8 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 .danger-action {
   width: 100%;
   background: transparent;
-  padding: 28px 0;
+  min-height: 88px;
+  padding: 16px 0;
   border: 1px solid $support-border-2;
   border-radius: $figma-radius-card;
   display: flex;
@@ -346,7 +348,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__button {
     flex: 1;
     background: transparent;
-    min-height: 78px;
+    min-height: 88px;
     padding: 0 24px;
     border-radius: $figma-radius-button;
     display: flex;

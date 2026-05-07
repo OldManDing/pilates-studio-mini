@@ -7,6 +7,8 @@ import { readStorage, writeStorage } from '../../utils/storage';
 import './index.scss';
 
 interface SettingsStorage {
+  courseReminder?: boolean;
+  systemNotification?: boolean;
   biometric?: boolean;
 }
 
@@ -20,7 +22,11 @@ export default function AccountSecurity() {
     setBiometricEnabled((value) => {
       const nextValue = !value;
       const settings = readStorage<SettingsStorage>(STORAGE_KEYS.settings, {});
-      writeStorage(STORAGE_KEYS.settings, { ...settings, biometric: nextValue });
+      writeStorage(STORAGE_KEYS.settings, {
+        ...(typeof settings.courseReminder === 'boolean' ? { courseReminder: settings.courseReminder } : {}),
+        ...(typeof settings.systemNotification === 'boolean' ? { systemNotification: settings.systemNotification } : {}),
+        biometric: nextValue,
+      });
       return nextValue;
     });
   };
@@ -51,7 +57,7 @@ export default function AccountSecurity() {
           <View className='security-row'>
             <View className='security-row__main'>
               <Text className='security-row__title'>账号管理说明</Text>
-              <Text className='security-row__desc'>当前账号通过微信授权登录，不支持在小程序内单独修改密码。</Text>
+              <Text className='security-row__desc'>手机号由门店会员档案同步，如需调整请联系客服核实身份后处理。</Text>
             </View>
             <Text className='security-row__value'>微信授权</Text>
           </View>

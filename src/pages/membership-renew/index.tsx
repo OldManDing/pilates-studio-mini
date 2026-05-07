@@ -2,10 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { Button, Text, View } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
-import { membershipPlansApi, type MembershipPlan } from '../../api/membershipPlans';
+import { membershipPlansApi, type MembershipPlan, type MiniPaymentParams } from '../../api/membershipPlans';
 import { transactionsApi } from '../../api/transactions';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
+import { showSafeToast } from '../../utils/feedback';
 import './index.scss';
 
 function formatPrice(cents: number) {
@@ -18,7 +19,17 @@ function getPlanCredits(plan: MembershipPlan) {
 
 function isPaymentConfigUnavailableError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error || '');
-  return message.includes('Missing WeChat Pay config') || message.includes('wechat.appId');
+  return /Missing WeChat Pay config|wechat\.appId|支付通道配置|支付通道暂不可用/i.test(message);
+}
+
+function hasCompletePaymentParams(paymentParams?: Partial<MiniPaymentParams>) {
+  return Boolean(
+    paymentParams?.timeStamp
+    && paymentParams.nonceStr
+    && paymentParams.package
+    && paymentParams.signType
+    && paymentParams.paySign,
+  );
 }
 
 export default function MembershipRenew() {
@@ -37,14 +48,14 @@ export default function MembershipRenew() {
       setLoading(true);
       setLoadFailed(false);
       setAuthRequired(false);
-      const response = await membershipPlansApi.getActive();
+      const response = await membershipPlansApi.getActive({ showLoading: false });
       const activePlans = response.data.plans || [];
       setPlans(activePlans);
       setSelectedPlanId((previous) => activePlans.some((plan) => plan.id === previous) ? previous : activePlans[0]?.id || '');
     } catch (error) {
       setLoadFailed(true);
       setAuthRequired(isUnauthorizedApiError(error));
-      Taro.showToast({ title: getApiErrorMessage(error, '会员方案加载失败'), icon: 'none' });
+      showSafeToast({ title: getApiErrorMessage(error, '会员方案加载失败'), icon: 'none' });
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -63,7 +74,7 @@ export default function MembershipRenew() {
 
   const waitForTransactionCompletion = async (transactionId: string) => {
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const response = await transactionsApi.getById(transactionId);
+      const response = await transactionsApi.getById(transactionId, { showLoading: false });
       const transaction = response.data.transaction;
       if (transaction?.status === 'COMPLETED') {
         return 'COMPLETED';
@@ -80,9 +91,9 @@ export default function MembershipRenew() {
     try {
       await ensureMiniProgramAuth({ interactive: true });
       await fetchPlans();
-      Taro.showToast({ title: '登录成功，已同步会员方案', icon: 'success' });
+      showSafeToast({ title: '登录成功，已同步会员方案', icon: 'success' });
     } catch (error) {
-      Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
+      showSafeToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
     }
   };
 
@@ -102,12 +113,12 @@ export default function MembershipRenew() {
     }
 
     if (loadFailed) {
-      Taro.showToast({ title: '方案未同步完成，请先刷新', icon: 'none' });
+      showSafeToast({ title: '方案未同步完成，请先刷新', icon: 'none' });
       return;
     }
 
     if (!selectedPlan) {
-      Taro.showToast({ title: '请选择会员方案', icon: 'none' });
+      showSafeToast({ title: '请选择会员方案', icon: 'none' });
       return;
     }
 
@@ -130,16 +141,16 @@ export default function MembershipRenew() {
         let paymentOrder: Awaited<ReturnType<typeof membershipPlansApi.createRenewalPayment>> | null = null;
 
         try {
-          paymentOrder = await membershipPlansApi.createRenewalPayment(selectedPlan.id);
+          paymentOrder = await membershipPlansApi.createRenewalPayment(selectedPlan.id, { showLoading: false });
         } catch (error) {
           if (!isPaymentConfigUnavailableError(error)) {
             throw error;
           }
 
           setPaymentStatusHint('支付通道暂不可用，已转为门店人工续费申请');
-          await membershipPlansApi.requestRenewal(selectedPlan.id);
+          await membershipPlansApi.requestRenewal(selectedPlan.id, { showLoading: false });
           setSubmittedPlanId(selectedPlan.id);
-          Taro.showToast({ title: '已提交续费申请', icon: 'success' });
+          showSafeToast({ title: '已提交续费申请', icon: 'success' });
           return;
         }
 
@@ -149,8 +160,12 @@ export default function MembershipRenew() {
 
         if (paymentOrder.data.mode === 'MOCK') {
           setPaymentStatusHint('正在模拟支付完成…');
-          await membershipPlansApi.completeMockRenewalPayment(paymentOrder.data.transactionId);
+          await membershipPlansApi.completeMockRenewalPayment(paymentOrder.data.transactionId, { showLoading: false });
         } else {
+          if (!hasCompletePaymentParams(paymentOrder.data.paymentParams)) {
+            throw new Error('微信支付参数异常，请联系门店处理');
+          }
+
           setPaymentStatusHint('请在微信支付弹窗中完成支付…');
           await Taro.requestPayment(paymentOrder.data.paymentParams);
         }
@@ -163,10 +178,10 @@ export default function MembershipRenew() {
 
         setSubmittedPlanId(selectedPlan.id);
         setPaymentStatusHint('支付成功，续费订单已提交');
-        Taro.showToast({ title: '支付成功，续费已提交', icon: 'success' });
+        showSafeToast({ title: '支付成功，续费已提交', icon: 'success' });
       } catch (error) {
         setPaymentStatusHint('');
-        Taro.showToast({ title: getApiErrorMessage(error, '续费提交失败，请稍后重试'), icon: 'none' });
+        showSafeToast({ title: getApiErrorMessage(error, '续费提交失败，请稍后重试'), icon: 'none' });
       } finally {
         setSubmitting(false);
       }

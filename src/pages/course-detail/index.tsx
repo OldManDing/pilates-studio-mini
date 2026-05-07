@@ -8,6 +8,7 @@ import { membersApi, Member } from '../../api/members';
 import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, PageHeader, PageShell } from '../../components';
 import { CourseLevels, CourseTypes, Weekdays, getLabelByValue } from '../../constants/enums';
+import { showSafeToast } from '../../utils/feedback';
 import { formatDurationMinutes, getSafeMiniImageSrc } from '../../utils/ui';
 import './index.scss';
 
@@ -121,6 +122,11 @@ function getSessionTotal(session: CourseSession | null, fallback: number) {
   return Math.max(0, session.capacity);
 }
 
+function isSessionBookable(session: CourseSession) {
+  const endsAt = new Date(session.endsAt).getTime();
+  return session.isActive !== false && (Number.isNaN(endsAt) || endsAt > Date.now());
+}
+
 export default function CourseDetail() {
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<Course | null>(null);
@@ -141,14 +147,14 @@ export default function CourseDetail() {
       setCourseLoadFailed(false);
       setCourseIdMissing(false);
       const [courseRes, sessionsRes, profileRes] = await Promise.all([
-        coursesApi.getById(id),
-        coursesApi.getSessions(id, { upcoming: true }),
+        coursesApi.getById(id, { showLoading: false }),
+        coursesApi.getSessions(id, { upcoming: true }, { showLoading: false }),
         membersApi.getProfile({ showLoading: false })
           .then((response) => ({ response, failed: false }))
           .catch(() => ({ response: { data: { member: null as Member | null } }, failed: true })),
       ]);
       setCourse(courseRes.data.course);
-      setSessions(sessionsRes.data.sessions || []);
+      setSessions((sessionsRes.data.sessions || []).filter(isSessionBookable));
       setMember(profileRes.response.data.member || null);
       setProfileLoadFailed(profileRes.failed);
       const nextHero = getSafeMiniImageSrc(courseRes.data.course.coverImageUrl, HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg');
@@ -157,7 +163,7 @@ export default function CourseDetail() {
       setCourse(null);
       setSessions([]);
       setCourseLoadFailed(true);
-      Taro.showToast({ title: '课程加载失败', icon: 'none' });
+      showSafeToast({ title: '课程加载失败', icon: 'none' });
     } finally {
       setLoading(false);
     }
@@ -192,12 +198,12 @@ export default function CourseDetail() {
 
   const handleBooking = async () => {
     if (!course || sortedSessions.length === 0) {
-      Taro.showToast({ title: '暂无可约场次', icon: 'none' });
+      showSafeToast({ title: '暂无可约场次', icon: 'none' });
       return;
     }
 
     if (profileLoadFailed) {
-      Taro.showToast({ title: '会员信息加载失败，请下拉重试', icon: 'none' });
+      showSafeToast({ title: '会员信息加载失败，请下拉重试', icon: 'none' });
       return;
     }
 
@@ -234,17 +240,17 @@ export default function CourseDetail() {
       }
 
       if (!targetSession) {
-        Taro.showToast({ title: '场次信息无效，请重试', icon: 'none' });
+        showSafeToast({ title: '场次信息无效，请重试', icon: 'none' });
         return;
       }
 
       setBookingLoading(true);
-      await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' });
-      Taro.showToast({ title: '预约成功', icon: 'success' });
+      await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' }, { showLoading: false });
+      showSafeToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
-      fetchData(course.id);
+      await fetchData(course.id);
     } catch (error) {
-      Taro.showToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
+      showSafeToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
     } finally {
       bookingInFlightRef.current = false;
       setBookingLoading(false);
@@ -255,17 +261,16 @@ export default function CourseDetail() {
     const targetCourseId = course?.id || courseId;
 
     if (!targetCourseId) {
-      Taro.showToast({ title: '课程信息缺失，请返回重试', icon: 'none' });
+      showSafeToast({ title: '课程信息缺失，请返回重试', icon: 'none' });
       return;
     }
 
     try {
       await ensureMiniProgramAuth({ interactive: true });
       await fetchData(targetCourseId);
-      Taro.showToast({ title: '登录成功，请继续预约', icon: 'success' });
+      showSafeToast({ title: '登录成功，请继续预约', icon: 'success' });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
-      Taro.showToast({ title: errorMessage, icon: 'none' });
+      showSafeToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
     }
   };
 
@@ -378,7 +383,7 @@ export default function CourseDetail() {
               <Icon name='pin' className='course-detail-page__meta-icon' />
               <View>
                 <Text className='course-detail-page__meta-title'>课程教室</Text>
-                <Text className='course-detail-page__meta-desc'>Pilates Studio · 朝阳门店</Text>
+                <Text className='course-detail-page__meta-desc'>愈己CareMe工作室 · 朝阳门店</Text>
               </View>
             </View>
 

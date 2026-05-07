@@ -28,10 +28,25 @@ interface SettingSection {
   items: SettingRow[];
 }
 
-type ToggleKey = 'courseReminder' | 'systemNotification' | 'darkMode' | 'biometric';
+type ToggleKey = 'courseReminder' | 'systemNotification' | 'biometric';
 type DeletionRequestStatus = 'NONE' | 'PENDING' | 'SUBMITTED' | 'PROCESSING' | 'PROCESSED' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | string;
 
 const CACHE_KEYS = ['taro-cache', 'pilates:page-cache'];
+const DEFAULT_TOGGLES: Record<ToggleKey, boolean> = {
+  courseReminder: true,
+  systemNotification: true,
+  biometric: true,
+};
+
+function readSettingsToggles(): Record<ToggleKey, boolean> {
+  const stored = readStorage<Partial<Record<ToggleKey, boolean>>>(STORAGE_KEYS.settings, {});
+
+  return {
+    courseReminder: typeof stored.courseReminder === 'boolean' ? stored.courseReminder : DEFAULT_TOGGLES.courseReminder,
+    systemNotification: typeof stored.systemNotification === 'boolean' ? stored.systemNotification : DEFAULT_TOGGLES.systemNotification,
+    biometric: typeof stored.biometric === 'boolean' ? stored.biometric : DEFAULT_TOGGLES.biometric,
+  };
+}
 
 function normalizeDeletionRequestStatus(status?: string, requested?: boolean): DeletionRequestStatus {
   const normalizedStatus = status?.trim().toUpperCase();
@@ -98,31 +113,12 @@ const SECTIONS: SettingSection[] = [
     ],
   },
   {
-    label: '偏好',
-    items: [
-      {
-        icon: '/assets/ui/icon-settings.svg',
-        title: '深色模式',
-        description: '仅影响当前设备的页面展示风格',
-        type: 'toggle',
-        toggleKey: 'darkMode',
-      },
-      {
-        icon: '/assets/ui/icon-settings.svg',
-        title: '语言',
-        description: '',
-        type: 'value',
-        value: '简体中文',
-      },
-    ],
-  },
-  {
     label: '数据',
     items: [
       {
         icon: '/assets/ui/icon-settings.svg',
         title: '清理页面缓存',
-        description: '清理页面缓存，不影响登录和偏好',
+        description: '清理页面缓存，不影响登录和通知设置',
         type: 'navigate',
         value: '清理页面缓存',
         action: 'clear-cache',
@@ -157,12 +153,7 @@ const ABOUT_ROWS: SettingRow[] = [
 
 export default function Settings() {
   const [profile, setProfile] = useState<{ phone?: string; hasBoundPhone?: boolean }>(() => readStorage(STORAGE_KEYS.profile, {}));
-  const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    courseReminder: true,
-    systemNotification: true,
-    darkMode: false,
-    biometric: true,
-  });
+  const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>(() => readSettingsToggles());
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [submittingDeletionRequest, setSubmittingDeletionRequest] = useState(false);
@@ -230,12 +221,8 @@ export default function Settings() {
   }, []);
 
   useEffect(() => {
-    setToggles(readStorage(STORAGE_KEYS.settings, {
-      courseReminder: true,
-      systemNotification: true,
-      darkMode: false,
-      biometric: true,
-    }));
+    const storedToggles = readSettingsToggles();
+    setToggles(storedToggles);
     syncProfile();
     const syncMemberPreferences = async () => {
       if (!Taro.getStorageSync('token')) {
@@ -280,7 +267,7 @@ export default function Settings() {
           systemNotification: response.data.preferences.systemNotification,
         }));
         writeStorage(STORAGE_KEYS.settings, {
-          ...readStorage(STORAGE_KEYS.settings, {}),
+          ...readSettingsToggles(),
           courseReminder: response.data.preferences.courseReminder,
           systemNotification: response.data.preferences.systemNotification,
         });
@@ -296,15 +283,6 @@ export default function Settings() {
     setToggles((previous) => {
       const next = { ...previous, [key]: !previous[key] };
       writeStorage(STORAGE_KEYS.settings, next);
-      if (key === 'darkMode') {
-        Taro.setNavigationBarColor({
-          frontColor: next.darkMode ? '#ffffff' : '#000000',
-          backgroundColor: next.darkMode ? '#1A1A1A' : '#FFFDF9',
-        });
-        Taro.setBackgroundColor({
-          backgroundColor: next.darkMode ? '#1A1A1A' : '#FFFDF9',
-        });
-      }
       return next;
     });
   };
@@ -450,7 +428,7 @@ export default function Settings() {
     <PageShell className='settings-page' safeAreaBottom>
       <PageHeader
         title='设置'
-        subtitle='账户安全与偏好设置'
+        subtitle='账户安全与通知设置'
         fallbackUrl='/pages/profile/index'
       />
 

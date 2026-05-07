@@ -320,7 +320,7 @@ export default function Index() {
   const initialFetchCompletedRef = useRef(false);
 
   useShareAppMessage(() => ({
-    title: '普拉提工作室｜专业训练预约',
+    title: '愈己CareMe工作室｜专业训练预约',
     path: '/pages/index/index',
   }));
 

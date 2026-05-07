@@ -53,8 +53,8 @@ function normalizePlan(plan: BackendMembershipPlan): MembershipPlan {
 // Membership Plan APIs
 export const membershipPlansApi = {
   // Get all active plans
-  getActive: async () => {
-    const response = await http.get<BackendMembershipPlan[]>('/membership-plans/active');
+  getActive: async (config?: { showLoading?: boolean }) => {
+    const response = await http.get<BackendMembershipPlan[]>('/membership-plans/active', undefined, config);
     return wrapListData({ ...response, data: response.data.map(normalizePlan) }, 'plans');
   },
 
@@ -65,12 +65,12 @@ export const membershipPlansApi = {
   },
 
   // Submit renewal request for selected plan
-  requestRenewal: (planId: string) =>
-    http.post<{ submitted: boolean }>('/membership-renewals', { planId }),
+  requestRenewal: (planId: string, config?: { showLoading?: boolean }) =>
+    http.post<{ submitted: boolean }>('/membership-renewals', { planId }, config),
 
-  createRenewalPayment: (planId: string) =>
-    http.post<RenewalPaymentResponse>('/membership-renewals/pay', { planId }),
+  createRenewalPayment: (planId: string, config?: { showLoading?: boolean }) =>
+    http.post<RenewalPaymentResponse>('/membership-renewals/pay', { planId }, config),
 
-  completeMockRenewalPayment: (transactionId: string) =>
-    http.post<{ success: boolean; transactionId: string; status: 'COMPLETED' }>(`/membership-renewals/${transactionId}/mock-complete`, {}),
+  completeMockRenewalPayment: (transactionId: string, config?: { showLoading?: boolean }) =>
+    http.post<{ success: boolean; transactionId: string; status: 'COMPLETED' }>(`/membership-renewals/${transactionId}/mock-complete`, {}, config),
 };

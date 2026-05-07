@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "dist/",
   "projectname": "pilates-studio-mini",
-  "description": "Pilates Studio Mini Program",
+  "description": "愈己CareMe工作室 Mini Program",
   "appid": "wx9608a7c1e99814f2",
   "setting": {
     "urlCheck": false,
