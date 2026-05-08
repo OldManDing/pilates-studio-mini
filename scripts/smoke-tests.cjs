@@ -28,6 +28,7 @@ function assertFileExists(relativePath) {
 }
 
 const appConfig = read('src/app.config.ts');
+const homePageConfig = read('src/pages/index/index.config.ts');
 const navigation = read('src/constants/navigation.ts');
 const taroConfig = read('config/index.js');
 const envExample = read('.env.example');
@@ -183,6 +184,12 @@ assertIncludes('src/pages/notifications/index.tsx', 'notificationsApi.getMy');
 assertIncludes('src/pages/notifications/index.tsx', '消息加载失败');
 assertIncludes('src/pages/index/index.tsx', "progressValue: activeMembership ? getRemainingDays(activeMembership.endDate) : '待开通'");
 assertIncludes('src/pages/index/index.tsx', 'progressPercent: activeMembership ? getMembershipProgressPercent(activeMembership) : 0');
+assertIncludes('src/pages/index/index.tsx', '页面刷新提示');
+assertIncludes('src/pages/index/index.tsx', '首页支持下拉刷新');
+assertIncludes('src/constants/storage.ts', 'homeRefreshGuideShown');
+assertIncludes('src/pages/index/index.config.ts', 'enablePullDownRefresh: true');
+assertIncludes('src/custom-tab-bar/index.scss', 'font-size: $figma-small');
+assert(homePageConfig.includes("backgroundColor: '#FAFAFA'"), '首页下拉刷新背景色未配置');
 assertIncludes('src/pages/my-coaches/index.tsx', "loadFailed ? '--' : summaries.length");
 assertIncludes('src/pages/my-coaches/index.tsx', 'coachesApi.getMine');
 assertIncludes('src/pages/training-records/index.tsx', 'bookingsApi.getMyTrainingRecords');

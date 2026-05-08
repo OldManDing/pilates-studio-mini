@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { useDidShow, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { AppButton, Loading, PageShell, SectionTitle } from '../../components';
+import { Loading, PageShell, SectionTitle } from '../../components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { coursesApi, type Course } from '../../api/courses';
 import { membersApi, type Member, type Membership } from '../../api/members';
@@ -28,6 +28,7 @@ import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { formatMembershipCredits, formatMembershipDescription } from '../../utils/membership';
 import { formatDurationMinutes, getSafeMiniImageSrc, getWeekdayLabel } from '../../utils/ui';
 import { useMiniPageImage } from '../../hooks/useMiniPageImage';
+import { STORAGE_KEYS } from '../../constants/storage';
 import './index.scss';
 
 const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
@@ -320,6 +321,7 @@ export default function Index() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [studioSettings, setStudioSettings] = useState<StudioSettings | null>(null);
   const initialFetchCompletedRef = useRef(false);
+  const refreshGuideCheckedRef = useRef(false);
 
   useShareAppMessage(() => ({
     title: '愈己CareMe工作室｜专业训练预约',
@@ -386,6 +388,26 @@ export default function Index() {
   useEffect(() => {
     void fetchData('initial');
   }, [fetchData]);
+
+  useEffect(() => {
+    if (loading || refreshGuideCheckedRef.current) {
+      return;
+    }
+
+    refreshGuideCheckedRef.current = true;
+
+    if (Taro.getStorageSync(STORAGE_KEYS.homeRefreshGuideShown)) {
+      return;
+    }
+
+    Taro.setStorageSync(STORAGE_KEYS.homeRefreshGuideShown, true);
+    Taro.showModal({
+      title: '页面刷新提示',
+      content: '首页支持下拉刷新。需要同步课程、会员或预约信息时，请在首页向下滑动，系统会自动获取最新内容。',
+      confirmText: '知道了',
+      showCancel: false,
+    });
+  }, [loading]);
 
   usePullDownRefresh(() => {
     void fetchData('pull');
@@ -621,27 +643,18 @@ export default function Index() {
         <View className='home-page__content'>
         <HomeHero data={heroData} />
 
-        {loadFailed || refreshing || lastRefreshLabel ? (
+        {loadFailed || refreshing ? (
           <View className={`home-page__notice ${refreshing ? 'home-page__notice--refreshing' : ''}`}>
             <View className='home-page__notice-main'>
               <Text className='home-page__notice-text'>
-                {refreshing ? '正在刷新首页内容…' : loadFailed ? '部分内容暂未同步' : '首页内容已更新'}
+                {refreshing ? '正在刷新首页内容…' : '部分内容暂未同步'}
               </Text>
               <Text className='home-page__notice-meta'>
                 {refreshing
                   ? '请稍候，刷新完成后会自动更新内容。'
-                  : loadFailed
-                    ? `下拉或轻触重试可重新同步${lastRefreshLabel ? `，上次尝试 ${lastRefreshLabel}` : ''}`
-                    : `最近刷新 ${lastRefreshLabel}`}
+                  : `请下拉页面重新同步${lastRefreshLabel ? `，上次尝试 ${lastRefreshLabel}` : ''}`}
               </Text>
             </View>
-            {loadFailed ? (
-              <View className='home-page__notice-action'>
-                <AppButton size='small' variant='outline' onClick={() => void fetchData('manual')} disabled={refreshing}>
-                  {refreshing ? '同步中' : '重试'}
-                </AppButton>
-              </View>
-            ) : null}
           </View>
         ) : null}
 
