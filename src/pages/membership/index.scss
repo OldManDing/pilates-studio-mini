@@ -79,7 +79,7 @@
 
   &__status-name {
     color: $gray-600;
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-normal;
   }
 
@@ -94,7 +94,7 @@
   &__activity-tag,
   &__activity-date,
   &__benefit-desc {
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
   }
 
   &__status-badge-text,
@@ -147,7 +147,7 @@
   &__status-code {
     margin-bottom: 24px;
     color: $text-primary;
-    font-size: $font-size-md;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
     line-height: 1;
@@ -156,7 +156,7 @@
   &__status-plan {
     margin-bottom: 24px;
     color: $text-secondary;
-    font-size: $font-size-sm;
+    font-size: $figma-body;
   }
 
   &__status-stats {
@@ -182,7 +182,7 @@
 
   &__status-stat-value {
     color: $text-primary;
-    font-size: $font-size-xl;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: 1;
     letter-spacing: 0;
@@ -198,7 +198,7 @@
     height: 2px;
     border-radius: $radius-full;
     overflow: hidden;
-    background: #f0f0f0;
+    background: $border-default;
   }
 
   &__progress-fill {
@@ -218,7 +218,7 @@
 
   &__section-name {
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-semibold;
     line-height: $line-height-tight;
   }
@@ -255,14 +255,14 @@
   &__activity-title {
     display: block;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     margin-bottom: 2px;
   }
 
   &__benefit-desc {
     color: $gray-500;
-    font-size: $font-size-xs;
+    font-size: $figma-body;
     line-height: $line-height-normal;
     letter-spacing: 0;
   }
@@ -282,14 +282,14 @@
     display: block;
     margin-bottom: 8px;
     text-transform: uppercase;
-    color: #bcbcbc;
+    color: $gray-500;
     letter-spacing: 0;
     font-weight: $font-weight-normal;
   }
 
   &__overview-value {
     color: $text-primary;
-    font-size: 34px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     line-height: 1;
     letter-spacing: 0;
@@ -298,8 +298,8 @@
   &__overview-unit,
   &__overview-side-unit {
     margin-bottom: 2px;
-    color: #c0c0c0;
-    font-size: $font-size-2xs;
+    color: $gray-600;
+    font-size: $figma-caption;
   }
 
   &__overview-divider {
@@ -307,7 +307,7 @@
     height: 48px;
     margin: 0 4px 4px 0;
     align-self: flex-end;
-    background: #f0f0f0;
+    background: $border-default;
   }
 
   &__overview-side {
@@ -319,7 +319,7 @@
 
   &__overview-side-value {
     color: $text-primary;
-    font-size: $font-size-lg;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
@@ -336,7 +336,7 @@
   }
 
   &__activity-tag {
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-normal;
     letter-spacing: 0;
     flex-shrink: 0;

@@ -63,7 +63,7 @@
   &__hero-title {
     margin-bottom: 10px;
     color: $white;
-    font-size: 46px;
+    font-size: $figma-title;
     font-weight: $font-weight-medium;
     line-height: 1.16;
     letter-spacing: 0;
@@ -77,6 +77,8 @@
   }
 
   &__hero-badge {
+    display: inline-flex;
+    align-items: center;
     flex-shrink: 0;
     min-height: 34px;
     padding: 0 16px;
@@ -84,7 +86,7 @@
     border-radius: $radius-full;
     color: rgba($white, 0.82);
     font-size: $figma-caption;
-    line-height: 34px;
+    line-height: 1;
     background: rgba($black, 0.18);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -127,14 +129,14 @@
 
   &__login-title {
     color: $text-primary;
-    font-size: $font-size-lg;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-semibold;
     line-height: $line-height-snug;
   }
 
   &__login-desc {
     color: $text-secondary;
-    font-size: $font-size-sm;
+    font-size: $figma-body;
     line-height: $line-height-relaxed;
   }
 
@@ -148,7 +150,7 @@
   background: $surface;
   border: none;
   border-radius: $figma-radius-card;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+  box-shadow: $shadow-card;
   padding: 36px 40px;
 
   &__top,
@@ -192,7 +194,7 @@
 
   &__avatar-text {
     color: $accent;
-    font-size: 35px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
@@ -221,7 +223,7 @@
 
   &__name {
     color: $text-primary;
-    font-size: $font-size-xl;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: 1.1;
   }
@@ -244,14 +246,14 @@
 
   &__badge-text {
     color: $accent;
-    font-size: $font-size-xs;
+    font-size: $figma-micro;
     font-weight: $font-weight-semibold;
     letter-spacing: 0;
     line-height: 1;
   }
 
   &__phone {
-    color: #cdcdcd;
+    color: $gray-500;
     font-size: $figma-small;
     font-feature-settings: 'tnum';
     line-height: $line-height-normal;
@@ -269,7 +271,7 @@
   &__summary-description,
   &__stat-unit,
   &__stat-label {
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
   }
 
   &__summary-label {
@@ -282,7 +284,7 @@
   &__summary-title {
     margin-bottom: $spacing-xs;
     color: $text-primary;
-    font-size: $font-size-lg;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-semibold;
     line-height: $line-height-tight;
   }
@@ -297,7 +299,7 @@
     gap: 0;
     padding: 28px 0;
     border-radius: 21px;
-    background: #fafafa;
+    background: $gray-100;
   }
 
   &__stat {
@@ -316,22 +318,22 @@
 
   &__stat-value {
     color: $text-primary;
-    font-size: 35px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     line-height: 1;
     font-feature-settings: 'tnum';
   }
 
   &__stat-unit {
-    color: #c0c0c0;
-    font-size: 16px;
+    color: $gray-600;
+    font-size: $figma-caption;
     font-weight: $font-weight-normal;
     line-height: 1;
   }
 
   &__stat-label {
-    color: #cdcdcd;
-    font-size: 16px;
+    color: $gray-500;
+    font-size: $figma-caption;
     font-weight: $font-weight-normal;
     letter-spacing: 0;
     line-height: 1.2;
@@ -343,7 +345,7 @@
     right: 0;
     width: 1px;
     height: 42px;
-    background: #ebebeb;
+    background: $border-default;
     transform: translateY(-50%);
   }
 }
@@ -357,8 +359,8 @@
   &__label {
     display: block;
     padding-left: 2px;
-    color: #cdcdcd;
-    font-size: 16px;
+    color: $gray-500;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -368,7 +370,7 @@
     background: $surface;
     border: none;
     border-radius: $figma-radius-card;
-    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+    box-shadow: $shadow-card;
   }
 
   &__item,
@@ -389,7 +391,7 @@
     padding: 24px 36px;
 
     &:active {
-      background: #fdfdfd;
+      background: rgba($gray-100, 0.72);
     }
 
     &::after {
@@ -399,7 +401,7 @@
     &--login-required {
       .profile-menu-section__title,
       .profile-menu-section__description {
-        color: #d4d4d4;
+        color: $gray-400;
       }
 
       .profile-menu-section__body {
@@ -413,7 +415,7 @@
     height: 63px;
     justify-content: center;
     border-radius: 21px;
-    background: #f8f8f8;
+    background: $surface-strong;
   }
 
   &__icon-image {
@@ -440,7 +442,7 @@
   }
 
   &__description {
-    color: #cdcdcd;
+    color: $gray-500;
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
     line-height: 1.4;
@@ -450,7 +452,7 @@
     justify-content: center;
     width: 24px;
     height: 24px;
-    color: #e5e5e5;
+    color: $gray-300;
     flex-shrink: 0;
   }
 
@@ -466,7 +468,7 @@
   &__divider {
     height: 1px;
     margin: 0 49px;
-    background: #f0f0f0;
+    background: $border-default;
   }
 }
 
@@ -475,10 +477,10 @@
   height: auto;
   min-height: 92px;
   padding: 0;
-  border: 1px solid #f0f0f0;
+  border: 1px solid $border-default;
   border-radius: $figma-radius-card;
   background: transparent;
-  color: #cdcdcd;
+  color: $gray-500;
   font-size: $figma-body;
   font-weight: $font-weight-normal;
   letter-spacing: 0;
@@ -488,7 +490,7 @@
   &__icon {
     width: 24px;
     height: 24px;
-    color: #d0d0d0;
+    color: $gray-500;
   }
 
   &:active {

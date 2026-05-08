@@ -60,7 +60,7 @@
   &__notice-meta {
     display: block;
     color: $text-muted;
-    font-size: 20px;
+    font-size: $figma-body;
     line-height: $line-height-normal;
   }
 
@@ -195,7 +195,7 @@
   &__badge-text {
     color: rgba($accent-strong, 0.86);
     font-size: $figma-caption;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     letter-spacing: 0;
   }
 
@@ -209,7 +209,7 @@
   &__title {
     margin-bottom: 10px;
     color: $white;
-    font-size: 40px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-normal;
     line-height: 1.15;
   }
@@ -291,7 +291,7 @@
     padding: 0 8px;
     border: none;
     background: transparent;
-    color: #bcbcbc;
+    color: $gray-500;
     line-height: 1;
     transition: opacity $duration-fast $ease-in-out;
 
@@ -306,7 +306,7 @@
 
   &__status-text {
     display: block;
-    color: #bcbcbc;
+    color: $gray-500;
     font-size: $figma-caption;
     font-weight: $font-weight-normal;
     white-space: nowrap;
@@ -315,7 +315,7 @@
   &__status-icon {
     width: 10px;
     height: 10px;
-    color: #d0d0d0;
+    color: $gray-500;
   }
 
   &__description {
@@ -464,7 +464,7 @@
     font-size: $figma-body;
     font-weight: $font-weight-medium;
     border-radius: $figma-radius-button;
-    box-shadow: 0 2px 8px rgba($ink, 0.1);
+    box-shadow: $shadow-xs;
     max-width: 100%;
     background: rgba($primary, 0.96);
   }
@@ -508,7 +508,7 @@
   &__time,
   &__duration {
     display: block;
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
   }
 
   &__label {
@@ -521,7 +521,7 @@
   &__title {
     display: block;
     color: $text-primary;
-    font-size: 28px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -529,8 +529,8 @@
   &__subtitle {
     display: block;
     margin-top: $spacing-xs;
-    color: #cdcdcd;
-    font-size: $font-size-3xs;
+    color: $gray-500;
+    font-size: $figma-micro;
     line-height: 1.35;
   }
 
@@ -585,13 +585,13 @@
   }
 
   &__duration {
-    color: #c0c0c0;
+    color: $gray-600;
     font-size: $figma-caption;
   }
 
   &__meta {
     margin-bottom: 12px;
-    color: #ababab;
+    color: $text-muted;
     font-size: $figma-body;
     line-height: 1.35;
   }
@@ -752,7 +752,7 @@
     width: 1px;
     height: 30px;
     margin: 0 16px 2px;
-    background: #f0f0f0;
+    background: $border-default;
   }
 
   &__side {
@@ -774,7 +774,7 @@
 
   &__side-value {
     color: rgba($text-primary, 0.86);
-    font-size: 38px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-normal;
     line-height: 1;
   }
@@ -849,7 +849,7 @@
     bottom: 36px;
     letter-spacing: 0;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: $font-weight-medium;
   }
 
   &__body {
@@ -860,7 +860,7 @@
     display: block;
     margin-bottom: 10px;
     color: $text-primary;
-    font-size: 28px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -959,7 +959,7 @@
 
   &__day {
     color: $text-primary;
-    font-size: 30px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-normal;
     line-height: $line-height-tight;
     letter-spacing: 0;
@@ -1000,7 +1000,7 @@
   &__item-title {
     flex: 1;
     color: $text-primary;
-    font-size: 19px;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     min-width: 0;
@@ -1016,7 +1016,7 @@
     background: rgba($accent-soft, 0.5);
     border: 1px solid rgba($accent, 0.16);
     color: rgba($accent-strong, 0.72);
-    font-size: 14px;
+    font-size: $figma-micro;
     font-weight: $font-weight-normal;
     letter-spacing: 0;
   }
@@ -1060,7 +1060,7 @@
   &__empty-title {
     margin-bottom: $spacing-xs;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-semibold;
     line-height: $line-height-tight;
   }
@@ -1114,7 +1114,7 @@
   &__name {
     display: block;
     color: $text-inverse;
-    font-size: 28px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -1200,7 +1200,7 @@
 .home-upcoming-list,
 .home-studio-card {
   border-radius: $figma-radius-card;
-  box-shadow: 0 2px 8px rgba($ink, 0.04), 0 0 1px rgba($ink, 0.06);
+  box-shadow: $shadow-card;
 }
 
 .home-membership-card {
@@ -1236,7 +1236,7 @@
 
   &__progress-bar {
     height: 3px;
-    background: #f0f0f0;
+    background: $border-default;
   }
 
   &__progress-fill {
@@ -1254,7 +1254,7 @@
   &__button {
     min-height: 88px;
     border-radius: 22px;
-    box-shadow: 0 1px 6px rgba($ink, 0.08);
+    box-shadow: $shadow-xs;
   }
 }
 
@@ -1305,7 +1305,7 @@
     min-height: 88px;
     padding: 0 28px;
     font-size: $figma-body;
-    box-shadow: 0 2px 8px rgba($ink, 0.1);
+    box-shadow: $shadow-xs;
   }
 
   &__button:last-child {
@@ -1318,7 +1318,7 @@
     border: 0.5px solid #e8e8e8;
     background: transparent;
     box-shadow: none;
-    color: #ababab;
+    color: $text-muted;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
   }
@@ -1366,13 +1366,13 @@
   }
 
   &__side-value {
-    font-size: 38px;
+    font-size: $figma-title-sm;
   }
 
   &__progress-track {
     height: 4px;
     margin-bottom: 14px;
-    background: #f0f0f0;
+    background: $border-default;
   }
 
   &__progress-fill {
@@ -1438,7 +1438,7 @@
   &__item-arrow {
     width: 24px;
     height: 24px;
-    color: #e5e5e5;
+    color: $gray-300;
   }
 }
 
@@ -1447,7 +1447,7 @@
   padding: 56px;
 
   &__label {
-    font-size: 16px;
+    font-size: $figma-micro;
   }
 
   &__top {
@@ -1465,7 +1465,7 @@
   }
 
   &__name {
-    font-size: $font-size-xl;
+    font-size: $figma-section-title;
   }
 
   &__address {

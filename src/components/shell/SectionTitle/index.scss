@@ -15,7 +15,7 @@
     display: block;
     margin-bottom: $spacing-xs;
     color: $accent;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wide;
   }
@@ -32,7 +32,7 @@
     display: block;
     margin-top: $spacing-xs;
     color: $text-secondary;
-    font-size: $font-size-2xs;
+    font-size: $figma-body;
     line-height: $line-height-normal;
   }
 
@@ -68,18 +68,23 @@
       .section-title-block__action-icon {
         color: $gray-500;
       }
+
+      .section-title-block__action-text {
+        font-weight: $font-weight-normal;
+        letter-spacing: 0;
+      }
     }
   }
 
   &__action-text {
     color: $accent;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
   }
 
   &__action-icon {
-    width: $font-size-xs;
-    height: $font-size-xs;
+    width: $figma-caption;
+    height: $figma-caption;
     color: $accent;
   }
 }

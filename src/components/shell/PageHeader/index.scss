@@ -97,7 +97,7 @@
     display: block;
     margin-bottom: $spacing-xs;
     color: rgba($white, 0.7);
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wide;
   }
@@ -105,7 +105,7 @@
   &__title {
     display: block;
     color: $white;
-    font-size: 40px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     line-height: 1.16;
     letter-spacing: 0;

@@ -3,16 +3,16 @@
 $support-dark: $primary;
 $support-muted-1: $gray-600;
 $support-muted-2: $gray-500;
-$support-muted-3: #cdcdcd;
-$support-muted-4: #e0d0d0;
-$support-muted-5: #e5e5e5;
-$support-surface-1: #f8f8f8;
+$support-muted-3: $gray-500;
+$support-muted-4: $gray-400;
+$support-muted-5: $gray-300;
+$support-surface-1: $surface-strong;
 $support-surface-2: $surface;
-$support-border-1: #ebebeb;
-$support-border-2: #f0f0f0;
-$support-border-3: #e8e8e8;
+$support-border-1: $border-default;
+$support-border-2: $border-default;
+$support-border-3: $border-default;
 $support-danger: #c0706f;
-$support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+$support-card-shadow: $shadow-card;
 
 .settings-page {
   .page-shell__inner {
@@ -36,7 +36,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__section-label {
     display: block;
     padding-left: 2px;
-    color: #cdcdcd;
+    color: $support-muted-3;
     font-size: $figma-caption;
     font-weight: $font-weight-medium;
     line-height: 1;
@@ -70,7 +70,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     transition: background $duration-fast $ease-in-out;
 
     &:active {
-      background: #fdfdfd;
+      background: rgba($gray-100, 0.72);
     }
   }
 
@@ -170,7 +170,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     transition: background $duration-fast $ease-in-out;
 
     &:active {
-      background: #fdfdfd;
+      background: rgba($gray-100, 0.72);
     }
   }
 
@@ -194,7 +194,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__value {
-    color: #cdcdcd;
+    color: $support-muted-3;
     font-size: $figma-body;
     font-weight: $font-weight-normal;
     line-height: 1.25;
@@ -235,7 +235,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     height: 31px;
     border-radius: $radius-full;
     background: $white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-xs;
     transition: left $duration-normal $ease-out;
   }
 
@@ -270,13 +270,13 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__icon {
-    color: #d0d0d0;
+    color: $gray-500;
     width: 24px;
     height: 24px;
   }
 
   &__text {
-    color: #cdcdcd;
+    color: $support-muted-3;
     font-size: $figma-body;
     font-weight: $font-weight-normal;
     line-height: 1;
@@ -335,7 +335,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     color: $support-muted-1;
     font-size: $figma-body;
     font-weight: $font-weight-normal;
-    line-height: 31px;
+    line-height: $line-height-normal;
     margin-bottom: 28px;
   }
 
@@ -367,7 +367,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
     &--confirm {
       background: $support-dark;
       border-color: $support-dark;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: $shadow-xs;
     }
 
     &--danger {

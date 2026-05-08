@@ -4,10 +4,10 @@ $support-gold: $accent;
 $support-gold-soft: rgba($accent, 0.08);
 $support-muted-1: $gray-600;
 $support-muted-2: $gray-500;
-$support-muted-3: #d8d8d8;
+$support-muted-3: $gray-400;
 $support-surface-1: $bg-gray;
 $support-surface-2: $surface-strong;
-$support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+$support-card-shadow: $shadow-card;
 
 .notifications-page {
   .page-shell__inner {
@@ -64,22 +64,9 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   .section-title-block {
     margin-bottom: 0;
 
-    &__title {
-      font-size: $figma-section-title;
-      font-weight: $font-weight-medium;
-      letter-spacing: 0;
-    }
-
     &__action {
       padding-bottom: 0;
       margin-left: 0;
-    }
-
-    &__action-text {
-      font-size: $figma-caption;
-      font-weight: $font-weight-normal;
-      letter-spacing: 0;
-      text-transform: uppercase;
     }
   }
 }
@@ -150,7 +137,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
     &--read {
       background: $support-surface-2;
-      color: #d0d0d0;
+      color: $gray-500;
     }
   }
 
@@ -201,7 +188,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   &__description {
     overflow: hidden;
     color: $support-muted-1;
-    font-size: 20px;
+    font-size: $figma-body;
     line-height: 1.55;
     letter-spacing: 0;
     display: -webkit-box;
@@ -219,7 +206,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__time--unread {
-    color: #cdcdcd;
+    color: $gray-500;
   }
 
   &__title--read {
@@ -227,7 +214,7 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
   }
 
   &__description--read {
-    color: #cdcdcd;
+    color: $gray-500;
   }
 
   &__dot {
@@ -261,13 +248,13 @@ $support-card-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06
 
   &__empty-title {
     color: $text-primary;
-    font-size: 26px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     margin-bottom: 10px;
   }
 
   &__empty-description {
-    color: #cdcdcd;
+    color: $gray-500;
     font-size: $figma-body;
     line-height: 1.5;
   }

@@ -25,14 +25,14 @@
 
   &__hero-value {
     color: $text-primary;
-    font-size: 52px;
+    font-size: $figma-title;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
 
   &__hero-desc {
     margin-top: 14px;
-    color: #ababab;
+    color: $text-muted;
     font-size: $figma-body;
     line-height: 1.52;
   }
@@ -76,7 +76,7 @@
 
   &__avatar-text {
     color: $accent;
-    font-size: 30px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
   }
 
@@ -94,14 +94,14 @@
 
   &__name {
     color: $text-primary;
-    font-size: 24px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     margin-bottom: 6px;
   }
 
   &__desc,
   &__count-label {
-    color: #c8c8c8;
+    color: $gray-500;
     font-size: $figma-body;
   }
 
@@ -120,7 +120,7 @@
 
   &__count {
     color: $text-primary;
-    font-size: 28px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     margin-bottom: 4px;
   }

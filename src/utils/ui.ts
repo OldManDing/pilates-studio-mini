@@ -2,8 +2,9 @@ import Taro from '@tarojs/taro';
 
 const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'] as const;
 
+const SAFE_DATA_IMAGE_PATTERN = /^data:image\/(?:png|jpe?g|webp|gif);base64,/i;
+
 const UNSAFE_IMAGE_PATTERNS = [
-  /^data:/i,
   /example\.com/i,
   /dummyimage/i,
   /placeholder/i,
@@ -46,6 +47,10 @@ export function getSafeMiniImageSrc(imageUrl: string | null | undefined, fallbac
 
   if (!nextImageUrl) {
     return fallbackImageUrl;
+  }
+
+  if (/^data:/i.test(nextImageUrl)) {
+    return SAFE_DATA_IMAGE_PATTERN.test(nextImageUrl) ? nextImageUrl : fallbackImageUrl;
   }
 
   return UNSAFE_IMAGE_PATTERNS.some((pattern) => pattern.test(nextImageUrl)) ? fallbackImageUrl : nextImageUrl;

@@ -10,13 +10,13 @@
   &--small {
     height: 36px;
     padding: 0 $spacing-xs;
-    font-size: $font-size-xs;
+    font-size: $figma-micro;
   }
 
   &--normal {
     height: 44px;
     padding: 0 $spacing-sm;
-    font-size: $font-size-sm;
+    font-size: $figma-caption;
   }
 
   &--outline {

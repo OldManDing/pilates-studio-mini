@@ -43,13 +43,6 @@
 
   .section-title-block {
     margin-bottom: 0;
-
-    &__action-text {
-      color: $gray-500;
-      font-size: $figma-caption;
-      font-weight: $font-weight-normal;
-      letter-spacing: 0;
-    }
   }
 
   &__headline {
@@ -72,7 +65,7 @@
 
   &__headline-title {
     color: $text-primary;
-    font-size: 42px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
     line-height: 1.18;
@@ -231,7 +224,7 @@
     display: block;
     margin-bottom: 14px;
     color: $white;
-    font-size: 42px;
+    font-size: $figma-title-sm;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
     line-height: 1.2;
@@ -258,7 +251,7 @@
     min-height: 88px;
     padding: 18px 21px;
     border-radius: 24px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid $border-default;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -312,7 +305,7 @@
   &__day {
     color: $text-primary;
     margin-bottom: 7px;
-    font-size: 31px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     font-feature-settings: 'tnum';
     line-height: 1;
@@ -331,7 +324,7 @@
     min-height: 88px;
     padding: 0 24px;
     border-radius: $radius-full;
-    border: 1px solid #ebebeb;
+    border: 1px solid $border-default;
     background: transparent;
 
     &--active {
@@ -364,13 +357,13 @@
   border: none;
   border-radius: $figma-radius-card;
   background: $surface;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06);
+  box-shadow: $shadow-card;
 
   &--full {
     .booking-course-card__title,
     .booking-course-card__time,
     .booking-course-card__meta {
-      color: #b0b0b0;
+      color: $gray-600;
     }
   }
 
@@ -423,7 +416,7 @@
     justify-content: center;
     background: rgba($primary, 0.34);
     color: $text-inverse;
-    font-size: 16px;
+    font-size: $figma-micro;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
   }
@@ -436,7 +429,7 @@
   &__title {
     margin-bottom: 14px;
     color: $text-primary;
-    font-size: 26px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
@@ -452,7 +445,7 @@
     position: relative;
     width: 21px;
     height: 21px;
-    border: 2px solid #cdcdcd;
+    border: 2px solid $gray-500;
     border-radius: 999px;
 
     &::before,
@@ -461,7 +454,7 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      background: #cdcdcd;
+      background: $gray-500;
       border-radius: 999px;
       transform-origin: bottom center;
     }
@@ -481,7 +474,7 @@
 
   &__time,
   &__meta {
-    color: #ababab;
+    color: $text-muted;
     font-size: $figma-small;
     font-weight: $font-weight-normal;
     line-height: 1.25;
@@ -515,7 +508,7 @@
     letter-spacing: 0;
 
     &--full {
-      color: #d0d0d0;
+      color: $gray-500;
     }
   }
 

@@ -54,13 +54,13 @@
 
   &__title {
     margin-bottom: $spacing-xs;
-    font-size: $font-size-md;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     color: $text-primary;
   }
 
   &__text {
-    font-size: $font-size-base;
+    font-size: $figma-body;
     color: $text-secondary;
     text-align: center;
     line-height: $line-height-normal;

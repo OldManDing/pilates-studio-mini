@@ -31,7 +31,7 @@
 
     &--active {
       background: $surface;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      box-shadow: $shadow-xs;
 
       .my-bookings-page__tab-text {
         color: $text-primary;
@@ -42,7 +42,7 @@
 
   &__tab-text {
     color: $text-muted;
-    font-size: $font-size-sm;
+    font-size: $figma-caption;
     letter-spacing: 0;
     font-weight: $font-weight-normal;
     transition: color $duration-fast $ease-in-out;
@@ -58,14 +58,14 @@
 
   &__count-title {
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
   }
 
   &__count-value {
     color: $gray-600;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     letter-spacing: 0;
   }
 
@@ -151,7 +151,7 @@
 
   &__day {
     color: $text-primary;
-    font-size: $font-size-xl;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: 1;
     letter-spacing: 0;
@@ -159,7 +159,7 @@
 
   &__weekday {
     color: $gray-500;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     font-weight: $font-weight-medium;
     letter-spacing: 0;
     line-height: 1;
@@ -187,7 +187,7 @@
 
   &__title {
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: 1.25;
     flex: 1;
@@ -206,7 +206,7 @@
     min-height: 28px;
     padding: 3px 8px;
     border-radius: $radius-full;
-    font-size: $font-size-2xs;
+    font-size: $figma-micro;
     font-weight: $font-weight-normal;
     letter-spacing: 0;
     line-height: 1;
@@ -237,7 +237,7 @@
   &__meta {
     display: block;
     color: $gray-500;
-    font-size: $font-size-xs;
+    font-size: $figma-body;
     letter-spacing: 0;
     line-height: $line-height-normal;
     display: -webkit-box;
@@ -248,7 +248,7 @@
   }
 
   &__arrow {
-    color: #e5e5e5;
+    color: $gray-300;
     width: 18px;
     height: 18px;
     flex-shrink: 0;
@@ -269,10 +269,10 @@
 
   &__loading-more-text {
     color: $text-muted;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
   }
 
   .app-divider {
-    background: #f0f0f0;
+    background: $border-default;
   }
 }

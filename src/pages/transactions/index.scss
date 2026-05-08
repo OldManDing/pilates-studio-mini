@@ -20,7 +20,7 @@
   &__item-date,
   &__item-code,
   &__loading-more-text {
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     color: $text-muted;
     letter-spacing: $letter-spacing-wide;
   }
@@ -48,7 +48,7 @@
 
   &__summary-meta-value {
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
@@ -56,7 +56,7 @@
   &__summary-note {
     margin-top: 8px;
     color: $text-muted;
-    font-size: $font-size-2xs;
+    font-size: $figma-caption;
     line-height: 1.4;
   }
 
@@ -72,7 +72,7 @@
     justify-content: space-between;
     align-items: center;
     gap: $spacing-md;
-    padding: 20px 36px;
+    padding: 20px $figma-card-x;
   }
 
   &__item-main {
@@ -84,7 +84,7 @@
     display: block;
     margin-bottom: $spacing-2xs;
     color: $text-primary;
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: $line-height-tight;
     white-space: nowrap;
@@ -108,7 +108,7 @@
     flex-shrink: 0;
 
     .price {
-      font-size: $font-size-xs;
+      font-size: $figma-body;
     }
   }
 

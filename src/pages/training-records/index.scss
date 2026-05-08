@@ -15,7 +15,7 @@
 
   &__summary-value {
     color: $text-primary;
-    font-size: 30px;
+    font-size: $figma-section-title;
     font-weight: $font-weight-medium;
     line-height: 1;
   }
@@ -23,7 +23,7 @@
   &__summary-unit,
   &__summary-label {
     display: block;
-    color: #c8c8c8;
+    color: $gray-500;
     font-size: $figma-caption;
   }
 
@@ -70,7 +70,7 @@
 
   &__title {
     color: $text-primary;
-    font-size: 24px;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     margin-bottom: 6px;
     overflow: hidden;
@@ -92,7 +92,7 @@
 
   &__meta,
   &__status {
-    color: #c8c8c8;
+    color: $gray-500;
     font-size: $figma-body;
   }
 
@@ -103,7 +103,7 @@
 
   &__duration {
     color: $accent;
-    font-size: 22px;
+    font-size: $figma-body;
     font-weight: $font-weight-medium;
     margin-bottom: 6px;
   }

@@ -43,7 +43,7 @@
   }
 
   &__title {
-    font-size: $font-size-base;
+    font-size: $figma-body-lg;
     color: $text-primary;
     margin-bottom: $spacing-xs;
     font-weight: $font-weight-medium;
@@ -52,7 +52,7 @@
 
   &__desc {
     max-width: 100%;
-    font-size: $font-size-sm;
+    font-size: $figma-body;
     color: $text-muted;
     line-height: $line-height-normal;
     text-align: center;

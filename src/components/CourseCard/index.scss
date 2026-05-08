@@ -25,12 +25,12 @@
   }
 
   &__duration {
-    font-size: $font-size-xs;
+    font-size: $figma-caption;
     color: $text-muted;
   }
 
   &__name {
-    font-size: $font-size-md;
+    font-size: $figma-body-lg;
     font-weight: $font-weight-semibold;
     color: $text-primary;
     margin-bottom: $spacing-xs;
@@ -38,7 +38,7 @@
   }
 
   &__desc {
-    font-size: $font-size-sm;
+    font-size: $figma-body;
     color: $text-secondary;
     line-height: $line-height-normal;
     margin-bottom: $spacing-sm;
@@ -64,7 +64,7 @@
   }
 
   &__coach-name {
-    font-size: $font-size-sm;
+    font-size: $figma-body;
     color: $text-secondary;
   }
 }
