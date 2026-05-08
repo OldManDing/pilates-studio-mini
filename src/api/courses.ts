@@ -18,13 +18,30 @@ export interface Course {
     id: string;
     name: string;
     avatar?: string;
+    avatarUrl?: string;
     bio?: string;
   };
   sessions?: CourseSession[];
 }
 
-type BackendCourse = Omit<Course, 'maxCapacity'> & { maxCapacity?: number; capacity?: number };
-type BackendSessionsPayload = CourseSession[] | { sessions?: CourseSession[] };
+type BackendCoach = { id: string; name: string; avatar?: string; avatarUrl?: string; bio?: string };
+type BackendCourse = Omit<Course, 'maxCapacity' | 'coach'> & { maxCapacity?: number; capacity?: number; coach?: BackendCoach };
+type BackendCourseSession = Omit<CourseSession, 'coach'> & { coach?: BackendCoach };
+type BackendSessionsPayload = BackendCourseSession[] | { sessions?: BackendCourseSession[] };
+
+function normalizeCoach(coach?: BackendCoach) {
+  if (!coach) {
+    return coach;
+  }
+
+  const avatar = coach.avatar || coach.avatarUrl || '';
+
+  return {
+    ...coach,
+    avatar,
+    avatarUrl: coach.avatarUrl || avatar,
+  };
+}
 
 function normalizeCourse(course: BackendCourse): Course {
   const normalizedCapacity = course.maxCapacity ?? course.capacity ?? 0;
@@ -33,11 +50,17 @@ function normalizeCourse(course: BackendCourse): Course {
     ...course,
     capacity: course.capacity ?? normalizedCapacity,
     maxCapacity: normalizedCapacity,
+    coach: normalizeCoach(course.coach),
   };
 }
 
 function normalizeSessionsPayload(payload: BackendSessionsPayload): CourseSession[] {
-  return Array.isArray(payload) ? payload : payload.sessions || [];
+  const sessions = Array.isArray(payload) ? payload : payload.sessions || [];
+
+  return sessions.map((session) => ({
+    ...session,
+    coach: normalizeCoach(session.coach),
+  }));
 }
 
 export interface CourseSession {
@@ -53,6 +76,7 @@ export interface CourseSession {
     id: string;
     name: string;
     avatar?: string;
+    avatarUrl?: string;
   };
   course?: {
     id: string;

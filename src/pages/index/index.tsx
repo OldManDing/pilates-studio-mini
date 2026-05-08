@@ -702,7 +702,7 @@ export default function Index() {
           <HomeCuratedCard data={curatedData} onClick={handleCoursesEntry} />
         </View>
 
-        <View className='home-page__section'>
+        <View className='home-page__section home-page__section--upcoming'>
           <SectionTitle
             title='近期安排'
             subtitle={usingRecentBookingFallback ? '当前无待上课安排，已展示最近预约记录' : undefined}

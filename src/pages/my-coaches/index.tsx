@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
-import { Text, View } from '@tarojs/components';
+import { Image, Text, View } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { coachesApi, type Coach, type MyCoachSummary } from '../../api/coaches';
 import { getApiErrorMessage, isUnauthorizedApiError } from '../../api/request';
@@ -100,7 +100,11 @@ export default function MyCoaches() {
                   onClick={() => handleCoachClick(item.coach)}
                 >
                   <View className='my-coaches-list__avatar'>
-                    <Text className='my-coaches-list__avatar-text'>{item.coach.name.slice(0, 1)}</Text>
+                    {item.coach.avatar ? (
+                      <Image className='my-coaches-list__avatar-image' src={item.coach.avatar} mode='aspectFill' />
+                    ) : (
+                      <Text className='my-coaches-list__avatar-text'>{item.coach.name.slice(0, 1)}</Text>
+                    )}
                   </View>
                   <View className='my-coaches-list__content'>
                     <Text className='my-coaches-list__name'>{item.coach.name}</Text>

@@ -1187,6 +1187,26 @@
     margin-bottom: 0;
   }
 
+  &__section--upcoming .section-title-block {
+    align-items: center;
+  }
+
+  &__section--upcoming .section-title-block__action {
+    align-self: center;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: auto;
+    min-height: 44px;
+    margin-left: 20px;
+    margin-right: 0;
+    padding: 0;
+    line-height: 1;
+  }
+
+  &__section--upcoming .section-title-block__action-text {
+    line-height: $line-height-snug;
+  }
+
   &__today-header {
     margin-bottom: 0;
   }

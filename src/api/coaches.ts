@@ -9,6 +9,7 @@ export interface Coach {
   email: string;
   phone: string;
   avatar?: string;
+  avatarUrl?: string;
   bio?: string;
   specialties?: string[];
   certifications?: string[];
@@ -39,6 +40,7 @@ type BackendMyCoachesPayload = { coaches?: RawMyCoachSummary[] };
 
 interface RawCoach extends Omit<Coach, 'specialties' | 'certifications' | 'isActive'> {
   status?: 'ACTIVE' | 'ON_LEAVE' | 'INACTIVE';
+  avatarUrl?: string;
   specialties?: RawCoachTag[];
   certificates?: RawCoachTag[];
   certifications?: RawCoachTag[];
@@ -56,8 +58,12 @@ function normalizeTagList(items?: RawCoachTag[]) {
 }
 
 function mapCoach(raw: RawCoach): Coach {
+  const avatar = raw.avatar || raw.avatarUrl || '';
+
   return {
     ...raw,
+    avatar,
+    avatarUrl: raw.avatarUrl || avatar,
     specialties: normalizeTagList(raw.specialties),
     certifications: normalizeTagList(raw.certifications || raw.certificates),
     isActive: raw.isActive ?? raw.status === 'ACTIVE',

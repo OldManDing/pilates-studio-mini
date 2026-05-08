@@ -30,17 +30,33 @@ export interface Booking {
     coach?: {
       id: string;
       name: string;
+      avatar?: string;
+      avatarUrl?: string;
     };
   };
 }
 
 function normalizeBooking(booking: Booking): Booking {
   const bookingTime = booking.bookingTime || booking.bookedAt || '';
+  const coach = booking.session?.coach;
+  const coachAvatar = coach?.avatar || coach?.avatarUrl || '';
 
   return {
     ...booking,
     bookingTime,
     bookedAt: booking.bookedAt || bookingTime,
+    session: booking.session
+      ? {
+          ...booking.session,
+          coach: coach
+            ? {
+                ...coach,
+                avatar: coachAvatar,
+                avatarUrl: coach.avatarUrl || coachAvatar,
+              }
+            : coach,
+        }
+      : booking.session,
   };
 }
 
