@@ -175,6 +175,7 @@ export default function Help() {
       <PageHeader
         title='帮助与反馈'
         subtitle='常见问题与意见反馈'
+        pageKey='help'
         fallbackUrl='/pages/profile/index'
       />
 

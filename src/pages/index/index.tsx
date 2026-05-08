@@ -27,6 +27,7 @@ import type {
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { formatMembershipCredits, formatMembershipDescription } from '../../utils/membership';
 import { formatDurationMinutes, getSafeMiniImageSrc, getWeekdayLabel } from '../../utils/ui';
+import { useMiniPageImage } from '../../hooks/useMiniPageImage';
 import './index.scss';
 
 const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
@@ -308,6 +309,7 @@ async function fetchAllMyBookings() {
 }
 
 export default function Index() {
+  const { imageSrc: homeHeroImageSrc, fallbackImageSrc: homeHeroFallbackImageSrc, refresh: refreshHomeHeroImage } = useMiniPageImage('home', '/assets/ui/hero-studio.jpg');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -326,6 +328,7 @@ export default function Index() {
 
   useDidShow(() => {
     syncCustomTabBarSelected(0);
+    void refreshHomeHeroImage();
 
     if (initialFetchCompletedRef.current) {
       void fetchData('resume');
@@ -458,7 +461,7 @@ export default function Index() {
     badgeTone: activeMembership ? 'accent' : 'muted',
     title: `${getGreeting(now)}，${getDisplayMemberName(member?.name)}`,
     subtitle: todayCourseSummary.heroSubtitle,
-    imageUrl: getSafeMiniImageSrc(studioSettings?.imageUrl, '/assets/ui/hero-studio.jpg'),
+    imageUrl: getSafeMiniImageSrc(homeHeroImageSrc, homeHeroFallbackImageSrc),
   };
 
   const membershipData: HomeMembershipData = {

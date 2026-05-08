@@ -119,6 +119,7 @@ export default function Transactions() {
         title='消费记录'
         subtitle='查看你的历史交易与支付状态'
         eyebrow='消费'
+        pageKey='transactions'
         fallbackUrl='/pages/membership/index'
       />
 

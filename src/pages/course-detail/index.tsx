@@ -139,11 +139,16 @@ export default function CourseDetail() {
   const [courseIdMissing, setCourseIdMissing] = useState(false);
   const [courseId, setCourseId] = useState('');
   const [heroImageSrc, setHeroImageSrc] = useState('');
+  const [sessionPickerOpen, setSessionPickerOpen] = useState(false);
   const bookingInFlightRef = useRef(false);
 
-  const fetchData = useCallback(async (id: string) => {
+  const fetchData = useCallback(async (id: string, options: { showPageLoading?: boolean } = {}) => {
+    const showPageLoading = options.showPageLoading !== false;
+
     try {
-      setLoading(true);
+      if (showPageLoading) {
+        setLoading(true);
+      }
       setCourseLoadFailed(false);
       setCourseIdMissing(false);
       const [courseRes, sessionsRes, profileRes] = await Promise.all([
@@ -160,12 +165,18 @@ export default function CourseDetail() {
       const nextHero = getSafeMiniImageSrc(courseRes.data.course.coverImageUrl, HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg');
       setHeroImageSrc(nextHero);
     } catch {
-      setCourse(null);
-      setSessions([]);
-      setCourseLoadFailed(true);
-      showSafeToast({ title: '课程加载失败', icon: 'none' });
+      if (showPageLoading) {
+        setCourse(null);
+        setSessions([]);
+        setCourseLoadFailed(true);
+        showSafeToast({ title: '课程加载失败', icon: 'none' });
+      } else {
+        showSafeToast({ title: '预约成功，课程余位稍后同步', icon: 'none' });
+      }
     } finally {
-      setLoading(false);
+      if (showPageLoading) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -196,7 +207,7 @@ export default function CourseDetail() {
 
   const featuredSession = sortedSessions.find((session) => getSessionSpots(session, course?.maxCapacity || 0) > 0) || sortedSessions[0] || null;
 
-  const handleBooking = async () => {
+  const handleBooking = async (selectedSession?: CourseSession) => {
     if (!course || sortedSessions.length === 0) {
       showSafeToast({ title: '暂无可约场次', icon: 'none' });
       return;
@@ -212,6 +223,11 @@ export default function CourseDetail() {
       return;
     }
 
+    if (!selectedSession && sortedSessions.length > 1) {
+      setSessionPickerOpen(true);
+      return;
+    }
+
     if (bookingLoading || bookingInFlightRef.current) {
       return;
     }
@@ -219,36 +235,24 @@ export default function CourseDetail() {
     bookingInFlightRef.current = true;
 
     try {
-      let targetSession = featuredSession;
-      if (sortedSessions.length > 1) {
-        const options = sortedSessions.map((session) => {
-          const sessionDate = formatDate(session.startsAt);
-          const sessionTime = formatTimeRange(session.startsAt, session.endsAt);
-          const sessionSpots = getSessionSpots(session, course.maxCapacity);
-          return `${sessionDate} ${sessionTime} · 余${sessionSpots}名额`;
-        });
-
-        const selectedIndex = await Taro.showActionSheet({ itemList: options })
-          .then((result) => result.tapIndex)
-          .catch(() => -1);
-
-        if (selectedIndex < 0) {
-          return;
-        }
-
-        targetSession = sortedSessions[selectedIndex] || null;
-      }
+      const targetSession = selectedSession || featuredSession;
 
       if (!targetSession) {
         showSafeToast({ title: '场次信息无效，请重试', icon: 'none' });
         return;
       }
 
+      if (getSessionSpots(targetSession, course.maxCapacity) <= 0) {
+        showSafeToast({ title: '该场次已约满，请选择其他场次', icon: 'none' });
+        return;
+      }
+
+      setSessionPickerOpen(false);
       setBookingLoading(true);
       await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' }, { showLoading: false });
       showSafeToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
-      await fetchData(course.id);
+      void fetchData(course.id, { showPageLoading: false });
     } catch (error) {
       showSafeToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
     } finally {
@@ -277,7 +281,7 @@ export default function CourseDetail() {
   if (loading) {
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title='课程详情' subtitle='正在同步课程资料' fallbackUrl='/pages/courses/index' />
+        <PageHeader title='课程详情' subtitle='正在同步课程资料' pageKey='courses' fallbackUrl='/pages/courses/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -301,7 +305,7 @@ export default function CourseDetail() {
 
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title={emptyTitle} subtitle={emptySubtitle} fallbackUrl='/pages/courses/index' />
+        <PageHeader title={emptyTitle} subtitle={emptySubtitle} pageKey='courses' fallbackUrl='/pages/courses/index' />
         <AppCard>
           <Empty
             title={emptyTitle}
@@ -337,6 +341,7 @@ export default function CourseDetail() {
   ];
   const shouldGuideLogin = !profileLoadFailed && !member?.id;
   const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin && !profileLoadFailed;
+  const ctaDisabled = bookingLoading || (!profileLoadFailed && !shouldGuideLogin && !canBook && Boolean(featuredSession));
   const ctaLabel = bookingLoading
     ? '预约中…'
     : booked
@@ -352,6 +357,29 @@ export default function CourseDetail() {
               : sortedSessions.length > 1
                 ? '选择场次预约'
                 : '立即预约';
+
+  const handleCtaClick = () => {
+    if (ctaDisabled) {
+      return;
+    }
+
+    if (!featuredSession) {
+      Taro.switchTab({ url: '/pages/courses/index' });
+      return;
+    }
+
+    if (profileLoadFailed) {
+      fetchData(course.id);
+      return;
+    }
+
+    if (shouldGuideLogin) {
+      handleLoginAndReload();
+      return;
+    }
+
+    void handleBooking();
+  };
 
   return (
     <View className='course-detail-page'>
@@ -475,31 +503,59 @@ export default function CourseDetail() {
               className='course-detail-page__cta-button'
               size='medium'
               variant='primary'
-              disabled={bookingLoading || (!profileLoadFailed && !shouldGuideLogin && !canBook && Boolean(featuredSession))}
-              onClick={() => {
-                if (!featuredSession) {
-                  Taro.switchTab({ url: '/pages/courses/index' });
-                  return;
-                }
-
-                if (profileLoadFailed) {
-                  fetchData(course.id);
-                  return;
-                }
-
-                if (shouldGuideLogin) {
-                  handleLoginAndReload();
-                  return;
-                }
-
-                handleBooking();
-              }}
+              disabled={ctaDisabled}
+              loading={bookingLoading}
+              onClick={handleCtaClick}
             >
               {ctaLabel}
             </AppButton>
           )}
         </View>
       </View>
+
+      {sessionPickerOpen ? (
+        <View className='course-detail-page__session-picker'>
+          <View className='course-detail-page__session-picker-mask' onClick={() => setSessionPickerOpen(false)} />
+          <View className='course-detail-page__session-picker-panel'>
+            <View className='course-detail-page__session-picker-head'>
+              <View>
+                <Text className='course-detail-page__session-picker-title'>选择预约场次</Text>
+                <Text className='course-detail-page__session-picker-desc'>请选择一个可预约时间</Text>
+              </View>
+              <View className='course-detail-page__session-picker-close' onClick={() => setSessionPickerOpen(false)}>
+                关闭
+              </View>
+            </View>
+
+            <ScrollView className='course-detail-page__session-picker-list' scrollY showScrollbar={false}>
+              {sortedSessions.map((session) => {
+                const sessionSpots = getSessionSpots(session, course.maxCapacity);
+                const sessionDisabled = sessionSpots <= 0 || bookingLoading;
+
+                return (
+                  <View
+                    key={session.id}
+                    className={`course-detail-page__session-option ${sessionDisabled ? 'course-detail-page__session-option--disabled' : ''}`}
+                    onClick={() => {
+                      if (sessionDisabled) {
+                        return;
+                      }
+
+                      void handleBooking(session);
+                    }}
+                  >
+                    <View className='course-detail-page__session-option-main'>
+                      <Text className='course-detail-page__session-option-date'>{formatDate(session.startsAt)} · {getDateLabel(session.startsAt)}</Text>
+                      <Text className='course-detail-page__session-option-time'>{formatTimeRange(session.startsAt, session.endsAt)}</Text>
+                    </View>
+                    <Text className='course-detail-page__session-option-spots'>{sessionSpots > 0 ? `余 ${sessionSpots} 位` : '已约满'}</Text>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }

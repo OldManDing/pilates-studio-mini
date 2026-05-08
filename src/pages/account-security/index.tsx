@@ -41,7 +41,7 @@ export default function AccountSecurity() {
 
   return (
     <PageShell className='account-security-page' safeAreaBottom>
-      <PageHeader title='账户安全' subtitle='手机号展示与本机登录偏好' fallbackUrl='/pages/settings/index' />
+      <PageHeader title='账户安全' subtitle='手机号展示与本机登录偏好' pageKey='accountSecurity' fallbackUrl='/pages/settings/index' />
 
       <View className='account-security-page__section'>
         <SectionTitle title='登录账户' actionLabel='账户' actionTone='muted' />

@@ -328,4 +328,135 @@ $course-detail-cta-content-height: 78px;
     font-weight: $font-weight-medium;
     letter-spacing: $letter-spacing-wide;
   }
+
+  &__session-picker-mask {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: rgba($black, 0.36);
+  }
+
+  &__session-picker-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 121;
+    max-height: 76vh;
+    padding: 34px $figma-page-x calc(34px + constant(safe-area-inset-bottom));
+    padding: 34px $figma-page-x calc(34px + env(safe-area-inset-bottom));
+    border-radius: 34px 34px 0 0;
+    background: rgba($surface, 0.98);
+    box-shadow: 0 -16px 44px rgba($ink, 0.14);
+  }
+
+  &__session-picker-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 26px;
+  }
+
+  &__session-picker-title,
+  &__session-picker-desc,
+  &__session-option-date,
+  &__session-option-time,
+  &__session-option-spots {
+    display: block;
+  }
+
+  &__session-picker-title {
+    color: $text-primary;
+    font-size: 32px;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+  }
+
+  &__session-picker-desc {
+    margin-top: 8px;
+    color: $text-muted;
+    font-size: $figma-body;
+    line-height: 1.35;
+  }
+
+  &__session-picker-close {
+    flex-shrink: 0;
+    min-width: 92px;
+    height: 56px;
+    margin: 0;
+    padding: 0 22px;
+    border: 1px solid rgba($accent, 0.2);
+    border-radius: $radius-full;
+    background: rgba($accent-soft, 0.6);
+    color: $accent-strong;
+    font-size: $figma-caption;
+    font-weight: $font-weight-medium;
+    line-height: 56px;
+
+    &::after {
+      border: 0;
+    }
+  }
+
+  &__session-picker-list {
+    max-height: calc(76vh - 150px);
+  }
+
+  &__session-option {
+    width: 100%;
+    min-height: 116px;
+    margin: 0 0 18px;
+    padding: 22px 24px;
+    border: 1px solid rgba($border-faint, 0.86);
+    border-radius: 24px;
+    background: $surface;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    text-align: left;
+    line-height: normal;
+
+    &::after {
+      border: 0;
+    }
+
+    &:active {
+      background: rgba($accent-soft, 0.42);
+    }
+
+    &--disabled {
+      opacity: 0.48;
+    }
+  }
+
+  &__session-option-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__session-option-date {
+    color: $text-muted;
+    font-size: $figma-caption;
+    line-height: 1.35;
+  }
+
+  &__session-option-time {
+    margin-top: 8px;
+    color: $text-primary;
+    font-size: $figma-body-lg;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
+  }
+
+  &__session-option-spots {
+    flex-shrink: 0;
+    min-width: 108px;
+    color: $accent-strong;
+    font-size: $figma-body;
+    font-weight: $font-weight-medium;
+    text-align: right;
+    line-height: 1.25;
+  }
 }

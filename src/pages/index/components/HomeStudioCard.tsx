@@ -1,6 +1,6 @@
 import { Button, Image, Text, View } from '@tarojs/components';
 import { useState } from 'react';
-import { AppCard, Icon } from '../../../components';
+import { AppCard } from '../../../components';
 import type { HomeStudioData } from './types';
 
 interface HomeStudioCardProps {
@@ -30,7 +30,7 @@ export default function HomeStudioCard({ data, onClick }: HomeStudioCardProps) {
 
         <View className='home-studio-card__pin'>
           <View className='home-studio-card__pin-ring'>
-            <Icon name='pin' className='home-studio-card__pin-icon' />
+            <Image className='home-studio-card__pin-icon' src='/assets/ui/icon-studio-map-pin.svg' mode='aspectFit' />
           </View>
         </View>
       </View>

@@ -337,7 +337,7 @@ export default function Membership() {
     return (
       <PageShell className='membership-page' safeAreaBottom>
         <View className='membership-page__content'>
-          <PageHeader title='会员中心' subtitle='正在同步会员权益' fallbackUrl='/pages/profile/index' />
+          <PageHeader title='会员中心' subtitle='正在同步会员权益' pageKey='membership' fallbackUrl='/pages/profile/index' />
           <AppCard>
             <Loading compact />
           </AppCard>
@@ -349,7 +349,7 @@ export default function Membership() {
   return (
     <PageShell className='membership-page' safeAreaBottom>
       <View className='membership-page__content'>
-        <PageHeader title='会员中心' subtitle='管理你的会员权益与服务' fallbackUrl='/pages/profile/index' />
+        <PageHeader title='会员中心' subtitle='管理你的会员权益与服务' pageKey='membership' fallbackUrl='/pages/profile/index' />
 
         <View className='membership-page__section'>
           <AppCard className='membership-page__status-card' padding='none'>

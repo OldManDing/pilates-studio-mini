@@ -193,7 +193,7 @@ export default function MembershipRenew() {
   if (loading) {
     return (
       <PageShell className='membership-renew-page' safeAreaBottom>
-        <PageHeader title='续费会员' subtitle='正在同步会员方案' fallbackUrl='/pages/membership/index' />
+        <PageHeader title='续费会员' subtitle='正在同步会员方案' pageKey='membershipRenew' fallbackUrl='/pages/membership/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -203,7 +203,7 @@ export default function MembershipRenew() {
 
   return (
     <PageShell className='membership-renew-page' safeAreaBottom>
-      <PageHeader title='续费会员' subtitle='选择适合你的会员方案' fallbackUrl='/pages/membership/index' />
+      <PageHeader title='续费会员' subtitle='选择适合你的会员方案' pageKey='membershipRenew' fallbackUrl='/pages/membership/index' />
 
       <View className='membership-renew-page__hero'>
         <Text className='membership-renew-page__hero-label'>会员方案</Text>

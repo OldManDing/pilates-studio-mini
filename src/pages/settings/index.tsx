@@ -429,6 +429,7 @@ export default function Settings() {
       <PageHeader
         title='设置'
         subtitle='账户安全与通知设置'
+        pageKey='settings'
         fallbackUrl='/pages/profile/index'
       />
 

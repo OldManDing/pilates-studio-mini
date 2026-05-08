@@ -15,6 +15,7 @@ import type {
 } from './components/types';
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { formatDurationMinutes, getSafeMiniImageSrc, getWeekdayLabel } from '../../utils/ui';
+import { useMiniPageImage } from '../../hooks/useMiniPageImage';
 import './index.scss';
 
 function formatDateKey(date: Date) {
@@ -70,6 +71,7 @@ async function fetchAllUpcomingSessions() {
 }
 
 export default function Courses() {
+  const { imageSrc: coursesHeroImageSrc, refresh: refreshCoursesHeroImage } = useMiniPageImage('courses', '/assets/ui/hero-courses.jpg');
   const [selectedDateKey, setSelectedDateKey] = useState('date-0');
   const [selectedCategoryKey, setSelectedCategoryKey] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -84,6 +86,7 @@ export default function Courses() {
 
   useDidShow(() => {
     syncCustomTabBarSelected(1);
+    void refreshCoursesHeroImage();
 
     if (initialFetchCompletedRef.current) {
       void fetchCourses();
@@ -119,7 +122,7 @@ export default function Courses() {
     title: '预约课程',
     subtitle: '选择日期与课程类型',
     actionLabel: '我的预约',
-    imageUrl: '/assets/ui/hero-courses.jpg',
+    imageUrl: coursesHeroImageSrc,
   };
 
   const dateItems: BookingDateItemData[] = useMemo(

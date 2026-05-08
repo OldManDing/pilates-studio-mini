@@ -1,5 +1,7 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import { Button, Image, Text, View } from '@tarojs/components';
+import type { MiniPageImageKey } from '../../../api/settings';
+import { useMiniPageImage } from '../../../hooks/useMiniPageImage';
 import { navigateBackWithFallback } from '../../../utils/navigation';
 import { getMiniCapsuleAvoidanceStyle } from '../../../utils/ui';
 import Icon from '../Icon';
@@ -14,9 +16,10 @@ interface PageHeaderProps extends PropsWithChildren {
   onBack?: () => void;
   rightSlot?: ReactNode;
   imageSrc?: string;
+  pageKey?: MiniPageImageKey;
 }
 
-function getHeaderImageSrc(title: string, imageSrc?: string) {
+function getHeaderFallbackImageSrc(title: string, imageSrc?: string) {
   if (imageSrc) {
     return imageSrc;
   }
@@ -40,10 +43,15 @@ export default function PageHeader({
   rightSlot,
   children,
   imageSrc,
+  pageKey,
 }: PageHeaderProps) {
   const rightContent = rightSlot ?? children;
   const topStyle = getMiniCapsuleAvoidanceStyle();
-  const headerImageSrc = getHeaderImageSrc(title, imageSrc);
+  const fallbackImageSrc = getHeaderFallbackImageSrc(title, imageSrc);
+  const { imageSrc: headerImageSrc, fallbackImageSrc: resolvedFallbackImageSrc, setImageSrc } = useMiniPageImage(
+    imageSrc ? undefined : pageKey,
+    fallbackImageSrc,
+  );
 
   const handleBack = () => {
     if (onBack) {
@@ -56,7 +64,7 @@ export default function PageHeader({
 
   return (
     <View className='page-header'>
-      <Image className='page-header__image' src={headerImageSrc} mode='aspectFill' />
+      <Image className='page-header__image' src={headerImageSrc} mode='aspectFill' onError={() => setImageSrc(resolvedFallbackImageSrc)} />
       <View className='page-header__mask' />
 
       <View className='page-header__top' style={topStyle}>

@@ -41,7 +41,7 @@ const SECTIONS = [
 export default function Privacy() {
   return (
     <PageShell className='privacy-page' safeAreaBottom>
-      <PageHeader title='隐私政策' subtitle='个人信息收集与保护说明' fallbackUrl='/pages/settings/index' />
+      <PageHeader title='隐私政策' subtitle='个人信息收集与保护说明' pageKey='privacy' fallbackUrl='/pages/settings/index' />
 
       <AppCard className='privacy-hero'>
         <Text className='privacy-hero__label'>隐私</Text>

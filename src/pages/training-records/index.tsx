@@ -82,7 +82,7 @@ export default function TrainingRecords() {
   if (loading) {
     return (
       <PageShell className='training-records-page' safeAreaBottom>
-        <PageHeader title='训练记录' subtitle='正在同步历史训练数据' fallbackUrl='/pages/profile/index' />
+        <PageHeader title='训练记录' subtitle='正在同步历史训练数据' pageKey='trainingRecords' fallbackUrl='/pages/profile/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -92,7 +92,7 @@ export default function TrainingRecords() {
 
   return (
     <PageShell className='training-records-page' safeAreaBottom>
-      <PageHeader title='训练记录' subtitle='历史训练数据与统计' fallbackUrl='/pages/profile/index' />
+      <PageHeader title='训练记录' subtitle='历史训练数据与统计' pageKey='trainingRecords' fallbackUrl='/pages/profile/index' />
 
       <View className='training-records-page__summary'>
         {[

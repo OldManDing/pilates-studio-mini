@@ -21,6 +21,7 @@ import { STORAGE_KEYS } from '../../constants/storage';
 import { clearAuthState, writeStorage } from '../../utils/storage';
 import { formatMembershipCreditsWithUnit } from '../../utils/membership';
 import { getMiniHeroContentStyle } from '../../utils/ui';
+import { useMiniPageImage } from '../../hooks/useMiniPageImage';
 import './index.scss';
 
 function getMaskedPhone(phone?: string) {
@@ -111,6 +112,7 @@ async function fetchAllMyBookings() {
 }
 
 export default function Profile() {
+  const { imageSrc: profileHeroImageSrc, fallbackImageSrc: profileHeroFallbackImageSrc, setImageSrc: setProfileHeroImageSrc, refresh: refreshProfileHeroImage } = useMiniPageImage('profile', '/assets/ui/hero-profile.jpg');
   const [loading, setLoading] = useState(true);
   const [loggingIn, setLoggingIn] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
@@ -121,6 +123,7 @@ export default function Profile() {
 
   useDidShow(() => {
     syncCustomTabBarSelected(2);
+    void refreshProfileHeroImage();
   });
 
   const fetchProfile = useCallback(async (options: FetchProfileOptions = {}) => {
@@ -373,7 +376,7 @@ export default function Profile() {
     <PageShell className='profile-page' reserveTabBarSpace flushTop>
       <View className='profile-page__content'>
         <View className='profile-page__hero'>
-          <Image className='profile-page__hero-image' src='/assets/ui/hero-profile.jpg' mode='aspectFill' />
+          <Image className='profile-page__hero-image' src={profileHeroImageSrc} mode='aspectFill' onError={() => setProfileHeroImageSrc(profileHeroFallbackImageSrc)} />
           <View className='profile-page__hero-mask' />
           <View className='profile-page__hero-inner' style={heroContentStyle}>
             <View className='profile-page__hero-main'>

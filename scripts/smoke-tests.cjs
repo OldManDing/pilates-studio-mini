@@ -149,6 +149,9 @@ assertIncludes('src/pages/courses/index.tsx', "['MAT', 'REFORMER', 'CADILLAC', '
 assertIncludes('src/pages/courses/index.tsx', 'courseSessionsApi.getUpcoming');
 assertNotIncludes('src/pages/courses/index.tsx', 'coursesApi.getAll');
 assertIncludes('src/pages/course-detail/index.tsx', 'profileLoadFailed');
+assertIncludes('src/pages/course-detail/index.tsx', 'sessionPickerOpen');
+assertIncludes('src/pages/course-detail/index.tsx', '选择预约场次');
+assertNotIncludes('src/pages/course-detail/index.tsx', 'showActionSheet');
 assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.createRenewalPayment');
 assertIncludes('src/pages/membership-renew/index.tsx', 'membershipPlansApi.completeMockRenewalPayment');
 assertIncludes('src/pages/membership-renew/index.tsx', 'Taro.requestPayment');

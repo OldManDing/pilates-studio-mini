@@ -172,7 +172,7 @@ export default function CoachDetail() {
   if (loading) {
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title='教练详情' subtitle='正在同步教练资料' fallbackUrl='/pages/coaches/index' />
+        <PageHeader title='教练详情' subtitle='正在同步教练资料' pageKey='coaches' fallbackUrl='/pages/coaches/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -196,7 +196,7 @@ export default function CoachDetail() {
 
     return (
       <PageShell safeAreaBottom>
-        <PageHeader title={emptyTitle} subtitle={emptySubtitle} fallbackUrl='/pages/coaches/index' />
+        <PageHeader title={emptyTitle} subtitle={emptySubtitle} pageKey='coaches' fallbackUrl='/pages/coaches/index' />
         <AppCard>
           <Empty title={emptyTitle} description={emptyDescription} />
           {canRetryCoachLoad ? (

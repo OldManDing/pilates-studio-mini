@@ -78,6 +78,7 @@ export default function Coaches() {
     <PageShell className='coaches-page' safeAreaBottom>
       <PageHeader
         title='教练团队'
+        pageKey='coaches'
         fallbackUrl='/pages/courses/index'
       />
 

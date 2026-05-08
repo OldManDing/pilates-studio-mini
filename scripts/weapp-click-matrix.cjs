@@ -176,7 +176,7 @@ async function runCase(mp, testCase) {
     index: testCase.index || 0,
     expected: testCase.expectAbsent
       ? 'selector absent'
-      : testCase.expectPath || testCase.expectText || testCase.expectClassContains || testCase.expectNative || '',
+      : testCase.expectPath || testCase.expectText || testCase.expectSelector || testCase.expectClassContains || testCase.expectNative || '',
     status: 'failed',
     durationMs: 0,
     beforePath: '',
@@ -256,6 +256,14 @@ async function runCase(mp, testCase) {
       result.evidence = `expected path ${normalizeRoute(testCase.expectPath)}, got ${page.path}`;
     } else if (testCase.expectText && !result.afterText.includes(testCase.expectText)) {
       result.evidence = `expected text "${testCase.expectText}" not found`;
+    } else if (testCase.expectSelector) {
+      const { count: afterCount } = await getElement(page, testCase.expectSelector, testCase.expectSelectorIndex || 0);
+      if (afterCount === 0) {
+        result.evidence = `expected selector not found after tap: ${testCase.expectSelector}`;
+      } else {
+        result.status = 'passed';
+        result.evidence = `selector rendered after tap: ${testCase.expectSelector}`;
+      }
     } else if (testCase.expectClassContains) {
       const { element: afterElement } = await getElement(page, testCase.selector, testCase.index || 0);
       const afterClass = afterElement ? await afterElement.attribute('class').catch(() => '') : '';
@@ -383,7 +391,7 @@ function cases() {
     { id: 'HDR-D01', module: '页头', entry: '课程详情返回课程列表', start: '/pages/course-detail/index', selector: '.page-header__back', expectPath: '/pages/courses/index' },
     { id: 'HDR-D02', module: '页头', entry: '课程详情成功态返回课程列表', start: '/pages/course-detail/index?id=cmnn7b1wh000e103eoua6vc4j', selector: '.floating-back-button', expectPath: '/pages/courses/index' },
     { id: 'BTN-D02', module: '课程详情', entry: '缺参返回课程列表', start: '/pages/course-detail/index', selector: '.empty__action .app-button', optional: true, expectPath: '/pages/courses/index' },
-    { id: 'BTN-D03', module: '课程详情', entry: '预约 CTA（场次无效保护）', start: '/pages/course-detail/index?id=cmnn7b1wh000e103eoua6vc4j', selector: '.course-detail-page__cta-button', expectNative: 'showActionSheet' },
+    { id: 'BTN-D03', module: '课程详情', entry: '预约 CTA 打开场次选择', start: '/pages/course-detail/index?id=cmnn7b1wh000e103eoua6vc4j', selector: '.course-detail-page__cta-button', expectSelector: '.course-detail-page__session-picker-panel' },
 
     { id: 'BTN-CO01', module: '教练列表', entry: '教练卡片第 1 项', start: '/pages/coaches/index', selector: '.coach-card', index: 0, before: async () => sleep(1600), expectPath: '/pages/coach-detail/index' },
     { id: 'HDR-CD01', module: '页头', entry: '教练详情返回教练列表', start: '/pages/coach-detail/index', selector: '.page-header__back', expectPath: '/pages/coaches/index' },

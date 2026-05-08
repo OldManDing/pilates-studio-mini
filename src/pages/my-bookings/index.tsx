@@ -301,6 +301,7 @@ export default function MyBookings() {
       <PageHeader
         title='我的预约'
         subtitle='管理你的课程安排'
+        pageKey='myBookings'
         fallbackUrl='/pages/profile/index'
       />
 

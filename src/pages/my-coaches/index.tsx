@@ -62,7 +62,7 @@ export default function MyCoaches() {
   if (loading) {
     return (
       <PageShell className='my-coaches-page' safeAreaBottom>
-        <PageHeader title='我的教练' subtitle='正在同步教练资料' fallbackUrl='/pages/profile/index' />
+        <PageHeader title='我的教练' subtitle='正在同步教练资料' pageKey='myCoaches' fallbackUrl='/pages/profile/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -72,7 +72,7 @@ export default function MyCoaches() {
 
   return (
     <PageShell className='my-coaches-page' safeAreaBottom>
-      <PageHeader title='我的教练' subtitle='常用教练与近期课程' fallbackUrl='/pages/profile/index' />
+      <PageHeader title='我的教练' subtitle='常用教练与近期课程' pageKey='myCoaches' fallbackUrl='/pages/profile/index' />
 
       <View className='my-coaches-page__hero'>
         <Text className='my-coaches-page__hero-label'>教练团队</Text>

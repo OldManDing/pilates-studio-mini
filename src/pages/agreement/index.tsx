@@ -37,7 +37,7 @@ const SECTIONS = [
 export default function Agreement() {
   return (
     <PageShell className='agreement-page' safeAreaBottom>
-      <PageHeader title='用户协议' subtitle='服务规则与账户责任' fallbackUrl='/pages/settings/index' />
+      <PageHeader title='用户协议' subtitle='服务规则与账户责任' pageKey='agreement' fallbackUrl='/pages/settings/index' />
 
       <AppCard className='legal-hero'>
         <Text className='legal-hero__label'>条款</Text>

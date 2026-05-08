@@ -257,7 +257,7 @@ export default function Notifications() {
   if (loading) {
     return (
       <PageShell className='notifications-page' safeAreaBottom>
-        <PageHeader title='消息通知' subtitle='正在同步消息' fallbackUrl='/pages/profile/index' />
+        <PageHeader title='消息通知' subtitle='正在同步消息' pageKey='notifications' fallbackUrl='/pages/profile/index' />
         <AppCard>
           <Loading compact />
         </AppCard>
@@ -270,6 +270,7 @@ export default function Notifications() {
       <PageHeader
         title='消息通知'
         subtitle={unreadCount > 0 ? `${unreadCount} 条未读消息` : '所有消息已读'}
+        pageKey='notifications'
         fallbackUrl='/pages/profile/index'
         rightSlot={unreadCount > 0 ? (
           <AppButton className='notifications-page__header-action' size='small' variant='outline' disabled={markingAllRead} loading={markingAllRead} onClick={handleMarkAllRead}>
