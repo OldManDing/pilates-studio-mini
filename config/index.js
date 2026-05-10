@@ -80,6 +80,10 @@ const config = {
     ALLOW_INSECURE_REAL_DEVICE_API: JSON.stringify(process.env.ALLOW_INSECURE_REAL_DEVICE_API === 'true'),
     USE_MINI_OPEN_ID_LOGIN: JSON.stringify(process.env.USE_MINI_OPEN_ID_LOGIN === 'true'),
     MINI_OPEN_ID: JSON.stringify(process.env.MINI_OPEN_ID || ''),
+    WECHAT_SUBSCRIBE_TEMPLATE_IDS: JSON.stringify([
+      process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID_BOOKING_CONFIRMATION || process.env.WECHAT_TEMPLATE_ID_BOOKING_CONFIRMATION || '',
+      process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID_BOOKING_REMINDER || process.env.WECHAT_TEMPLATE_ID_BOOKING_REMINDER || '',
+    ].filter(Boolean)),
     APP_VERSION: JSON.stringify(process.env.APP_VERSION || `v${packageInfo.version}`),
     SUPPORT_PHONE: JSON.stringify(process.env.SUPPORT_PHONE || ''),
     SUPPORT_EMAIL: JSON.stringify(process.env.SUPPORT_EMAIL || '')

@@ -24,3 +24,4 @@ declare const process: {
 };
 
 declare const API_BASE_URL: string;
+declare const WECHAT_SUBSCRIBE_TEMPLATE_IDS: string[];

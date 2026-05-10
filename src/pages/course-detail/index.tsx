@@ -10,6 +10,7 @@ import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, 
 import { CourseLevels, CourseTypes, Weekdays, getLabelByValue } from '../../constants/enums';
 import { showSafeToast } from '../../utils/feedback';
 import { formatDurationMinutes, getSafeMiniImageSrc } from '../../utils/ui';
+import { requestBookingSubscribeAuthorization } from '../../utils/wechatSubscribe';
 import './index.scss';
 
 const HERO_IMAGE_FALLBACK_BY_TYPE: Record<string, string> = {
@@ -249,6 +250,7 @@ export default function CourseDetail() {
 
       setSessionPickerOpen(false);
       setBookingLoading(true);
+      await requestBookingSubscribeAuthorization();
       await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' }, { showLoading: false });
       showSafeToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
