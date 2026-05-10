@@ -3,6 +3,14 @@ const fs = require('fs');
 const path = require('path');
 
 function loadLocalEnv() {
+  const isExplicitProductionRelease = process.env.APP_ENV === 'production'
+    || process.env.MINI_RELEASE === 'true'
+    || (process.env.CI === 'true' && process.env.NODE_ENV === 'production');
+
+  if (isExplicitProductionRelease) {
+    return;
+  }
+
   const envPath = path.resolve(__dirname, '../.env');
   if (!fs.existsSync(envPath)) {
     return;

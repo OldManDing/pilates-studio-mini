@@ -13,5 +13,6 @@ export function writeStorage<T>(key: string, value: T) {
 export function clearAuthState() {
   Taro.removeStorageSync('token');
   Taro.removeStorageSync(STORAGE_KEYS.profile);
+  Taro.removeStorageSync(STORAGE_KEYS.miniUser);
   Taro.removeStorageSync('biometricEnabled');
 }

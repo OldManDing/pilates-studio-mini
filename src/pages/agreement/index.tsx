@@ -10,7 +10,7 @@ const supportContact = [SUPPORT_PHONE, SUPPORT_EMAIL].filter(Boolean).join(' / '
 const SECTIONS = [
   {
     title: '服务说明',
-    content: '本小程序用于展示课程预约、会员权益、训练记录与门店服务信息。你在使用预约、会员和反馈功能时，应提供真实、准确的信息。',
+    content: '本小程序用于个人瑜伽、普拉提练习记录、课程安排查看与预约提醒。你在使用记录、预约和反馈功能时，应提供真实、准确的信息。',
   },
   {
     title: '预约规则',
@@ -41,7 +41,7 @@ export default function Agreement() {
 
       <AppCard className='legal-hero'>
         <Text className='legal-hero__label'>条款</Text>
-        <Text className='legal-hero__title'>愈己CareMe工作室用户服务协议</Text>
+        <Text className='legal-hero__title'>CareMe练习记录用户服务协议</Text>
         <Text className='legal-hero__desc'>更新日期：2026.04.25</Text>
       </AppCard>
 

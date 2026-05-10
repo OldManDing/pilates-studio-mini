@@ -110,7 +110,7 @@ const ERROR_MESSAGE_RULES: Array<{ pattern: RegExp; message: string }> = [
     message: '相关记录不存在或已更新，请刷新后重试',
   },
   {
-    pattern: /code is required|failed to exchange wechat code|wechat app credentials are not configured/i,
+    pattern: /code is required|failed to exchange wechat code|wechat app credentials are not configured|invalid code|invalid appid|invalid appsecret|invalid secret/i,
     message: '微信登录凭证无效，请重新登录后再试',
   },
   {

@@ -324,7 +324,7 @@ export default function Index() {
   const refreshGuideCheckedRef = useRef(false);
 
   useShareAppMessage(() => ({
-    title: '愈己CareMe工作室｜专业训练预约',
+    title: 'CareMe练习记录｜个人练习计划',
     path: '/pages/index/index',
   }));
 

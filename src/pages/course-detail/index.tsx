@@ -411,7 +411,7 @@ export default function CourseDetail() {
               <Icon name='pin' className='course-detail-page__meta-icon' />
               <View>
                 <Text className='course-detail-page__meta-title'>课程教室</Text>
-                <Text className='course-detail-page__meta-desc'>愈己CareMe工作室 · 朝阳门店</Text>
+                <Text className='course-detail-page__meta-desc'>CareMe练习记录</Text>
               </View>
             </View>
 

@@ -80,7 +80,7 @@ export default function Courses() {
   const initialFetchCompletedRef = useRef(false);
 
   useShareAppMessage(() => ({
-    title: '愈己CareMe工作室｜预约课程',
+    title: 'CareMe练习记录｜练习安排',
     path: '/pages/courses/index',
   }));
 

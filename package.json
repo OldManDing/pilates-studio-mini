@@ -1,8 +1,8 @@
 {
-  "name": "pilates-studio-mini",
+  "name": "careme-practice-mini",
   "version": "1.0.0",
   "private": true,
-  "description": "愈己CareMe工作室小程序",
+  "description": "CareMe练习记录小程序",
   "templateInfo": {
     "name": "default",
     "typescript": true,
@@ -48,7 +48,7 @@
     "Android >= 4.1",
     "ios >= 8"
   ],
-  "author": "愈己CareMe工作室",
+  "author": "CareMe练习记录",
   "dependencies": {
     "@babel/runtime": "^7.7.7",
     "@tarojs/components": "4.2.0",

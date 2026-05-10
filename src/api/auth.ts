@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro';
 import { localizeErrorMessage } from '../utils/errorMessages';
+import { STORAGE_KEYS } from '../constants/storage';
 
 declare const API_BASE_URL: string;
 declare const DEVTOOLS_API_BASE_URL: string;
@@ -11,6 +12,8 @@ interface MiniAuthPayload {
   success: boolean;
   data?: {
     accessToken: string;
+    miniUser?: MiniProgramUser;
+    member?: unknown;
   };
   error?: {
     message?: string;
@@ -24,6 +27,29 @@ interface MiniProgramAuthOptions {
 interface MiniProgramProfile {
   nickname?: string;
   avatarUrl?: string;
+}
+
+export interface MiniProgramUser {
+  id: string;
+  openId: string;
+  unionId?: string;
+  nickname?: string;
+  avatarUrl?: string;
+  phone?: string;
+  status: 'ACTIVE' | 'DISABLED';
+}
+
+interface PrivacyAuthorizationError {
+  errMsg?: string;
+}
+
+interface PrivacyAuthorizeOptions {
+  success?: () => void;
+  fail?: (error: PrivacyAuthorizationError) => void;
+}
+
+interface TaroPrivacyApi {
+  requirePrivacyAuthorize?: (options: PrivacyAuthorizeOptions) => void;
 }
 
 let authPromise: Promise<string | null> | null = null;
@@ -74,8 +100,38 @@ function getStoredToken(): string | null {
   return Taro.getStorageSync('token') || null;
 }
 
+function getStoredMiniUser(): MiniProgramUser | null {
+  return Taro.getStorageSync<MiniProgramUser | ''>(STORAGE_KEYS.miniUser) || null;
+}
+
+function getReusableStoredToken(options: MiniProgramAuthOptions): string | null {
+  const storedToken = getStoredToken();
+  if (!storedToken) {
+    return null;
+  }
+
+  return !options.interactive || getStoredMiniUser() ? storedToken : null;
+}
+
+function clearIncompleteMiniAuthState(options: MiniProgramAuthOptions) {
+  if (!options.interactive || !getStoredToken() || getStoredMiniUser()) {
+    return;
+  }
+
+  Taro.removeStorageSync('token');
+  Taro.removeStorageSync(STORAGE_KEYS.miniUser);
+}
+
 function shouldUseForcedMiniOpenIdLogin() {
   return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID) && (isWeChatDeveloperTool() || ALLOW_INSECURE_REAL_DEVICE_API);
+}
+
+function persistMiniAuthData(data: NonNullable<MiniAuthPayload['data']>) {
+  Taro.setStorageSync('token', data.accessToken);
+
+  if (data.miniUser) {
+    Taro.setStorageSync(STORAGE_KEYS.miniUser, data.miniUser);
+  }
 }
 
 async function confirmLoginAuthorization() {
@@ -90,6 +146,29 @@ async function confirmLoginAuthorization() {
   if (!result.confirm) {
     throw new Error('已取消授权登录');
   }
+}
+
+async function ensurePrivacyAuthorization() {
+  const privacyApi = Taro as unknown as TaroPrivacyApi;
+
+  if (typeof privacyApi.requirePrivacyAuthorize !== 'function') {
+    return;
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    privacyApi.requirePrivacyAuthorize?.({
+      success: () => resolve(),
+      fail: (error) => {
+        const errMsg = error?.errMsg || '';
+        if (/cancel|deny|refuse/i.test(errMsg)) {
+          reject(new Error('需要同意隐私保护指引后才能完成微信登录'));
+          return;
+        }
+
+        reject(new Error(localizeErrorMessage(errMsg, '微信隐私授权失败，请稍后重试')));
+      },
+    });
+  });
 }
 
 async function getAuthorizedProfile(): Promise<MiniProgramProfile> {
@@ -114,10 +193,11 @@ async function getAuthorizedProfile(): Promise<MiniProgramProfile> {
 }
 
 async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promise<string | null> {
-  const storedToken = getStoredToken();
+  const storedToken = getReusableStoredToken(options);
   if (storedToken) {
     return storedToken;
   }
+  clearIncompleteMiniAuthState(options);
 
   const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
   const apiBaseUrlUnavailableMessage = getApiBaseUrlUnavailableMessage(runtimeApiBaseUrl);
@@ -129,6 +209,7 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
 
   if (options.interactive && !forceMiniOpenIdLogin) {
     await confirmLoginAuthorization();
+    await ensurePrivacyAuthorization();
   }
 
   if (forceMiniOpenIdLogin) {
@@ -146,7 +227,7 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
       throw new Error(localizeErrorMessage(response.data?.error?.message, '小程序登录失败'));
     }
 
-    Taro.setStorageSync('token', response.data.data.accessToken);
+    persistMiniAuthData(response.data.data);
     return response.data.data.accessToken;
   }
 
@@ -181,15 +262,16 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
     throw new Error(localizeErrorMessage(response.data?.error?.message, '小程序登录失败'));
   }
 
-  Taro.setStorageSync('token', response.data.data.accessToken);
+  persistMiniAuthData(response.data.data);
   return response.data.data.accessToken;
 }
 
 export async function ensureMiniProgramAuth(options: MiniProgramAuthOptions = {}): Promise<string | null> {
-  const storedToken = getStoredToken();
+  const storedToken = getReusableStoredToken(options);
   if (storedToken) {
     return storedToken;
   }
+  clearIncompleteMiniAuthState(options);
 
   const now = Date.now();
   if (lastAuthFailureAt && now - lastAuthFailureAt < AUTH_FAILURE_COOLDOWN_MS) {

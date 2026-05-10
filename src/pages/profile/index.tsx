@@ -3,7 +3,7 @@ import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import { Image, View, Text } from '@tarojs/components';
 import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
-import { ensureMiniProgramAuth } from '../../api/auth';
+import { ensureMiniProgramAuth, type MiniProgramUser } from '../../api/auth';
 import { getApiErrorMessage } from '../../api/request';
 import { AppButton, Empty, Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
@@ -18,7 +18,7 @@ import type {
 } from './components/types';
 import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { STORAGE_KEYS } from '../../constants/storage';
-import { clearAuthState, writeStorage } from '../../utils/storage';
+import { clearAuthState, readStorage, writeStorage } from '../../utils/storage';
 import { formatMembershipCreditsWithUnit } from '../../utils/membership';
 import { getMiniHeroContentStyle } from '../../utils/ui';
 import { useMiniPageImage } from '../../hooks/useMiniPageImage';
@@ -32,12 +32,12 @@ function getMaskedPhone(phone?: string) {
   return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
 }
 
-function getDisplayName(member: Member | null) {
-  return member?.name || '微信用户';
+function getDisplayName(member: Member | null, miniUser: MiniProgramUser | null) {
+  return member?.name || miniUser?.nickname || '微信用户';
 }
 
-function getMemberInitial(member: Member | null) {
-  return member?.name?.slice(0, 1).toUpperCase() || 'P';
+function getMemberInitial(member: Member | null, miniUser: MiniProgramUser | null) {
+  return (member?.name || miniUser?.nickname)?.slice(0, 1).toUpperCase() || 'P';
 }
 
 function getJoinedMonths(joinedAt?: string) {
@@ -95,6 +95,11 @@ interface FetchProfileOptions {
   throwOnError?: boolean;
 }
 
+interface ProfileSnapshot {
+  member: Member | null;
+  miniUser: MiniProgramUser | null;
+}
+
 async function fetchAllMyBookings() {
   const pageSize = 50;
   const allBookings: Booking[] = [];
@@ -116,6 +121,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [loggingIn, setLoggingIn] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
+  const [miniUser, setMiniUser] = useState<MiniProgramUser | null>(() => readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null));
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [profileLoadFailed, setProfileLoadFailed] = useState(false);
@@ -126,15 +132,17 @@ export default function Profile() {
     void refreshProfileHeroImage();
   });
 
-  const fetchProfile = useCallback(async (options: FetchProfileOptions = {}) => {
+  const fetchProfile = useCallback(async (options: FetchProfileOptions = {}): Promise<ProfileSnapshot> => {
     try {
       setLoading(true);
       setStatsSyncFailed(false);
 
       const profileRes = await membersApi.getProfile({ showLoading: false });
       const nextMember = profileRes.data.member;
+      const nextMiniUser = readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null);
 
       setMember(nextMember);
+      setMiniUser(nextMiniUser);
       setProfileLoadFailed(false);
       if (nextMember) {
         writeStorage(STORAGE_KEYS.profile, {
@@ -161,8 +169,15 @@ export default function Profile() {
         setBookings([]);
         setStatsSyncFailed(true);
       }
+
+      return {
+        member: nextMember,
+        miniUser: nextMiniUser,
+      };
     } catch {
+      const cachedMiniUser = readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null);
       setMember(null);
+      setMiniUser(cachedMiniUser);
       setMemberships([]);
       setBookings([]);
       setProfileLoadFailed(true);
@@ -171,6 +186,11 @@ export default function Profile() {
       if (options.throwOnError) {
         throw new Error('个人资料同步失败');
       }
+
+      return {
+        member: null,
+        miniUser: cachedMiniUser,
+      };
     } finally {
       setLoading(false);
       Taro.stopPullDownRefresh();
@@ -217,20 +237,22 @@ export default function Profile() {
     ];
 
     return {
-      avatarText: getMemberInitial(member),
-      avatarUrl: member?.avatar,
-      name: getDisplayName(member),
-      badgeLabel: activeMembership ? '会员' : '访客',
-      phone: getMaskedPhone(member?.phone),
-      membershipLabel: activeMembership ? '会员权益' : '访客模式',
-      membershipTitle: activeMembership?.planName || '尚未开通会员',
+      avatarText: getMemberInitial(member, miniUser),
+      avatarUrl: member?.avatar || miniUser?.avatarUrl,
+      name: getDisplayName(member, miniUser),
+      badgeLabel: activeMembership ? '会员' : (miniUser ? '微信用户' : '访客'),
+      phone: member?.phone ? getMaskedPhone(member.phone) : (miniUser ? '会员档案待绑定' : getMaskedPhone(undefined)),
+      membershipLabel: activeMembership ? '会员权益' : (miniUser ? '会员档案' : '访客模式'),
+      membershipTitle: activeMembership?.planName || (miniUser ? '待门店绑定会员档案' : '尚未开通会员'),
       membershipDescription: activeMembership
         ? `${formatMembershipCreditsWithUnit(activeMembership)} · 有效期至 ${formatDateLabel(activeMembership.endDate)}`
-        : '登录后即可同步会员权益、课次余额与训练记录。',
+        : miniUser
+          ? '已完成微信登录，请联系门店绑定会员档案后同步权益、预约和训练记录。'
+          : '登录后即可同步会员权益、课次余额与训练记录。',
       syncNotice: member && statsSyncFailed ? '训练统计同步失败，累计课程与训练时长暂未更新，请下拉重试。' : undefined,
       stats,
     };
-  }, [activeMembership, bookings, member, statsSyncFailed]);
+  }, [activeMembership, bookings, member, miniUser, statsSyncFailed]);
 
   const menuSections = useMemo<ProfileMenuSectionData[]>(() => [
     {
@@ -303,8 +325,13 @@ export default function Profile() {
       try {
         setLoggingIn(true);
         await ensureMiniProgramAuth({ interactive: true });
-        await fetchProfile({ throwOnError: true });
-        Taro.showToast({ title: '登录成功', icon: 'success' });
+        const nextMiniUser = readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null);
+        setMiniUser(nextMiniUser);
+        const snapshot = await fetchProfile({ throwOnError: true });
+        if (!snapshot.member && !snapshot.miniUser) {
+          throw new Error('微信用户信息同步失败，请重新登录');
+        }
+        Taro.showToast({ title: snapshot.member ? '登录成功' : '已完成微信登录，会员档案待绑定', icon: 'success' });
       } catch (error) {
         Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
         return;
@@ -326,8 +353,13 @@ export default function Profile() {
     try {
       setLoggingIn(true);
       await ensureMiniProgramAuth({ interactive: true });
-      await fetchProfile({ throwOnError: true });
-      Taro.showToast({ title: '登录成功', icon: 'success' });
+      const nextMiniUser = readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null);
+      setMiniUser(nextMiniUser);
+      const snapshot = await fetchProfile({ throwOnError: true });
+      if (!snapshot.member && !snapshot.miniUser) {
+        throw new Error('微信用户信息同步失败，请重新登录');
+      }
+      Taro.showToast({ title: snapshot.member ? '登录成功' : '已完成微信登录，会员档案待绑定', icon: 'success' });
     } catch (error) {
       Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
     } finally {
@@ -356,6 +388,7 @@ export default function Profile() {
 
     clearAuthState();
     setMember(null);
+    setMiniUser(null);
     setMemberships([]);
     setBookings([]);
     setProfileLoadFailed(false);
@@ -380,8 +413,8 @@ export default function Profile() {
           <View className='profile-page__hero-mask' />
           <View className='profile-page__hero-inner' style={heroContentStyle}>
             <View className='profile-page__hero-main'>
-              <Text className='profile-page__hero-title'>{getDisplayName(member)}</Text>
-              <Text className='profile-page__hero-subtitle'>{member ? getMaskedPhone(member.phone) : '登录后同步会员资料'}</Text>
+              <Text className='profile-page__hero-title'>{getDisplayName(member, miniUser)}</Text>
+              <Text className='profile-page__hero-subtitle'>{member ? getMaskedPhone(member.phone) : (miniUser ? '会员档案待绑定' : '登录后同步会员资料')}</Text>
             </View>
           </View>
         </View>
@@ -397,7 +430,7 @@ export default function Profile() {
               onActionClick={handleLogin}
             />
           </View>
-        ) : !member ? (
+        ) : !member && !miniUser ? (
           <View className='profile-page__login-panel'>
             <Text className='profile-page__login-title'>登录同步会员资料</Text>
             <Text className='profile-page__login-desc'>使用微信登录后，可同步会员权益、预约记录和训练数据。</Text>
@@ -405,13 +438,18 @@ export default function Profile() {
               {loggingIn ? '登录中…' : '微信登录'}
             </AppButton>
           </View>
+        ) : !member && miniUser ? (
+          <View className='profile-page__login-panel'>
+            <Text className='profile-page__login-title'>已完成微信登录</Text>
+            <Text className='profile-page__login-desc'>当前微信账号尚未绑定门店会员档案，绑定后可同步会员权益、预约记录和训练数据。</Text>
+          </View>
         ) : null}
 
         {menuSections.map((section) => (
           <ProfileMenuSection key={section.key} data={section} onItemClick={handleMenuClick} />
         ))}
 
-        {member ? <ProfileSignOutButton data={signOutData} onClick={handleSignOut} /> : null}
+        {member || miniUser ? <ProfileSignOutButton data={signOutData} onClick={handleSignOut} /> : null}
       </View>
     </PageShell>
   );
