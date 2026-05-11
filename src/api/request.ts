@@ -15,6 +15,9 @@ interface RequestConfig {
   showLoading?: boolean;
   loadingText?: string;
   skipAuth?: boolean;
+  suppressErrorToast?: boolean;
+  timeoutMs?: number;
+  authInteractive?: boolean;
 }
 
 export interface PaginationMeta {
@@ -46,7 +49,7 @@ export class ApiBusinessError extends Error {
 }
 
 export function isUnauthorizedApiError(error: unknown) {
-  return error instanceof ApiBusinessError && error.code === 'UNAUTHORIZED';
+  return error instanceof ApiBusinessError && /^unauthorized$/i.test(error.code || '');
 }
 
 export function getApiErrorMessage(error: unknown, fallback: string) {
@@ -145,6 +148,9 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     showLoading = true,
     loadingText = '加载中...',
     skipAuth = false,
+    suppressErrorToast = false,
+    timeoutMs = 30000,
+    authInteractive = false,
   } = config;
 
   let loadingAcquired = false;
@@ -180,10 +186,10 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
 
     let token = getToken();
     if (!token && url !== '/mini-auth/login' && !skipAuth) {
-      token = await ensureMiniProgramAuth({ interactive: true });
+      token = await ensureMiniProgramAuth({ interactive: authInteractive });
     }
 
-    const response = await Taro.request({
+    let response = await Taro.request({
       url: fullUrl,
       method,
       data: method !== 'GET' ? data : undefined,
@@ -192,8 +198,26 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
-      timeout: 30000,
+      timeout: timeoutMs,
     });
+
+    if (response.statusCode === 401 && url !== '/mini-auth/login' && !skipAuth) {
+      clearAuthState();
+      const refreshedToken = await ensureMiniProgramAuth({ interactive: authInteractive });
+      if (refreshedToken) {
+        response = await Taro.request({
+          url: fullUrl,
+          method,
+          data: method !== 'GET' ? data : undefined,
+          header: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${refreshedToken}`,
+            ...headers,
+          },
+          timeout: timeoutMs,
+        });
+      }
+    }
 
     closeLoading();
 
@@ -222,6 +246,10 @@ async function request<T = unknown>(config: RequestConfig): Promise<ApiResponse<
     const errorWithMessage = error as { errMsg?: string; message?: string };
 
     const apiBaseUrlUnavailableMessage = getApiBaseUrlUnavailableMessage(getRuntimeApiBaseUrl());
+
+    if (suppressErrorToast) {
+      throw requestError;
+    }
 
     if (apiBaseUrlUnavailableMessage) {
       showSafeToast({ title: apiBaseUrlUnavailableMessage, icon: 'none' });

@@ -10,10 +10,14 @@ interface CustomTabBarState {
   selected: number;
 }
 
-function getSelectedIndex() {
+function getCurrentRouteUrl() {
   const pages = Taro.getCurrentPages();
   const currentPage = pages[pages.length - 1];
-  const currentRoute = currentPage ? `/${currentPage.route}` : toTabPageUrl(TAB_ITEMS[0].pagePath);
+  return currentPage ? `/${currentPage.route}` : toTabPageUrl(TAB_ITEMS[0].pagePath);
+}
+
+function getSelectedIndex() {
+  const currentRoute = getCurrentRouteUrl();
   const selected = TAB_ITEMS.findIndex((item) => toTabPageUrl(item.pagePath) === currentRoute);
 
   return selected >= 0 ? selected : 0;
@@ -45,10 +49,16 @@ export default class CustomTabBar extends Component<Record<string, never>, Custo
       return;
     }
 
+    const targetUrl = toTabPageUrl(item.pagePath);
+    if (targetUrl === getCurrentRouteUrl()) {
+      this.setSelected(index);
+      return;
+    }
+
     this.switching = true;
 
     try {
-      await Taro.switchTab({ url: toTabPageUrl(item.pagePath) });
+      await Taro.switchTab({ url: targetUrl });
     } catch {
       this.setSelected(getSelectedIndex());
       Taro.showToast({ title: '切换失败，请重试', icon: 'none' });

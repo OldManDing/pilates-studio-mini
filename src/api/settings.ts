@@ -43,5 +43,7 @@ export const settingsApi = {
   getMiniPageImages: () => http.get<MiniPageImageSetting[]>('/settings/mini-page-images', { compact: true }, {
     showLoading: false,
     skipAuth: true,
+    suppressErrorToast: true,
+    timeoutMs: 30000,
   }),
 };
