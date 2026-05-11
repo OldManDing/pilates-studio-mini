@@ -40,7 +40,7 @@ export interface MiniPageImageSetting {
 
 export const settingsApi = {
   getStudio: () => http.get<StudioSettings>('/settings/studio', undefined, { showLoading: false }),
-  getMiniPageImages: () => http.get<MiniPageImageSetting[]>('/settings/mini-page-images', undefined, {
+  getMiniPageImages: () => http.get<MiniPageImageSetting[]>('/settings/mini-page-images', { compact: true }, {
     showLoading: false,
     skipAuth: true,
   }),
