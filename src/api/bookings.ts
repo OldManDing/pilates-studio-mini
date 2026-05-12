@@ -131,10 +131,4 @@ export const bookingsApi = {
     const response = await http.patch<Booking>(`/bookings/${id}/cancel`, { reason });
     return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
   },
-
-  // Check in
-  checkIn: async (id: string) => {
-    const response = await http.patch<Booking>(`/bookings/${id}/checkin`);
-    return wrapObjectData({ ...response, data: normalizeBooking(response.data) }, 'booking');
-  },
 };

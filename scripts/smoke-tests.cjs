@@ -261,6 +261,11 @@ assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.se
 assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.service.ts', 'bookingCode: result.bookingCode');
 assertIncludes('../pilates-studio-admin/backend/src/modules/notifications/notification-delivery.service.ts', 'buildWeChatTemplateData');
 assertIncludes('../pilates-studio-admin/backend/src/modules/notifications/notification-delivery.service.ts', 'notifications.templateFields');
+assertIncludes('../pilates-studio-admin/backend/src/modules/notifications/notification-delivery.service.ts', "thing2: 'courseName'");
+assertIncludes('../pilates-studio-admin/backend/src/modules/notifications/notification-delivery.service.ts', "time3: 'startsAt'");
+assertIncludes('../pilates-studio-admin/docker-compose.yml', 'WECHAT_MINIPROGRAM_STATE: ${WECHAT_MINIPROGRAM_STATE:-trial}');
+assertIncludes('.env.example', 'WECHAT_SUBSCRIBE_TEMPLATE_ID_BOOKING_CONFIRMATION=YWFpfLKKasXqCC8fcFRYbUMD-0IxtpxyIWI4mboleTc');
+assertIncludes('.env.example', 'WECHAT_SUBSCRIBE_TEMPLATE_ID_BOOKING_REMINDER=IuIFavZGWZ62G2G2-QqXVWJJqvj_YS5UrJx6XXIK1Xg');
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.controller.ts', "@Controller('membership-renewals')");
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'MEMBERSHIP_RENEWAL');
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-renewals/membership-renewals.service.ts', 'TransactionStatus.PENDING');
@@ -273,8 +278,8 @@ assertNotIncludes('../pilates-studio-admin/backend/src/modules/bookings/dto/crea
 assertIncludes('../pilates-studio-admin/backend/src/modules/support/support.controller.ts', "@Post('feedback')");
 assertIncludes('../pilates-studio-admin/backend/src/modules/support/support.service.ts', 'MINI_PROGRAM_FEEDBACK');
 assertIncludes('../pilates-studio-admin/backend/src/modules/support/support.service.ts', 'Feedback content is required');
-assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.controller.ts', "@Patch(':id/checkin')");
-assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.service.ts', 'Cannot check in another member booking');
+assertNotIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.controller.ts', "@Patch(':id/checkin')");
+assertIncludes('../pilates-studio-admin/backend/src/modules/bookings/bookings.service.ts', '请在签到核销中完成签到和课后完成');
 assertIncludes('../pilates-studio-admin/backend/src/modules/course-sessions/course-sessions.controller.ts', '@AllowMiniUser()');
 assertIncludes('../pilates-studio-admin/backend/src/modules/membership-plans/membership-plans.controller.ts', '@AllowMiniUser()');
 assertIncludes('../pilates-studio-admin/backend/src/modules/courses/courses.controller.ts', '@AllowMiniUser()');

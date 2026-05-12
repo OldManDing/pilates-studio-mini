@@ -621,7 +621,6 @@ async function main() {
     ['API-037', 'members', 'GET', (ctx) => ctx.memberId && `/members/${ctx.memberId}`, 'src/api/members.ts', 'API 客户端暴露但非小程序授权的会员详情', [403]],
     ['API-038', 'members', 'PUT', (ctx) => ctx.memberId && `/members/${ctx.memberId}`, 'src/api/members.ts', 'API 客户端暴露但非小程序授权的会员更新', [403]],
     ['API-039', 'bookings', 'GET', '/bookings?page=1&pageSize=1', 'src/api/bookings.ts', 'API 客户端暴露但非小程序授权的全部预约', [403]],
-    ['API-040', 'bookings', 'PATCH', (ctx) => ctx.bookingId && `/bookings/${ctx.bookingId}/checkin`, 'src/api/bookings.ts', 'API 客户端暴露但当前路由未允许小程序签到', [403]],
   ];
 
   for (const [id, moduleName, method, apiPath, source, scenario, allowStatuses] of nonMiniCases) {
