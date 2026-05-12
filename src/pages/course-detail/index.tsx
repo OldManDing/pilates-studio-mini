@@ -3,7 +3,7 @@ import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
 import { coursesApi, Course, CourseSession } from '../../api/courses';
-import { bookingsApi } from '../../api/bookings';
+import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, Member } from '../../api/members';
 import { getApiErrorMessage } from '../../api/request';
 import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, PageHeader, PageShell } from '../../components';
@@ -30,6 +30,8 @@ const TYPE_SUBTITLE_MAP: Record<string, string> = {
   BARREL: '脊柱矫正桶',
   PRIVATE: '私教课程',
 };
+
+const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
 
 function pad(value: number) {
   return String(value).padStart(2, '0');
@@ -128,6 +130,28 @@ function isSessionBookable(session: CourseSession) {
   return session.isActive !== false && (Number.isNaN(endsAt) || endsAt > Date.now());
 }
 
+function hasActiveBookingForCourse(bookings: Booking[], courseId: string, sessionIds: Set<string>) {
+  return bookings.some((booking) => {
+    if (!ACTIVE_BOOKING_STATUSES.includes(booking.status)) {
+      return false;
+    }
+
+    return sessionIds.has(booking.sessionId) || booking.session?.course?.id === courseId;
+  });
+}
+
+async function fetchActiveCourseBookingState(courseId: string, sessions: CourseSession[]) {
+  const sessionIds = new Set(sessions.map((session) => session.id));
+  const responses = await Promise.all(
+    ACTIVE_BOOKING_STATUSES.map((status) => (
+      bookingsApi.getMyBookings({ page: 1, limit: 100, status }, { showLoading: false })
+    )),
+  );
+  const bookings = responses.flatMap((response) => response.data.bookings || []);
+
+  return hasActiveBookingForCourse(bookings, courseId, sessionIds);
+}
+
 export default function CourseDetail() {
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<Course | null>(null);
@@ -159,10 +183,17 @@ export default function CourseDetail() {
           .then((response) => ({ response, failed: false }))
           .catch(() => ({ response: { data: { member: null as Member | null } }, failed: true })),
       ]);
+      const nextSessions = (sessionsRes.data.sessions || []).filter(isSessionBookable);
+      const nextMember = profileRes.response.data.member || null;
       setCourse(courseRes.data.course);
-      setSessions((sessionsRes.data.sessions || []).filter(isSessionBookable));
-      setMember(profileRes.response.data.member || null);
+      setSessions(nextSessions);
+      setMember(nextMember);
       setProfileLoadFailed(profileRes.failed);
+      setBooked(false);
+      if (nextMember?.id) {
+        const nextBooked = await fetchActiveCourseBookingState(id, nextSessions).catch(() => false);
+        setBooked(nextBooked);
+      }
       const nextHero = getSafeMiniImageSrc(courseRes.data.course.coverImageUrl, HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg');
       setHeroImageSrc(nextHero);
     } catch {
@@ -323,8 +354,11 @@ export default function CourseDetail() {
 
   const subtitle = TYPE_SUBTITLE_MAP[course.type] || getLabelByValue(CourseTypes, course.type);
   const heroImageFallback = HERO_IMAGE_FALLBACK_BY_TYPE[course.type] || '/assets/ui/booking-yoga.svg';
-  const instructorName = course.coach?.name || '待安排';
-  const instructorDescription = course.coach?.bio || '基于当前课程资料展示教练公开信息。';
+  const instructor = featuredSession?.coach || course.coach;
+  const instructorName = instructor?.name || '待安排';
+  const instructorDescription = instructor?.id === course.coach?.id && course.coach?.bio
+    ? course.coach.bio
+    : '基于当前课程资料展示教练公开信息。';
   const sessionDate = featuredSession?.startsAt;
   const timeRange = formatTimeRange(featuredSession?.startsAt, featuredSession?.endsAt);
   const durationMinutes = getDurationMinutes(featuredSession?.startsAt, featuredSession?.endsAt, course.durationMinutes);
@@ -347,7 +381,7 @@ export default function CourseDetail() {
   const ctaLabel = bookingLoading
     ? '预约中…'
     : booked
-      ? '已预约成功'
+      ? '已预约'
       : !featuredSession
         ? '查看全部课程'
         : profileLoadFailed
@@ -440,8 +474,8 @@ export default function CourseDetail() {
             <AppCard>
               <View className='course-detail-page__instructor'>
                 <View className='course-detail-page__instructor-avatar'>
-                  {course.coach?.avatar ? (
-                    <Image className='course-detail-page__instructor-avatar-image' src={course.coach.avatar} mode='aspectFill' />
+                  {instructor?.avatar ? (
+                    <Image className='course-detail-page__instructor-avatar-image' src={instructor.avatar} mode='aspectFill' />
                   ) : (
                     <Text className='course-detail-page__instructor-avatar-text'>{instructorName.slice(0, 1)}</Text>
                   )}
@@ -495,23 +529,16 @@ export default function CourseDetail() {
       <View className='course-detail-page__cta-wrap'>
         <View className='course-detail-page__cta-line' />
         <View className='course-detail-page__cta-inner'>
-          {booked ? (
-            <View className='course-detail-page__success'>
-                <Icon name='check' className='course-detail-page__success-icon' />
-              <Text className='course-detail-page__success-text'>已预约成功</Text>
-            </View>
-          ) : (
-            <AppButton
-              className='course-detail-page__cta-button'
-              size='medium'
-              variant='primary'
-              disabled={ctaDisabled}
-              loading={bookingLoading}
-              onClick={handleCtaClick}
-            >
-              {ctaLabel}
-            </AppButton>
-          )}
+          <AppButton
+            className='course-detail-page__cta-button'
+            size='medium'
+            variant='primary'
+            disabled={ctaDisabled}
+            loading={bookingLoading}
+            onClick={handleCtaClick}
+          >
+            {ctaLabel}
+          </AppButton>
         </View>
       </View>
 

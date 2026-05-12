@@ -67,7 +67,7 @@ export interface CourseSession {
   id: string;
   sessionCode: string;
   courseId: string;
-  coachId: string;
+  coachId?: string | null;
   startsAt: string;
   endsAt: string;
   capacity: number;
