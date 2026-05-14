@@ -1,6 +1,7 @@
 import { Image, Text, View } from '@tarojs/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppCard } from '../../../components';
+import { getSafeMiniImageSrc } from '../../../utils/ui';
 import type { BookingCourseCardData } from './types';
 
 interface BookingCourseCardProps {
@@ -17,7 +18,12 @@ export default function BookingCourseCard({ data, onClick }: BookingCourseCardPr
   };
 
   const fallbackImageSrc = thumbImageMap[data.imageKind] || thumbImageMap.yoga;
-  const [imageSrc, setImageSrc] = useState(data.imageUrl || fallbackImageSrc);
+  const resolvedImageSrc = getSafeMiniImageSrc(data.imageUrl, fallbackImageSrc);
+  const [imageSrc, setImageSrc] = useState(resolvedImageSrc);
+
+  useEffect(() => {
+    setImageSrc(resolvedImageSrc);
+  }, [resolvedImageSrc]);
 
   return (
     <AppCard className={`booking-course-card ${data.full ? 'booking-course-card--full' : ''}`} padding='none' onClick={onClick}>

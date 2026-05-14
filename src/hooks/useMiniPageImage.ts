@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { settingsApi, type MiniPageImageKey, type MiniPageImageSetting } from '../api/settings';
+import { getSafeMiniImageSrc } from '../utils/ui';
 
 const miniPageImageCache = new Map<MiniPageImageKey, string>();
 const miniPageInlineFileCache = new Map<string, string>();
 let miniPageImagesRequest: Promise<MiniPageImageSetting[]> | null = null;
+let miniPageImagesRequestKey = '';
 let miniPageImagesFetchedAt = 0;
 let miniPageImagesLastFailureAt = 0;
 
@@ -39,6 +41,10 @@ export const MINI_PAGE_IMAGE_FALLBACKS: Record<MiniPageImageKey, string> = {
   agreement: '/assets/ui/hero-profile.jpg',
   privacy: '/assets/ui/hero-profile.jpg',
   transactions: '/assets/ui/hero-profile.jpg',
+};
+
+const MINI_PAGE_IMAGE_INHERITANCE: Partial<Record<MiniPageImageKey, MiniPageImageKey>> = {
+  myCoaches: 'coaches',
 };
 
 function hasCachedMiniPageImages() {
@@ -125,35 +131,60 @@ function sanitizeMiniPageImageUrl(item: MiniPageImageSetting) {
     return resolveInlineImagePath(item.pageKey, imageUrl);
   }
 
-  return imageUrl || defaultImageUrl;
+  return getSafeMiniImageSrc(imageUrl, defaultImageUrl);
 }
 
-function getMiniPageImages(options: { force?: boolean } = {}) {
+function getMiniPageImages(options: { force?: boolean; requiredPageKey?: MiniPageImageKey } = {}) {
   const force = options.force === true;
+  const missingRequiredPageImage = options.requiredPageKey ? !miniPageImageCache.has(options.requiredPageKey) : false;
 
-  if (!force && (isMiniPageImagesCacheFresh() || isMiniPageImagesRetryCoolingDown())) {
+  if (!force && !missingRequiredPageImage && (isMiniPageImagesCacheFresh() || isMiniPageImagesRetryCoolingDown())) {
     return Promise.resolve([]);
   }
 
   if (force) {
     miniPageImagesRequest = null;
+    miniPageImagesRequestKey = '';
   }
 
-  if (!miniPageImagesRequest) {
-    miniPageImagesRequest = settingsApi.getMiniPageImages()
+  const requestKey = options.requiredPageKey || '__all__';
+  if (!miniPageImagesRequest || miniPageImagesRequestKey !== requestKey) {
+    miniPageImagesRequestKey = requestKey;
+    miniPageImagesRequest = settingsApi.getMiniPageImages(options.requiredPageKey)
       .then((response) => {
-        miniPageImageCache.clear();
+        if (!options.requiredPageKey) {
+          miniPageImageCache.clear();
+        }
+
+        const sanitizedImages = new Map<MiniPageImageKey, string>();
+        const defaultStates = new Map<MiniPageImageKey, boolean>();
+
         (response.data || []).forEach((item) => {
-          miniPageImageCache.set(item.pageKey, sanitizeMiniPageImageUrl(item));
+          sanitizedImages.set(item.pageKey, sanitizeMiniPageImageUrl(item));
+          defaultStates.set(item.pageKey, item.isDefault);
+        });
+
+        (response.data || []).forEach((item) => {
+          const inheritedPageKey = MINI_PAGE_IMAGE_INHERITANCE[item.pageKey];
+          const inheritedImage = inheritedPageKey ? sanitizedImages.get(inheritedPageKey) : undefined;
+          const inheritedIsDefault = inheritedPageKey ? defaultStates.get(inheritedPageKey) !== false : true;
+          const imageSrc = item.isDefault && inheritedImage && !inheritedIsDefault
+            ? inheritedImage
+            : sanitizedImages.get(item.pageKey);
+
+          miniPageImageCache.set(item.pageKey, imageSrc || getMiniPageImageFallback(item.pageKey));
         });
         miniPageImagesFetchedAt = Date.now();
         miniPageImagesLastFailureAt = 0;
         return response.data;
       })
       .catch((error) => {
-        miniPageImagesRequest = null;
         miniPageImagesLastFailureAt = Date.now();
         throw error;
+      })
+      .finally(() => {
+        miniPageImagesRequest = null;
+        miniPageImagesRequestKey = '';
       });
   }
 
@@ -173,20 +204,22 @@ export function useMiniPageImage(pageKey: MiniPageImageKey | undefined, fallback
   const [imageSrc, setImageSrc] = useState(resolvedFallback);
 
   const refresh = useCallback((options?: { force?: boolean }) => {
+    const force = options?.force ?? true;
+
     if (!pageKey) {
       setImageSrc(resolvedFallback);
       return Promise.resolve();
     }
 
     const cachedImage = miniPageImageCache.get(pageKey);
-    if (cachedImage && !options?.force) {
+    if (cachedImage && !force) {
       setImageSrc(cachedImage);
       if (isMiniPageImagesCacheFresh() || isMiniPageImagesRetryCoolingDown()) {
         return Promise.resolve();
       }
     }
 
-    return getMiniPageImages({ force: options?.force })
+    return getMiniPageImages({ force, requiredPageKey: pageKey })
       .then(() => {
         setImageSrc(miniPageImageCache.get(pageKey) || resolvedFallback);
       })
@@ -213,7 +246,7 @@ export function useMiniPageImage(pageKey: MiniPageImageKey | undefined, fallback
       };
     }
 
-    getMiniPageImages()
+    getMiniPageImages({ requiredPageKey: pageKey })
       .then(() => {
         if (!active) {
           return;

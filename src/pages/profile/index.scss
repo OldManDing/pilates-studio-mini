@@ -428,17 +428,33 @@
     min-width: 0;
   }
 
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    margin-bottom: 1px;
+  }
+
   &__title,
   &__description {
     display: block;
   }
 
   &__title {
-    margin-bottom: 1px;
     color: $text-primary;
     font-size: $figma-body-lg;
     font-weight: $font-weight-medium;
     line-height: 1.25;
+  }
+
+  &__unread-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: $radius-full;
+    background: #f3b23c;
+    box-shadow: 0 0 0 4px rgba(#f3b23c, 0.16);
+    flex-shrink: 0;
   }
 
   &__description {
@@ -450,10 +466,11 @@
 
   &__arrow {
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    color: $gray-300;
+    width: 30px;
+    height: 30px;
+    color: $gray-400;
     flex-shrink: 0;
+    opacity: 0.92;
   }
 
   &__login-hint {

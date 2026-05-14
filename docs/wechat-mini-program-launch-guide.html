@@ -1,0 +1,393 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鎰堝繁CareMe灏忕▼搴忎笂绾挎搷浣滄寚鍗?/title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --ok: #ecfdf5;
+      --ok-line: #10b981;
+      --warn: #fff7ed;
+      --warn-line: #f97316;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+    }
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    h1, h2, h3 {
+      line-height: 1.35;
+      margin: 0 0 12px;
+    }
+    h1 { font-size: 30px; }
+    h2 {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      font-size: 22px;
+    }
+    h3 { margin-top: 20px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+    code, pre {
+      background: #f3f4f6;
+      border-radius: 8px;
+      font-family: Consolas, "SFMono-Regular", Menlo, Monaco, monospace;
+    }
+    code { padding: 2px 6px; }
+    pre {
+      padding: 14px 16px;
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+      margin: 12px 0 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 0;
+      background: var(--panel);
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      margin-top: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .callout {
+      border-left: 4px solid var(--ok-line);
+      background: var(--ok);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 16px;
+    }
+    .warn {
+      border-left-color: var(--warn-line);
+      background: var(--warn);
+    }
+    ul, ol {
+      margin: 10px 0 0 22px;
+      padding: 0;
+    }
+    li { margin: 6px 0; }
+    .small { color: var(--muted); font-size: 14px; }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      line-height: 1;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    .footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 720px) {
+      h1 { font-size: 24px; }
+      h2 { font-size: 19px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>鎰堝繁CareMe灏忕▼搴忎笂绾挎搷浣滄寚鍗?/h1>
+  <p class="small">閫傜敤鑼冨洿锛氬井淇″叕浼楀钩鍙板皬绋嬪簭淇℃伅濉啓銆佹湇鍔″櫒鍩熷悕閰嶇疆銆佸悗绔櫥褰曢厤缃€佷唬鐮佷笂浼犮€佹彁浜ゅ鏍搞€佹寮忓彂甯冦€?/p>
+
+  <div class="callout">
+    <strong>褰撳墠宸插畬鎴?/strong>锛氬悗鍙板妗堛€丠TTPS銆丄PI 鍩熷悕銆佸悗鍙?CORS銆佸悗鍙板煙鍚?<code>careme.xmlga.top</code>銆?br />
+    <strong>浣犳帴涓嬫潵瑕佸仛</strong>锛氬～鍐欏皬绋嬪簭淇℃伅銆佽ˉ灏忕▼搴忕敓浜т俊鎭€佽ˉ鍚庣寰俊鐧诲綍鍑瘉銆佷笂浼犱唬鐮併€佹彁浜ゅ鏍搞€佸彂甯冦€?  </div>
+
+  <div class="panel">
+    <div>
+      <span class="tag">褰撳墠鍚庡彴鍩熷悕</span>
+      <span class="tag">API 鍩熷悕</span>
+      <span class="tag">灏忕▼搴忕敓浜ч厤缃?/span>
+      <span class="tag">寰俊鍏紬骞冲彴</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>椤圭洰</th>
+          <th>褰撳墠鍊?/th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>鍚庡彴绠＄悊绔?/td>
+          <td><code>https://careme.xmlga.top</code></td>
+        </tr>
+        <tr>
+          <td>鍚庣 API</td>
+          <td><code>https://api.xmlga.top/api</code></td>
+        </tr>
+        <tr>
+          <td>灏忕▼搴?AppID</td>
+          <td><code>wxf254be7f362e2881</code></td>
+        </tr>
+        <tr>
+          <td>灏忕▼搴忕敓浜ч厤缃枃浠?/td>
+          <td><code>F:\pilates-studio-mini\.env.production.draft</code></td>
+        </tr>
+        <tr>
+          <td>鍚庣鐢熶骇閰嶇疆鏂囦欢</td>
+          <td><code>F:\pilates-studio-admin\.env.production.draft</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>1. 鍏堝噯澶囪繖浜涙潗鏂?/h2>
+  <table>
+    <thead>
+      <tr>
+        <th>鏉愭枡</th>
+        <th>浣犻渶瑕佸噯澶囦粈涔?/th>
+        <th>涓轰粈涔堣鍑嗗</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>灏忕▼搴忎俊鎭?/td>
+        <td>鍚嶇О銆佸ご鍍忋€佺畝浠嬨€佹湇鍔＄被鐩€佷富浣撲俊鎭€佺鐞嗗憳/寮€鍙戣€呰处鍙?/td>
+        <td>杩欎簺鏄井淇″叕浼楀钩鍙扳€滃熀鏈俊鎭?灏忕▼搴忎俊鎭€濋噷瑕佸～鍐欑殑鍐呭</td>
+      </tr>
+      <tr>
+        <td>寰俊鐧诲綍鍑瘉</td>
+        <td>AppSecret</td>
+        <td>鍚庣鐢ㄥ畠鎶?<code>wx.login</code> 鐨?code 鎹㈡垚 openId</td>
+      </tr>
+      <tr>
+        <td>瀹㈡湇淇℃伅</td>
+        <td>瀹㈡湇鐢佃瘽銆佸鏈嶉偖绠?/td>
+        <td>浼氳繘鍏ュ皬绋嬪簭鐢熶骇閰嶇疆鍜屼笂绾挎鏌?/td>
+      </tr>
+      <tr>
+        <td>瀹℃牳绱犳潗</td>
+        <td>棣栭〉銆侀绾︺€佹垜鐨勩€佽绋嬨€佹暀缁冦€侀€氱煡銆佸弽棣堛€佽缃€佸崗璁〉闈㈡埅鍥?/td>
+        <td>寰俊瀹℃牳鏃跺鏋滆姹傝ˉ鍏呰鏄庢垨鎴浘浼氱敤鍒?/td>
+      </tr>
+      <tr>
+        <td>涓氬姟璧勮川</td>
+        <td>鎸夊井淇″疄闄呰姹傛彁渚涳紝濡備富浣撹璇併€佺被鐩祫璐ㄣ€佽涓氳瘉鏄?/td>
+        <td>濡傛灉绫荤洰瀹℃牳瑕佹眰鏉愭枡锛屽繀椤荤幇鍦鸿ˉ榻?/td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. 濉啓灏忕▼搴忎俊鎭?/h2>
+  <div class="panel">
+    <ol>
+      <li>鐧诲綍寰俊鍏紬骞冲彴锛?a href="https://mp.weixin.qq.com/" target="_blank" rel="noreferrer">https://mp.weixin.qq.com/</a></li>
+      <li>浣跨敤灏忕▼搴忕鐞嗗憳鎵爜鐧诲綍銆?/li>
+      <li>杩涘叆灏忕▼搴忓悗鍙板悗锛屾壘鍒?<strong>璁剧疆</strong> 鎴?<strong>灏忕▼搴忎俊鎭?/strong> 鐩稿叧鑿滃崟銆?/li>
+      <li>濉啓/纭浠ヤ笅鍐呭锛?        <ul>
+          <li><strong>灏忕▼搴忓悕绉?/strong>锛氬缓璁娇鐢?<code>鎰堝繁CareMe宸ヤ綔瀹?/code>锛屽拰闂ㄥ簵鍝佺墝淇濇寔涓€鑷淬€?/li>
+          <li><strong>澶村儚</strong>锛氫笂浼犳竻鏅般€佹柟褰€佸彲璇嗗埆鐨勫搧鐗?Logo銆?/li>
+          <li><strong>绠€浠?/strong>锛氬缓璁啓鎴愨€滄櫘鎷夋彁/鐟滀冀璇剧▼棰勭害銆佷細鍛樼鐞嗐€佹暀缁冪鐞嗐€佹秷鎭€氱煡鈥濄€?/li>
+          <li><strong>鏈嶅姟绫荤洰</strong>锛氶€夋嫨涓庨棬搴椾笟鍔′竴鑷寸殑绫荤洰锛屾寜寰俊鍚庡彴瀹為檯鍙€夐」鏉ラ€夈€?/li>
+          <li><strong>涓讳綋淇℃伅</strong>锛氱‘璁や富浣撳悕绉般€佽璇佺姸鎬併€佺粺涓€绀句細淇＄敤浠ｇ爜绛変俊鎭纭€?/li>
+          <li><strong>绠＄悊鍛?寮€鍙戣€?/strong>锛氱‘璁よ处鍙峰凡缁戝畾锛屽悗闈㈣鐢ㄤ簬涓婁紶銆佸鏍搞€佸彂甯冦€?/li>
+        </ul>
+      </li>
+      <li>濡傛灉椤甸潰鎻愮ず琛ュ厖璁よ瘉鏉愭枡銆佺被鐩鏄庛€佺粡钀ヨ瘉鏄庯紝鎸夋彁绀轰笂浼犮€?/li>
+      <li>淇濆瓨鍚庢鏌ユ槸鍚︽垚鍔熷洖鏄俱€?/li>
+    </ol>
+  </div>
+
+  <h2>3. 閰嶇疆寮€鍙戣缃?/h2>
+  <div class="panel">
+    <ol>
+      <li>杩涘叆 <strong>寮€鍙戠鐞?/strong> 鈫?<strong>寮€鍙戣缃?/strong>銆?/li>
+      <li>鎵惧埌 <strong>鏈嶅姟鍣ㄥ煙鍚?/strong>銆?/li>
+      <li>鍦?<strong>request 鍚堟硶鍩熷悕</strong> 涓坊鍔狅細
+        <pre><code>https://api.xmlga.top</code></pre>
+      </li>
+      <li>涓嶈濉啓 <code>/api</code> 璺緞锛屼笉瑕佸～鍐?IP锛屼笉瑕佸～鍐欑鍙ｅ彿銆?/li>
+      <li>濡傛灉鍚庣画瑕佸湪灏忕▼搴忛噷鐩存帴涓嬭浇鏂囦欢锛屽啀琛?<strong>downloadFile 鍚堟硶鍩熷悕</strong>銆?/li>
+      <li>濡傛灉鍚庣画瑕佸湪灏忕▼搴忛噷鐩存帴涓婁紶鏂囦欢锛屽啀琛?<strong>uploadFile 鍚堟硶鍩熷悕</strong>銆?/li>
+      <li>濡傛灉浠ュ悗瑕佸仛 <code>web-view</code>锛屽啀琛?<strong>涓氬姟鍩熷悕</strong>锛屽綋鍓嶉樁娈靛彲鍏堜笉閰嶃€?/li>
+    </ol>
+  </div>
+
+  <h2>4. 濉悗绔井淇＄櫥褰曢厤缃?/h2>
+  <div class="panel">
+    <p>鐜板湪鍚庣宸茬粡鎶婂皬绋嬪簭鐧诲綍閾捐矾鎺ュソ浜嗭紝浣嗙敓浜х幆澧冮噷杩欎袱涓€艰繕鏄┖鐨勶細</p>
+    <pre><code>WECHAT_APPID=
+WECHAT_SECRET=</code></pre>
+    <p>浣犻渶瑕佸仛鐨勬槸锛?/p>
+    <ol>
+      <li>鍦ㄥ井淇″叕浼楀钩鍙版壘鍒板皬绋嬪簭鐨?<strong>AppSecret</strong>銆?/li>
+      <li>鎶婂畠濉繘鍚庣鐢熶骇鐜鏂囦欢 <code>F:\pilates-studio-admin\.env.production.draft</code>銆?/li>
+      <li>纭 <code>WECHAT_APPID</code> 濉殑鏄綋鍓嶅皬绋嬪簭 AppID銆?/li>
+      <li>閲嶅惎鍚庣瀹瑰櫒锛岃閰嶇疆鐢熸晥銆?/li>
+    </ol>
+    <p class="small">濡傛灉涓嶅～杩欎竴姝ワ紝鐪熸満灏忕▼搴忕櫥褰曚細澶辫触锛屽洜涓哄悗绔棤娉曠敤 code 鎹?openId銆?/p>
+  </div>
+
+  <h2>5. 濉皬绋嬪簭鐢熶骇鐜</h2>
+  <div class="panel">
+    <p>褰撳墠鐢熶骇鑽夌宸茬粡鎶?API 鎸囧悜姝ｅ紡鍩熷悕锛屼絾瀹㈡湇鐢佃瘽鍜岄偖绠辫繕鏄崰浣嶅€笺€備笂绾垮墠璇锋敼鎴愮湡瀹炲€笺€?/p>
+    <pre><code>API_BASE_URL=https://api.xmlga.top/api
+DEVTOOLS_API_BASE_URL=https://api.xmlga.top/api
+ALLOW_INSECURE_REAL_DEVICE_API=false
+
+NODE_ENV=production
+APP_ENV=production
+MINI_RELEASE=true
+
+SUPPORT_PHONE=浣犵殑瀹㈡湇鐢佃瘽
+SUPPORT_EMAIL=浣犵殑瀹㈡湇閭
+
+MINI_OPEN_ID=
+USE_MINI_OPEN_ID_LOGIN=false</code></pre>
+    <p>鏈湴寮€鍙戦厤缃粛鐒朵繚鐣欏湪 <code>F:\pilates-studio-mini\.env</code>锛屼笉鐢ㄥ拰鐢熶骇鍊兼贩鐢ㄣ€?/p>
+  </div>
+
+  <h2>6. 鏋勫缓鍜屼笂浼?/h2>
+  <div class="panel">
+    <ol>
+      <li>鍏堝湪鏈湴鍋氬彂甯冩鏌ャ€傚綋鍓嶄粨搴撲細鍗″湪鍗犱綅鍊硷紝鎵€浠ヨ鍏堟妸涓婇潰鐨勭敓浜т俊鎭ˉ榻愩€?/li>
+      <li>甯哥敤妫€鏌ュ懡浠わ細
+        <pre><code>cd F:\pilates-studio-mini
+npm.cmd run verify
+
+cd F:\pilates-studio-admin
+npm.cmd run release:check -- -MiniRoot F:\pilates-studio-mini -BackendEnvPath F:\pilates-studio-admin\.env.production.draft -MiniEnvPath F:\pilates-studio-mini\.env.production.draft</code></pre>
+      </li>
+      <li>鏋勫缓瀹屾垚鍚庯紝鐢ㄥ井淇″紑鍙戣€呭伐鍏峰鍏?<code>dist/</code> 鐩綍銆?/li>
+      <li>纭寮€鍙戣€呭伐鍏烽噷鐨勯」鐩?AppID 鏄寮?AppID锛屼笉鏄祴璇曞彿銆?/li>
+      <li>鍦ㄥ紑鍙戣€呭伐鍏烽噷鍋氫竴娆＄湡鏈?棰勮娴嬭瘯锛岀‘璁ら椤点€侀绾︺€佹垜鐨勩€佽绋嬨€佹暀缁冦€侀€氱煡銆佸弽棣堥兘鑳芥墦寮€銆?/li>
+      <li>纭娌℃湁浣跨敤 <code>localhost</code>銆?code>127.0.0.1</code> 鎴栨湭澶囨鍩熷悕銆?/li>
+    </ol>
+  </div>
+
+  <h2>7. 鎻愪氦瀹℃牳</h2>
+  <div class="panel">
+    <ol>
+      <li>鍦ㄥ井淇″紑鍙戣€呭伐鍏烽噷鐐瑰嚮 <strong>涓婁紶</strong>銆?/li>
+      <li>鐧诲綍寰俊鍏紬骞冲彴锛岃繘鍏?<strong>鐗堟湰绠＄悊</strong>銆?/li>
+      <li>鎵惧埌鍒氫笂浼犵殑鐗堟湰锛岀偣鍑?<strong>鎻愪氦瀹℃牳</strong>銆?/li>
+      <li>鎸夐〉闈㈡彁绀哄～鍐欏鏍歌鏄庯細
+        <ul>
+          <li>杩欐槸闂ㄥ簵杩愯惀绫诲皬绋嬪簭銆?/li>
+          <li>鍖呭惈璇剧▼娴忚銆侀绾︺€佷釜浜轰腑蹇冦€佹秷鎭€氱煡銆佸弽棣堟彁浜ょ瓑鍔熻兘銆?/li>
+          <li>濡傛灉寰俊瑕佹眰鎻愪緵娴嬭瘯璺緞锛屽氨鍐欐竻妤氱櫥褰曟柟寮忓拰娴嬭瘯璐﹀彿銆?/li>
+        </ul>
+      </li>
+      <li>濡傛灉骞冲彴瑕佹眰琛ュ厖鎴浘鎴栬祫璐紝鎸夋彁绀轰笂浼犮€?/li>
+      <li>绛夊緟瀹℃牳缁撴灉銆?/li>
+    </ol>
+  </div>
+
+  <h2>8. 瀹℃牳閫氳繃鍚庡彂甯?/h2>
+  <div class="panel">
+    <ol>
+      <li>瀹℃牳閫氳繃鍚庯紝鍦ㄧ増鏈鐞嗛噷鐐瑰嚮 <strong>鍙戝竷</strong>銆?/li>
+      <li>鍙戝竷鍚庝笉瑕佺珛鍒绘敼鐢熶骇閰嶇疆锛屽厛鍋氫竴娆″畬鏁村疄娴嬨€?/li>
+      <li>閲嶇偣纭锛?        <ul>
+          <li>鐪熸満鐧诲綍姝ｅ父銆?/li>
+          <li>棣栭〉銆侀绾︺€佹垜鐨勩€佽绋嬨€佹暀缁冦€侀€氱煡銆佸弽棣堟甯搞€?/li>
+          <li>鎺ュ彛鍩熷悕鏄?<code>https://api.xmlga.top</code>銆?/li>
+          <li>娌℃湁鈥滆姹傚悎娉曞煙鍚嶆湭閰嶇疆鈥濃€滆瘉涔︿笉瀹夊叏鈥濈瓑閿欒銆?/li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <h2>9. 涓婄嚎鍚庢鏌ユ竻鍗?/h2>
+  <table>
+    <thead>
+      <tr>
+        <th>妫€鏌ラ」</th>
+        <th>鐩爣缁撴灉</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>灏忕▼搴忎俊鎭?/td>
+        <td>鍚嶇О銆佸ご鍍忋€佺畝浠嬨€佺被鐩兘姝ｇ‘</td>
+      </tr>
+      <tr>
+        <td>request 鍚堟硶鍩熷悕</td>
+        <td><code>https://api.xmlga.top</code></td>
+      </tr>
+      <tr>
+        <td>鍚庣鐧诲綍閰嶇疆</td>
+        <td><code>WECHAT_APPID</code> 鍜?<code>WECHAT_SECRET</code> 宸插～</td>
+      </tr>
+      <tr>
+        <td>鐢熶骇瀹㈡湇鐢佃瘽/閭</td>
+        <td>宸叉浛鎹㈡垚鐪熷疄鍊?/td>
+      </tr>
+      <tr>
+        <td>鐪熸満鐧诲綍</td>
+        <td>鍙甯告嬁鍒?token锛岃繘鍏ラ椤?/td>
+      </tr>
+      <tr>
+        <td>棰勭害娴佺▼</td>
+        <td>鑳芥祻瑙堛€佹彁浜ゃ€佸彇娑堛€佹煡鐪嬫垜鐨勯绾?/td>
+      </tr>
+      <tr>
+        <td>閫氱煡/鍙嶉</td>
+        <td>鑳芥甯告彁浜ゅ苟鍦ㄥ悗鍙扮湅鍒?/td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>10. 鍙傝€冮摼鎺?/h2>
+  <ul>
+    <li><a href="https://mp.weixin.qq.com/" target="_blank" rel="noreferrer">寰俊鍏紬骞冲彴</a></li>
+    <li><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/ability/domain.html" target="_blank" rel="noreferrer">灏忕▼搴忓煙鍚嶈兘鍔涜鏄?/a></li>
+    <li><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html" target="_blank" rel="noreferrer">灏忕▼搴忕綉缁滆兘鍔涜鏄?/a></li>
+    <li><a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/devtools.html" target="_blank" rel="noreferrer">寰俊寮€鍙戣€呭伐鍏疯鏄?/a></li>
+  </ul>
+
+  <div class="callout warn">
+    <strong>鏈€瀹规槗婕忕殑鐐?/strong>锛?br />
+    1. <code>WECHAT_SECRET</code> 娌″～锛岀湡鏈虹櫥褰曚細澶辫触銆?br />
+    2. <code>SUPPORT_PHONE</code> 鍜?<code>SUPPORT_EMAIL</code> 杩樻槸鍗犱綅鍊笺€?br />
+    3. 鏈嶅姟鍣ㄥ煙鍚嶅彧閰嶄簡 <code>api.xmlga.top</code>锛屽繕浜嗙‘璁ゅ井淇″叕浼楀钩鍙伴噷纭疄淇濆瓨鎴愬姛銆?br />
+    4. 寮€鍙戣€呭伐鍏烽噷娌℃湁鍒囧埌姝ｅ紡 AppID銆?br />
+    5. 涓婄嚎鍚庢病鏈夊厛鍋氱湡鏈哄鏍搞€?  </div>
+
+  <p class="footer">濡傛灉浣犳妸瀹㈡湇鐢佃瘽銆侀偖绠便€丄ppSecret 鍙戠粰鎴戯紝鎴戝彲浠ョ户缁洿鎺ュ府浣犳妸鐢熶骇閰嶇疆琛ラ綈锛岀劧鍚庡啀甯︿綘璧颁笂浼犲拰瀹℃牳閭ｄ竴姝ャ€?/p>
+</main>
+</body>
+</html>
+

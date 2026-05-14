@@ -1,5 +1,5 @@
 import { Image, Text, View } from '@tarojs/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppButton, AppCard } from '../../../components';
 import type { HomeCuratedData } from './types';
 
@@ -10,6 +10,10 @@ interface HomeCuratedCardProps {
 
 export default function HomeCuratedCard({ data, onClick }: HomeCuratedCardProps) {
   const [imageSrc, setImageSrc] = useState(data.imageUrl);
+
+  useEffect(() => {
+    setImageSrc(data.imageUrl);
+  }, [data.imageUrl]);
 
   return (
     <AppCard className='home-curated-card' padding='none'>

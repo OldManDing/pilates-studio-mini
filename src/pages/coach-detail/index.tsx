@@ -1,11 +1,11 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import { coachesApi, Coach } from '../../api/coaches';
 import { CourseSession } from '../../api/courses';
 import { AppButton, AppCard, Divider, Empty, FloatingBackButton, Icon, Loading, PageHeader, PageShell, SectionTitle } from '../../components';
 import { getLabelByValue, CourseTypes, Weekdays } from '../../constants/enums';
-import { formatDurationMinutes } from '../../utils/ui';
+import { formatDurationMinutes, getSafeMiniImageSrc } from '../../utils/ui';
 import './index.scss';
 
 const COACH_SCHEDULE_TIMEOUT_MS = 12000;
@@ -95,6 +95,8 @@ export default function CoachDetail() {
   const [scheduleLoadFailed, setScheduleLoadFailed] = useState(false);
   const [coachId, setCoachId] = useState('');
   const [coachIdMissing, setCoachIdMissing] = useState(false);
+  const [heroImageSrc, setHeroImageSrc] = useState('/assets/ui/booking-dark.svg');
+  const [avatarImageSrc, setAvatarImageSrc] = useState('/assets/ui/default-avatar.svg');
 
   const fetchScheduleData = useCallback(async (id: string) => {
     try {
@@ -157,6 +159,18 @@ export default function CoachDetail() {
     setCoachIdMissing(true);
   });
 
+  useEffect(() => {
+    if (!coach) {
+      setHeroImageSrc('/assets/ui/booking-dark.svg');
+      setAvatarImageSrc('/assets/ui/default-avatar.svg');
+      return;
+    }
+
+    const rawAvatar = coach.avatar || coach.avatarUrl;
+    setHeroImageSrc(getSafeMiniImageSrc(rawAvatar, '/assets/ui/booking-dark.svg'));
+    setAvatarImageSrc(getSafeMiniImageSrc(rawAvatar, '/assets/ui/default-avatar.svg'));
+  }, [coach]);
+
   const upcomingSchedule = useMemo(() => {
     return [...schedule].sort((left, right) => {
       const leftTime = new Date(left.startsAt).getTime();
@@ -217,7 +231,6 @@ export default function CoachDetail() {
     );
   }
 
-  const heroImage = coach.avatar || '/assets/ui/booking-dark.svg';
   const coachName = coach.name || '未命名教练';
   const specialties = coach.specialties || [];
   const certifications = coach.certifications || [];
@@ -270,7 +283,7 @@ export default function CoachDetail() {
     <View className='coach-detail-page'>
       <FloatingBackButton fallbackUrl='/pages/coaches/index' theme='light' />
       <View className='coach-detail-page__hero'>
-        <Image className='coach-detail-page__hero-image' src={heroImage} mode='aspectFill' />
+        <Image className='coach-detail-page__hero-image' src={heroImageSrc} mode='aspectFill' onError={() => setHeroImageSrc('/assets/ui/booking-dark.svg')} />
         <View className='coach-detail-page__hero-mask' />
         <View className='coach-detail-page__hero-text'>
           <Text className='coach-detail-page__subtitle'>教练档案</Text>
@@ -282,8 +295,8 @@ export default function CoachDetail() {
         <AppCard className='coach-detail-page__info-card'>
           <View className='coach-detail-page__identity'>
             <View className='coach-detail-page__avatar-wrap'>
-              {coach.avatar ? (
-                <Image className='coach-detail-page__avatar-image' src={coach.avatar} mode='aspectFill' />
+              {coach.avatar || coach.avatarUrl ? (
+                <Image className='coach-detail-page__avatar-image' src={avatarImageSrc} mode='aspectFill' onError={() => setAvatarImageSrc('/assets/ui/default-avatar.svg')} />
               ) : (
                 <Text className='coach-detail-page__avatar-text'>{coachName.slice(0, 1)}</Text>
               )}

@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import { useEffect, type PropsWithChildren, type ReactNode } from 'react';
 import { Button, Image, Text, View } from '@tarojs/components';
 import type { MiniPageImageKey } from '../../../api/settings';
 import { useMiniPageImage } from '../../../hooks/useMiniPageImage';
@@ -37,6 +37,8 @@ function getHeaderFallbackImageSrc(title: string, imageSrc?: string) {
 
 export default function PageHeader({
   title,
+  subtitle,
+  eyebrow,
   showBack = true,
   fallbackUrl,
   onBack,
@@ -48,10 +50,16 @@ export default function PageHeader({
   const rightContent = rightSlot ?? children;
   const topStyle = getMiniCapsuleAvoidanceStyle();
   const fallbackImageSrc = getHeaderFallbackImageSrc(title, imageSrc);
-  const { imageSrc: headerImageSrc, fallbackImageSrc: resolvedFallbackImageSrc, setImageSrc } = useMiniPageImage(
+  const { imageSrc: headerImageSrc, fallbackImageSrc: resolvedFallbackImageSrc, setImageSrc, refresh } = useMiniPageImage(
     imageSrc ? undefined : pageKey,
     fallbackImageSrc,
   );
+
+  useEffect(() => {
+    if (!imageSrc && pageKey) {
+      void refresh({ force: true });
+    }
+  }, [imageSrc, pageKey, refresh]);
 
   const handleBack = () => {
     if (onBack) {
@@ -85,7 +93,9 @@ export default function PageHeader({
       </View>
 
       <View className='page-header__content'>
+        {eyebrow ? <Text className='page-header__eyebrow'>{eyebrow}</Text> : null}
         <Text className='page-header__title'>{title}</Text>
+        {subtitle ? <Text className='page-header__subtitle'>{subtitle}</Text> : null}
       </View>
     </View>
   );

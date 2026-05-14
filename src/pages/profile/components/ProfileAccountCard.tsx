@@ -1,4 +1,5 @@
 import { Image, Text, View } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import { AppCard } from '../../../components';
 import type { ProfileAccountCardData } from './types';
 
@@ -7,12 +8,18 @@ interface ProfileAccountCardProps {
 }
 
 export default function ProfileAccountCard({ data }: ProfileAccountCardProps) {
+  const [avatarSrc, setAvatarSrc] = useState(data.avatarUrl || '');
+
+  useEffect(() => {
+    setAvatarSrc(data.avatarUrl || '');
+  }, [data.avatarUrl]);
+
   return (
     <AppCard className='profile-account-card' padding='medium'>
       <View className='profile-account-card__top'>
         <View className='profile-account-card__avatar-wrap'>
-          {data.avatarUrl ? (
-            <Image className='profile-account-card__avatar-image' src={data.avatarUrl} mode='aspectFill' />
+          {avatarSrc ? (
+            <Image className='profile-account-card__avatar-image' src={avatarSrc} mode='aspectFill' onError={() => setAvatarSrc('')} />
           ) : (
             <View className='profile-account-card__avatar-fallback'>
               <Text className='profile-account-card__avatar-text'>{data.avatarText}</Text>

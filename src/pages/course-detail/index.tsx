@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { ensureMiniProgramAuth } from '../../api/auth';
@@ -164,6 +164,7 @@ export default function CourseDetail() {
   const [courseIdMissing, setCourseIdMissing] = useState(false);
   const [courseId, setCourseId] = useState('');
   const [heroImageSrc, setHeroImageSrc] = useState('');
+  const [instructorAvatarLoadFailed, setInstructorAvatarLoadFailed] = useState(false);
   const [sessionPickerOpen, setSessionPickerOpen] = useState(false);
   const bookingInFlightRef = useRef(false);
 
@@ -238,6 +239,11 @@ export default function CourseDetail() {
   }, [sessions]);
 
   const featuredSession = sortedSessions.find((session) => getSessionSpots(session, course?.maxCapacity || 0) > 0) || sortedSessions[0] || null;
+  const featuredInstructor = featuredSession?.coach || course?.coach;
+
+  useEffect(() => {
+    setInstructorAvatarLoadFailed(false);
+  }, [featuredInstructor?.id, featuredInstructor?.avatar, featuredInstructor?.avatarUrl]);
 
   const handleBooking = async (selectedSession?: CourseSession) => {
     if (!course || sortedSessions.length === 0) {
@@ -354,8 +360,11 @@ export default function CourseDetail() {
 
   const subtitle = TYPE_SUBTITLE_MAP[course.type] || getLabelByValue(CourseTypes, course.type);
   const heroImageFallback = HERO_IMAGE_FALLBACK_BY_TYPE[course.type] || '/assets/ui/booking-yoga.svg';
-  const instructor = featuredSession?.coach || course.coach;
+  const instructor = featuredInstructor;
   const instructorName = instructor?.name || '待安排';
+  const instructorAvatarSrc = instructorAvatarLoadFailed
+    ? ''
+    : getSafeMiniImageSrc(instructor?.avatar || instructor?.avatarUrl, '');
   const instructorDescription = instructor?.id === course.coach?.id && course.coach?.bio
     ? course.coach.bio
     : '基于当前课程资料展示教练公开信息。';
@@ -377,7 +386,7 @@ export default function CourseDetail() {
   ];
   const shouldGuideLogin = !profileLoadFailed && !member?.id;
   const canBook = Boolean(featuredSession) && !isFull && !booked && !shouldGuideLogin && !profileLoadFailed;
-  const ctaDisabled = bookingLoading || (!profileLoadFailed && !shouldGuideLogin && !canBook && Boolean(featuredSession));
+  const ctaDisabled = bookingLoading || booked || (!profileLoadFailed && !shouldGuideLogin && !canBook && Boolean(featuredSession));
   const ctaLabel = bookingLoading
     ? '预约中…'
     : booked
@@ -474,8 +483,8 @@ export default function CourseDetail() {
             <AppCard>
               <View className='course-detail-page__instructor'>
                 <View className='course-detail-page__instructor-avatar'>
-                  {instructor?.avatar ? (
-                    <Image className='course-detail-page__instructor-avatar-image' src={instructor.avatar} mode='aspectFill' />
+                  {instructorAvatarSrc ? (
+                    <Image className='course-detail-page__instructor-avatar-image' src={instructorAvatarSrc} mode='aspectFill' onError={() => setInstructorAvatarLoadFailed(true)} />
                   ) : (
                     <Text className='course-detail-page__instructor-avatar-text'>{instructorName.slice(0, 1)}</Text>
                   )}

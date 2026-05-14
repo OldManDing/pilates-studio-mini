@@ -79,8 +79,17 @@
   }
 
   &--chevron-right {
-    .app-icon__line--one { transform: translate(-55%, -140%) rotate(45deg); }
-    .app-icon__line--two { transform: translate(-55%, 40%) rotate(-45deg); }
+    .app-icon__line--one,
+    .app-icon__line--two {
+      width: 44%;
+      height: 2px;
+      left: 46%;
+      top: 50%;
+      transform-origin: right center;
+    }
+
+    .app-icon__line--one { transform: translate(-50%, 0) rotate(45deg); }
+    .app-icon__line--two { transform: translate(-50%, 0) rotate(-45deg); }
   }
 
   &--check {

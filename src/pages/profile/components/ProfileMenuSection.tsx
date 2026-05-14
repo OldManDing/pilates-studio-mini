@@ -30,7 +30,10 @@ export default function ProfileMenuSection({ data, onItemClick }: ProfileMenuSec
               </View>
 
               <View className='profile-menu-section__body'>
-                <Text className='profile-menu-section__title'>{item.label}</Text>
+                <View className='profile-menu-section__title-row'>
+                  <Text className='profile-menu-section__title'>{item.label}</Text>
+                  {item.showUnreadDot ? <View className='profile-menu-section__unread-dot' /> : null}
+                </View>
                 <Text className='profile-menu-section__description'>{item.description}</Text>
               </View>
 

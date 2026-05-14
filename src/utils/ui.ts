@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro';
+import { getRuntimeApiBaseUrl } from '../api/auth';
 
 const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'] as const;
 
@@ -10,6 +11,11 @@ const UNSAFE_IMAGE_PATTERNS = [
   /placeholder/i,
   /placehold\.co/i,
 ];
+
+const ABSOLUTE_IMAGE_URL_PATTERN = /^[a-z][a-z\d+\-.]*:\/\//i;
+const LOCAL_ASSET_IMAGE_PATTERN = /^\/?assets\//i;
+const LOCAL_IMAGE_HOSTS = new Set(['127.0.0.1', 'localhost', '::1']);
+const PRIVATE_NETWORK_HOST_PATTERN = /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/;
 
 interface MiniCapsuleRect {
   top?: number;
@@ -53,7 +59,42 @@ export function getSafeMiniImageSrc(imageUrl: string | null | undefined, fallbac
     return SAFE_DATA_IMAGE_PATTERN.test(nextImageUrl) ? nextImageUrl : fallbackImageUrl;
   }
 
-  return UNSAFE_IMAGE_PATTERNS.some((pattern) => pattern.test(nextImageUrl)) ? fallbackImageUrl : nextImageUrl;
+  if (UNSAFE_IMAGE_PATTERNS.some((pattern) => pattern.test(nextImageUrl))) {
+    return fallbackImageUrl;
+  }
+
+  return normalizeMiniImageSrc(nextImageUrl);
+}
+
+function normalizeMiniImageSrc(imageUrl: string) {
+  if (LOCAL_ASSET_IMAGE_PATTERN.test(imageUrl)) {
+    return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  }
+
+  try {
+    const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
+    const parsedApiBaseUrl = new URL(runtimeApiBaseUrl);
+    const apiOrigin = parsedApiBaseUrl.origin;
+    const parsedImageUrl = new URL(imageUrl, `${apiOrigin}/`);
+    const isAbsoluteImageUrl = ABSOLUTE_IMAGE_URL_PATTERN.test(imageUrl) || imageUrl.startsWith('//');
+
+    if (!isAbsoluteImageUrl) {
+      return parsedImageUrl.toString();
+    }
+
+    if (!LOCAL_IMAGE_HOSTS.has(parsedImageUrl.hostname)) {
+      return parsedImageUrl.toString();
+    }
+
+    if (!PRIVATE_NETWORK_HOST_PATTERN.test(parsedApiBaseUrl.hostname)) {
+      return parsedImageUrl.toString();
+    }
+
+    parsedImageUrl.hostname = parsedApiBaseUrl.hostname;
+    return parsedImageUrl.toString();
+  } catch {
+    return imageUrl;
+  }
 }
 
 function getMiniLayoutInfo() {

@@ -32,13 +32,6 @@ import { STORAGE_KEYS } from '../../constants/storage';
 import './index.scss';
 
 const ACTIVE_BOOKING_STATUSES: Booking['status'][] = ['PENDING', 'CONFIRMED'];
-const BOOKING_STATUS_LABEL_MAP: Record<Booking['status'], string> = {
-  PENDING: '待确认',
-  CONFIRMED: '已预约',
-  COMPLETED: '已完成',
-  CANCELLED: '已取消',
-  NO_SHOW: '未到场',
-};
 
 function padNumber(value: number) {
   return String(value).padStart(2, '0');
@@ -174,24 +167,6 @@ function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemDa
   };
 }
 
-function toHomeRecentItem(booking: Booking, index: number): HomeUpcomingItemData {
-  const startsAt = booking.session?.startsAt;
-  const endsAt = booking.session?.endsAt;
-  const duration = calculateMinutes(startsAt, endsAt);
-  const courseId = booking.session?.course?.id;
-
-  return {
-    key: booking.id || `recent-booking-${index}`,
-    day: getUpcomingDay(startsAt),
-    weekday: getUpcomingWeekday(startsAt),
-    label: BOOKING_STATUS_LABEL_MAP[booking.status],
-    title: booking.session?.course?.name || '课程安排',
-    description: '',
-    meta: `${booking.session?.coach?.name || '教练待定'} · ${formatClock(startsAt)} · ${formatDurationMinutes(duration)}`,
-    routeUrl: courseId ? `/pages/course-detail/index?id=${courseId}` : undefined,
-  };
-}
-
 function getRemainingRatio(startDate?: string, endDate?: string) {
   if (!startDate || !endDate) return '0%';
   const start = new Date(startDate).getTime();
@@ -261,7 +236,7 @@ function getCourseCaption(course?: Course | null) {
 function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: Membership | null) {
   if (todayBooking) {
     return {
-      heroSubtitle: '今日已安排 1 节课程',
+      heroSubtitle: '今天的课程已准备好，到店前留出签到时间。',
       courseLabel: '今日课程',
       courseStatus: todayBooking.status === 'PENDING' ? '待确认' : '已为你留位',
       courseSubtitle: '今日训练安排',
@@ -271,7 +246,7 @@ function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: M
 
   if (activeMembership) {
     return {
-      heroSubtitle: `${activeMembership.planName || '会员权益'} 已生效`,
+      heroSubtitle: '今天也为身体留出一段稳定练习时间。',
       courseLabel: '下一节课程',
       courseStatus: '下一节待安排',
       courseSubtitle: '近期最近可预约场次',
@@ -280,7 +255,7 @@ function getTodayCourseSummary(todayBooking: Booking | null, activeMembership: M
   }
 
   return {
-    heroSubtitle: '从一节舒展课程开始今天的练习。',
+    heroSubtitle: '从一节适合当下状态的课程开始。',
     courseLabel: '课程推荐',
     courseStatus: '等待预约',
     courseSubtitle: '推荐你先完成第一节体验课',
@@ -552,14 +527,7 @@ export default function Index() {
     fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
-  const recentBookings = bookings
-    .filter((booking) => Boolean(booking.session?.startsAt) && booking.session)
-    .sort((left, right) => new Date(right.session?.startsAt || '').getTime() - new Date(left.session?.startsAt || '').getTime());
-
-  const upcomingItems = upcomingBookings.length > 0
-    ? upcomingBookings.slice(0, 2).map(toHomeUpcomingItem)
-    : recentBookings.slice(0, 2).map(toHomeRecentItem);
-  const usingRecentBookingFallback = upcomingBookings.length === 0 && recentBookings.length > 0;
+  const upcomingItems = upcomingBookings.slice(0, 2).map(toHomeUpcomingItem);
 
   const studioData: HomeStudioData = {
     label: '我的门店',
@@ -568,7 +536,7 @@ export default function Index() {
     hours: studioBusinessHours ? `营业时间 ${studioBusinessHours}` : '营业时间待更新',
     note: '',
     actionLabel: '导航前往',
-    imageUrl: studioSettings?.imageUrl?.trim() || undefined,
+    imageUrl: getSafeMiniImageSrc(studioSettings?.imageUrl, '/assets/ui/hero-studio.jpg'),
   };
 
   const handleMembershipPrimary = () => {
@@ -705,7 +673,6 @@ export default function Index() {
         <View className='home-page__section home-page__section--upcoming'>
           <SectionTitle
             title='近期安排'
-            subtitle={usingRecentBookingFallback ? '当前无待上课安排，已展示最近预约记录' : undefined}
             actionLabel='全部'
             actionTone='muted'
             actionIcon='chevron-right'

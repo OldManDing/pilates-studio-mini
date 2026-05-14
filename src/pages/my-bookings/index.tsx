@@ -131,6 +131,28 @@ function getBookingSortTime(booking: Booking) {
   return Number.isNaN(time) ? 0 : time;
 }
 
+function isFutureClassBooking(booking: Booking) {
+  const referenceTime = booking.session?.endsAt || booking.session?.startsAt;
+
+  if (!referenceTime) {
+    return true;
+  }
+
+  const time = new Date(referenceTime).getTime();
+  if (Number.isNaN(time)) {
+    return true;
+  }
+
+  return time >= Date.now();
+}
+
+function sortBookingsByTime(items: Booking[], direction: 'asc' | 'desc') {
+  return [...items].sort((left, right) => {
+    const delta = getBookingSortTime(left) - getBookingSortTime(right);
+    return direction === 'asc' ? delta : -delta;
+  });
+}
+
 function mergeBookings(first: Booking[], second: Booking[]) {
   const bookingMap = new Map<string, Booking>();
 
@@ -194,15 +216,18 @@ export default function MyBookings() {
         : activeTab === 'cancelled'
           ? await fetchAllBookingsByStatuses(['CANCELLED', 'NO_SHOW'])
           : await fetchAllBookingsByStatuses(['COMPLETED']);
+      const visibleBookings = activeTab === 'upcoming'
+        ? sortBookingsByTime(mergedBookings.filter(isFutureClassBooking), 'asc')
+        : mergedBookings;
 
       if (requestSeq !== requestSeqRef.current) {
         return;
       }
 
       const endIndex = currentPage * pageSize;
-      setBookings(mergedBookings.slice(0, endIndex));
-      setTabTotalCount(mergedBookings.length);
-      setHasMore(mergedBookings.length > endIndex);
+      setBookings(visibleBookings.slice(0, endIndex));
+      setTabTotalCount(visibleBookings.length);
+      setHasMore(visibleBookings.length > endIndex);
       setPage(currentPage);
     } catch (error) {
       if (requestSeq !== requestSeqRef.current) {

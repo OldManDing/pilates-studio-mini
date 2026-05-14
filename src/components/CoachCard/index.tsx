@@ -1,5 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import { Coach } from '../../api/coaches';
+import { getSafeMiniImageSrc } from '../../utils/ui';
 import Icon from '../shell/Icon';
 import './index.scss';
 
@@ -15,10 +17,17 @@ function joinClasses(classes: Array<string | false | undefined>) {
 
 export default function CoachCard({ coach, onClick, compact = false }: CoachCardProps) {
   const courseText = coach.courses?.map((course) => course.name).filter(Boolean).join('、');
+  const fallbackAvatarSrc = '/assets/ui/default-avatar.svg';
+  const resolvedAvatarSrc = getSafeMiniImageSrc(coach.avatar || coach.avatarUrl, fallbackAvatarSrc);
+  const [avatarSrc, setAvatarSrc] = useState(resolvedAvatarSrc);
+
+  useEffect(() => {
+    setAvatarSrc(resolvedAvatarSrc);
+  }, [resolvedAvatarSrc]);
 
   return (
     <View className={joinClasses(['coach-card', compact && 'coach-card--compact'])} onClick={onClick}>
-      <Image className='coach-card__avatar' src={coach.avatar || '/assets/ui/default-avatar.svg'} mode='aspectFill' />
+      <Image className='coach-card__avatar' src={avatarSrc} mode='aspectFill' onError={() => setAvatarSrc(fallbackAvatarSrc)} />
       <View className='coach-card__info'>
         <View className='coach-card__title-row'>
           <Text className='coach-card__name'>{coach.name}</Text>

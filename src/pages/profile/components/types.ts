@@ -30,6 +30,7 @@ export interface ProfileMenuItemData {
   description: string;
   route?: string;
   requiresLogin?: boolean;
+  showUnreadDot?: boolean;
 }
 
 /** Future mapping: account navigation groups */

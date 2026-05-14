@@ -5,6 +5,7 @@ import { bookingsApi, type Booking } from '../../api/bookings';
 import { membersApi, type Member, type Membership } from '../../api/members';
 import { ensureMiniProgramAuth, type MiniProgramUser } from '../../api/auth';
 import { getApiErrorMessage } from '../../api/request';
+import { notificationsApi } from '../../api/notifications';
 import { AppButton, Empty, Loading, PageShell } from '../../components';
 import ProfileAccountCard from './components/ProfileAccountCard';
 import ProfileMenuSection from './components/ProfileMenuSection';
@@ -20,7 +21,7 @@ import { syncCustomTabBarSelected } from '../../utils/tabbar';
 import { STORAGE_KEYS } from '../../constants/storage';
 import { clearAuthState, readStorage, writeStorage } from '../../utils/storage';
 import { formatMembershipCreditsWithUnit } from '../../utils/membership';
-import { getMiniHeroContentStyle } from '../../utils/ui';
+import { getMiniHeroContentStyle, getSafeMiniImageSrc } from '../../utils/ui';
 import { useMiniPageImage } from '../../hooks/useMiniPageImage';
 import './index.scss';
 
@@ -124,12 +125,28 @@ export default function Profile() {
   const [miniUser, setMiniUser] = useState<MiniProgramUser | null>(() => readStorage<MiniProgramUser | null>(STORAGE_KEYS.miniUser, null));
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const [profileLoadFailed, setProfileLoadFailed] = useState(false);
   const [statsSyncFailed, setStatsSyncFailed] = useState(false);
+
+  const refreshUnreadNotifications = useCallback(async () => {
+    if (!Taro.getStorageSync('token')) {
+      setHasUnreadNotifications(false);
+      return;
+    }
+
+    try {
+      const response = await notificationsApi.getMy({ page: 1, limit: 1, status: 'SENT' }, { showLoading: false });
+      setHasUnreadNotifications((response.data.notifications || []).length > 0);
+    } catch {
+      setHasUnreadNotifications(false);
+    }
+  }, []);
 
   useDidShow(() => {
     syncCustomTabBarSelected(2);
     void refreshProfileHeroImage();
+    void refreshUnreadNotifications();
   });
 
   const fetchProfile = useCallback(async (options: FetchProfileOptions = {}): Promise<ProfileSnapshot> => {
@@ -238,7 +255,7 @@ export default function Profile() {
 
     return {
       avatarText: getMemberInitial(member, miniUser),
-      avatarUrl: member?.avatar || miniUser?.avatarUrl,
+      avatarUrl: getSafeMiniImageSrc(member?.avatar || miniUser?.avatarUrl, ''),
       name: getDisplayName(member, miniUser),
       badgeLabel: activeMembership ? '会员' : (miniUser ? '微信用户' : '访客'),
       phone: member?.phone ? getMaskedPhone(member.phone) : (miniUser ? '会员档案待绑定' : getMaskedPhone(undefined)),
@@ -296,6 +313,7 @@ export default function Profile() {
           description: '课程提醒与系统通知',
           route: '/pages/notifications/index',
           requiresLogin: !member,
+          showUnreadDot: hasUnreadNotifications,
         },
         {
           key: 'support',
@@ -313,7 +331,7 @@ export default function Profile() {
         },
       ],
     },
-  ], [member]);
+  ], [hasUnreadNotifications, member]);
 
   const signOutData: ProfileSignOutData = {
     label: '退出登录',
@@ -331,6 +349,7 @@ export default function Profile() {
         if (!snapshot.member && !snapshot.miniUser) {
           throw new Error('微信用户信息同步失败，请重新登录');
         }
+        await refreshUnreadNotifications();
         Taro.showToast({ title: snapshot.member ? '登录成功' : '已完成微信登录，会员档案待绑定', icon: 'success' });
       } catch (error) {
         Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
@@ -359,6 +378,7 @@ export default function Profile() {
       if (!snapshot.member && !snapshot.miniUser) {
         throw new Error('微信用户信息同步失败，请重新登录');
       }
+      await refreshUnreadNotifications();
       Taro.showToast({ title: snapshot.member ? '登录成功' : '已完成微信登录，会员档案待绑定', icon: 'success' });
     } catch (error) {
       Taro.showToast({ title: getApiErrorMessage(error, '登录失败，请稍后重试'), icon: 'none' });
@@ -391,6 +411,7 @@ export default function Profile() {
     setMiniUser(null);
     setMemberships([]);
     setBookings([]);
+    setHasUnreadNotifications(false);
     setProfileLoadFailed(false);
     setStatsSyncFailed(false);
     Taro.showToast({ title: '已退出登录', icon: 'success' });

@@ -1,6 +1,8 @@
 import { View, Text, Image } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import { Course } from '../../api/courses';
 import { CourseTypes, CourseLevels } from '../../constants/enums';
+import { getSafeMiniImageSrc } from '../../utils/ui';
 import StatusTag from '../StatusTag';
 import './index.scss';
 
@@ -11,6 +13,14 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course, onClick, showCoach = true }: CourseCardProps) {
+  const fallbackAvatarSrc = '/assets/ui/default-avatar.svg';
+  const resolvedCoachAvatarSrc = getSafeMiniImageSrc(course.coach?.avatar || course.coach?.avatarUrl, fallbackAvatarSrc);
+  const [coachAvatarSrc, setCoachAvatarSrc] = useState(resolvedCoachAvatarSrc);
+
+  useEffect(() => {
+    setCoachAvatarSrc(resolvedCoachAvatarSrc);
+  }, [resolvedCoachAvatarSrc]);
+
   return (
     <View className='course-card' onClick={onClick}>
       <View className='course-card__header'>
@@ -24,7 +34,7 @@ export default function CourseCard({ course, onClick, showCoach = true }: Course
       <Text className='course-card__desc'>{course.description || '暂无课程描述'}</Text>
       {showCoach && course.coach && (
         <View className='course-card__coach'>
-          <Image className='course-card__coach-avatar' src={course.coach.avatar || '/assets/default-avatar.png'} />
+          <Image className='course-card__coach-avatar' src={coachAvatarSrc} onError={() => setCoachAvatarSrc(fallbackAvatarSrc)} />
           <Text className='course-card__coach-name'>{course.coach.name}</Text>
         </View>
       )}

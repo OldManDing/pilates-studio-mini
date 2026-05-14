@@ -39,11 +39,16 @@ export interface MiniPageImageSetting {
 }
 
 export const settingsApi = {
-  getStudio: () => http.get<StudioSettings>('/settings/studio', undefined, { showLoading: false }),
-  getMiniPageImages: () => http.get<MiniPageImageSetting[]>('/settings/mini-page-images', { compact: true }, {
+  getStudio: () => http.get<StudioSettings>('/settings/studio', undefined, {
     showLoading: false,
     skipAuth: true,
     suppressErrorToast: true,
-    timeoutMs: 30000,
   }),
+  getMiniPageImages: (pageKey?: MiniPageImageKey) =>
+    http.get<MiniPageImageSetting[]>('/settings/mini-page-images', pageKey ? { pageKey } : { compact: true }, {
+      showLoading: false,
+      skipAuth: true,
+      suppressErrorToast: true,
+      timeoutMs: 30000,
+    }),
 };
