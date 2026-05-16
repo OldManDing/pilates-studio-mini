@@ -26,6 +26,7 @@ export interface BookingCategoryItemData {
 export interface BookingCourseCardData {
   key: string;
   courseId?: string;
+  sessionId?: string;
   title: string;
   time: string;
   duration: string;

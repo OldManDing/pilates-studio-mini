@@ -16,14 +16,22 @@ $support-card-shadow: $shadow-card;
     gap: 0;
   }
 
-  &__header-action {
+  &__section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+  }
+
+  &__mark-all {
     display: flex;
     width: auto;
-    max-width: 100%;
+    max-width: 220px;
+    flex-shrink: 0;
     align-items: center;
     gap: 7px;
     min-height: 35px;
-    padding: 14px 18px;
+    padding: 12px 18px;
     white-space: nowrap;
 
     &--disabled,
@@ -32,18 +40,18 @@ $support-card-shadow: $shadow-card;
     }
   }
 
-  &__header-action-icon,
-  &__header-action-text {
+  &__mark-all-icon,
+  &__mark-all-text {
     display: block;
     color: $support-gold;
   }
 
-  &__header-action-icon {
+  &__mark-all-icon {
     width: $figma-body-lg;
     height: $figma-body-lg;
   }
 
-  &__header-action-text {
+  &__mark-all-text {
     font-size: $figma-small;
     font-weight: $font-weight-normal;
     line-height: 1;
@@ -62,6 +70,8 @@ $support-card-shadow: $shadow-card;
   }
 
   .section-title-block {
+    flex: 1;
+    min-width: 0;
     margin-bottom: 0;
 
     &__action {

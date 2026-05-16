@@ -54,6 +54,10 @@ function getCourseCategoryKey(type?: string) {
   return 'other';
 }
 
+function getCourseCoverImage(course?: CourseSession['course']) {
+  return course?.coverImageUrl || course?.imageUrl || '';
+}
+
 async function fetchAllUpcomingSessions() {
   const pageSize = 50;
   const allSessions: CourseSession[] = [];
@@ -166,7 +170,7 @@ export default function Courses() {
       return;
     }
 
-    Taro.navigateTo({ url: `/pages/course-detail/index?id=${item.courseId}` });
+    Taro.navigateTo({ url: `/pages/course-detail/index?id=${item.courseId}&sessionId=${item.sessionId || item.key}` });
   };
 
   const handleDateSelect = (key: BookingDateItemData['key']) => {
@@ -193,8 +197,9 @@ export default function Courses() {
     return {
       key: session.id,
       courseId: session.courseId || course?.id,
+      sessionId: session.id,
       title: course?.name || '未命名课程',
-      imageUrl: getSafeMiniImageSrc(course?.coverImageUrl, imageKind === 'pilates' ? '/assets/ui/booking-pilates.svg' : imageKind === 'meditation' ? '/assets/ui/booking-meditation.svg' : '/assets/ui/booking-yoga.svg'),
+      imageUrl: getSafeMiniImageSrc(getCourseCoverImage(course), imageKind === 'pilates' ? '/assets/ui/booking-pilates.svg' : imageKind === 'meditation' ? '/assets/ui/booking-meditation.svg' : '/assets/ui/booking-yoga.svg'),
       time: startsAt && !Number.isNaN(startsAt.getTime()) ? `${String(startsAt.getHours()).padStart(2, '0')}:${String(startsAt.getMinutes()).padStart(2, '0')}` : '--:--',
       duration: formatDurationMinutes(durationMinutes, '待定'),
       instructor: session.coach?.name || '待安排',

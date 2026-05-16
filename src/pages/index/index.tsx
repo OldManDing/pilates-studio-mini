@@ -227,6 +227,10 @@ function getCourseDisplayMeta(course?: Course | null, studioName?: string) {
   return `${course.coach?.name || '教练待定'} · ${studioName || '门店待更新'}`;
 }
 
+function getCourseCoverImage(course?: Pick<Course, 'coverImageUrl' | 'imageUrl'> | null) {
+  return course?.coverImageUrl || course?.imageUrl || '';
+}
+
 function getCourseCaption(course?: Course | null) {
   if (!course) return '课程更新';
   const duration = formatDurationMinutes(course.durationMinutes);
@@ -523,7 +527,7 @@ export default function Index() {
     meta: getCourseDisplayMeta(curatedCourse, studioName),
     cta: '预约',
     monogram: '',
-    imageUrl: getSafeMiniImageSrc(curatedCourse?.coverImageUrl, '/assets/ui/booking-pilates.svg'),
+    imageUrl: getSafeMiniImageSrc(getCourseCoverImage(curatedCourse), '/assets/ui/booking-pilates.svg'),
     fallbackImageUrl: '/assets/ui/home-curated.svg',
   };
 
@@ -536,7 +540,7 @@ export default function Index() {
     hours: studioBusinessHours ? `营业时间 ${studioBusinessHours}` : '营业时间待更新',
     note: '',
     actionLabel: '导航前往',
-    imageUrl: getSafeMiniImageSrc(studioSettings?.imageUrl, '/assets/ui/hero-studio.jpg'),
+    imageUrl: getSafeMiniImageSrc(studioSettings?.imageUrl || homeHeroImageSrc, homeHeroFallbackImageSrc),
   };
 
   const handleMembershipPrimary = () => {
@@ -554,8 +558,10 @@ export default function Index() {
   const handleServiceClick = (key: HomeServiceItemData['key']) => {
     switch (key) {
       case 'booking':
-      case 'courses':
         handleCoursesEntry();
+        break;
+      case 'courses':
+        handleBookingsEntry();
         break;
       case 'membership':
         handleMembershipPrimary();

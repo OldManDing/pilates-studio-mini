@@ -44,7 +44,7 @@ export const MINI_PAGE_IMAGE_FALLBACKS: Record<MiniPageImageKey, string> = {
 };
 
 const MINI_PAGE_IMAGE_INHERITANCE: Partial<Record<MiniPageImageKey, MiniPageImageKey>> = {
-  myCoaches: 'coaches',
+  coaches: 'myCoaches',
 };
 
 function hasCachedMiniPageImages() {

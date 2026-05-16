@@ -7,6 +7,7 @@ export interface Course {
   name: string;
   description: string;
   coverImageUrl?: string;
+  imageUrl?: string;
   type: string;
   level: string;
   durationMinutes: number;
@@ -26,7 +27,8 @@ export interface Course {
 
 type BackendCoach = { id: string; name: string; avatar?: string; avatarUrl?: string; bio?: string };
 type BackendCourse = Omit<Course, 'maxCapacity' | 'coach'> & { maxCapacity?: number; capacity?: number; coach?: BackendCoach };
-type BackendCourseSession = Omit<CourseSession, 'coach'> & { coach?: BackendCoach };
+type BackendSessionCourse = NonNullable<CourseSession['course']> & { imageUrl?: string };
+type BackendCourseSession = Omit<CourseSession, 'coach' | 'course'> & { coach?: BackendCoach; course?: BackendSessionCourse };
 type BackendSessionsPayload = BackendCourseSession[] | { sessions?: BackendCourseSession[] };
 
 function normalizeCoach(coach?: BackendCoach) {
@@ -45,9 +47,12 @@ function normalizeCoach(coach?: BackendCoach) {
 
 function normalizeCourse(course: BackendCourse): Course {
   const normalizedCapacity = course.maxCapacity ?? course.capacity ?? 0;
+  const coverImageUrl = course.coverImageUrl || course.imageUrl || '';
 
   return {
     ...course,
+    coverImageUrl,
+    imageUrl: course.imageUrl || coverImageUrl,
     capacity: course.capacity ?? normalizedCapacity,
     maxCapacity: normalizedCapacity,
     coach: normalizeCoach(course.coach),
@@ -60,6 +65,12 @@ function normalizeSessionsPayload(payload: BackendSessionsPayload): CourseSessio
   return sessions.map((session) => ({
     ...session,
     coach: normalizeCoach(session.coach),
+    course: session.course
+      ? {
+          ...session.course,
+          coverImageUrl: session.course.coverImageUrl || session.course.imageUrl || '',
+        }
+      : session.course,
   }));
 }
 
@@ -82,6 +93,7 @@ export interface CourseSession {
     id: string;
     name: string;
     coverImageUrl?: string;
+    imageUrl?: string;
     type: string;
     level: string;
     durationMinutes: number;
@@ -119,12 +131,17 @@ export const coursesApi = {
 // Course Session APIs
 export const courseSessionsApi = {
   // Get all upcoming sessions
-  getUpcoming: async (params?: PaginationParams) =>
-    wrapListData(await http.get<CourseSession[]>('/course-sessions/upcoming', params), 'sessions'),
+  getUpcoming: async (params?: PaginationParams) => {
+    const response = await http.get<BackendCourseSession[]>('/course-sessions/upcoming', params);
+    return wrapListData({ ...response, data: normalizeSessionsPayload(response.data) }, 'sessions');
+  },
 
   // Get session by ID
-  getById: async (id: string) =>
-    wrapObjectData(await http.get<CourseSession>(`/course-sessions/${id}`), 'session'),
+  getById: async (id: string) => {
+    const response = await http.get<BackendCourseSession>(`/course-sessions/${id}`);
+    const [session] = normalizeSessionsPayload([response.data]);
+    return wrapObjectData({ ...response, data: session }, 'session');
+  },
 
   // Get available seats
   getAvailableSeats: (id: string) =>

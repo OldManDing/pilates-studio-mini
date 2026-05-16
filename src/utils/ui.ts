@@ -10,6 +10,8 @@ const UNSAFE_IMAGE_PATTERNS = [
   /dummyimage/i,
   /placeholder/i,
   /placehold\.co/i,
+  /fakepath/i,
+  /^[a-z]:\\/i,
 ];
 
 const ABSOLUTE_IMAGE_URL_PATTERN = /^[a-z][a-z\d+\-.]*:\/\//i;

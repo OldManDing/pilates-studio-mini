@@ -130,17 +130,25 @@ function isSessionBookable(session: CourseSession) {
   return session.isActive !== false && (Number.isNaN(endsAt) || endsAt > Date.now());
 }
 
-function hasActiveBookingForCourse(bookings: Booking[], courseId: string, sessionIds: Set<string>) {
+function getCourseCoverImage(course?: Pick<Course, 'coverImageUrl' | 'imageUrl'> | null) {
+  return course?.coverImageUrl || course?.imageUrl || '';
+}
+
+function hasActiveBookingForCourse(bookings: Booking[], courseId: string, sessionIds: Set<string>, targetSessionId?: string) {
   return bookings.some((booking) => {
     if (!ACTIVE_BOOKING_STATUSES.includes(booking.status)) {
       return false;
+    }
+
+    if (targetSessionId) {
+      return booking.sessionId === targetSessionId || booking.session?.id === targetSessionId;
     }
 
     return sessionIds.has(booking.sessionId) || booking.session?.course?.id === courseId;
   });
 }
 
-async function fetchActiveCourseBookingState(courseId: string, sessions: CourseSession[]) {
+async function fetchActiveCourseBookingState(courseId: string, sessions: CourseSession[], targetSessionId?: string) {
   const sessionIds = new Set(sessions.map((session) => session.id));
   const responses = await Promise.all(
     ACTIVE_BOOKING_STATUSES.map((status) => (
@@ -149,7 +157,7 @@ async function fetchActiveCourseBookingState(courseId: string, sessions: CourseS
   );
   const bookings = responses.flatMap((response) => response.data.bookings || []);
 
-  return hasActiveBookingForCourse(bookings, courseId, sessionIds);
+  return hasActiveBookingForCourse(bookings, courseId, sessionIds, targetSessionId);
 }
 
 export default function CourseDetail() {
@@ -163,13 +171,14 @@ export default function CourseDetail() {
   const [courseLoadFailed, setCourseLoadFailed] = useState(false);
   const [courseIdMissing, setCourseIdMissing] = useState(false);
   const [courseId, setCourseId] = useState('');
+  const [preferredSessionId, setPreferredSessionId] = useState('');
   const [heroImageSrc, setHeroImageSrc] = useState('');
   const [instructorAvatarLoadFailed, setInstructorAvatarLoadFailed] = useState(false);
-  const [sessionPickerOpen, setSessionPickerOpen] = useState(false);
   const bookingInFlightRef = useRef(false);
 
-  const fetchData = useCallback(async (id: string, options: { showPageLoading?: boolean } = {}) => {
+  const fetchData = useCallback(async (id: string, options: { showPageLoading?: boolean; sessionId?: string } = {}) => {
     const showPageLoading = options.showPageLoading !== false;
+    const targetSessionId = options.sessionId ?? preferredSessionId;
 
     try {
       if (showPageLoading) {
@@ -192,10 +201,14 @@ export default function CourseDetail() {
       setProfileLoadFailed(profileRes.failed);
       setBooked(false);
       if (nextMember?.id) {
-        const nextBooked = await fetchActiveCourseBookingState(id, nextSessions).catch(() => false);
+        const nextBooked = await fetchActiveCourseBookingState(id, nextSessions, targetSessionId).catch(() => false);
         setBooked(nextBooked);
       }
-      const nextHero = getSafeMiniImageSrc(courseRes.data.course.coverImageUrl, HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg');
+      const matchedSession = targetSessionId ? nextSessions.find((session) => session.id === targetSessionId) : null;
+      const nextHero = getSafeMiniImageSrc(
+        getCourseCoverImage(matchedSession?.course) || getCourseCoverImage(courseRes.data.course),
+        HERO_IMAGE_FALLBACK_BY_TYPE[courseRes.data.course.type] || '/assets/ui/booking-yoga.svg',
+      );
       setHeroImageSrc(nextHero);
     } catch {
       if (showPageLoading) {
@@ -211,13 +224,15 @@ export default function CourseDetail() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [preferredSessionId]);
 
   useLoad((options) => {
     if (options?.id) {
       const nextCourseId = String(options.id);
+      const nextSessionId = options.sessionId ? String(options.sessionId) : '';
       setCourseId(nextCourseId);
-      fetchData(nextCourseId);
+      setPreferredSessionId(nextSessionId);
+      fetchData(nextCourseId, { sessionId: nextSessionId });
       return;
     }
 
@@ -238,14 +253,15 @@ export default function CourseDetail() {
     });
   }, [sessions]);
 
-  const featuredSession = sortedSessions.find((session) => getSessionSpots(session, course?.maxCapacity || 0) > 0) || sortedSessions[0] || null;
+  const preferredSession = preferredSessionId ? sortedSessions.find((session) => session.id === preferredSessionId) : null;
+  const featuredSession = preferredSession || sortedSessions.find((session) => getSessionSpots(session, course?.maxCapacity || 0) > 0) || sortedSessions[0] || null;
   const featuredInstructor = featuredSession?.coach || course?.coach;
 
   useEffect(() => {
     setInstructorAvatarLoadFailed(false);
   }, [featuredInstructor?.id, featuredInstructor?.avatar, featuredInstructor?.avatarUrl]);
 
-  const handleBooking = async (selectedSession?: CourseSession) => {
+  const handleBooking = async () => {
     if (!course || sortedSessions.length === 0) {
       showSafeToast({ title: '暂无可约场次', icon: 'none' });
       return;
@@ -261,11 +277,6 @@ export default function CourseDetail() {
       return;
     }
 
-    if (!selectedSession && sortedSessions.length > 1) {
-      setSessionPickerOpen(true);
-      return;
-    }
-
     if (bookingLoading || bookingInFlightRef.current) {
       return;
     }
@@ -273,7 +284,7 @@ export default function CourseDetail() {
     bookingInFlightRef.current = true;
 
     try {
-      const targetSession = selectedSession || featuredSession;
+      const targetSession = featuredSession;
 
       if (!targetSession) {
         showSafeToast({ title: '场次信息无效，请重试', icon: 'none' });
@@ -285,13 +296,12 @@ export default function CourseDetail() {
         return;
       }
 
-      setSessionPickerOpen(false);
       setBookingLoading(true);
       await requestBookingSubscribeAuthorization();
       await bookingsApi.create({ memberId: member.id, sessionId: targetSession.id, source: 'MINI_PROGRAM' }, { showLoading: false });
       showSafeToast({ title: '预约成功', icon: 'success' });
       setBooked(true);
-      void fetchData(course.id, { showPageLoading: false });
+      void fetchData(course.id, { showPageLoading: false, sessionId: targetSession.id });
     } catch (error) {
       showSafeToast({ title: getApiErrorMessage(error, '预约失败，请稍后重试'), icon: 'none' });
     } finally {
@@ -375,9 +385,8 @@ export default function CourseDetail() {
   const spots = getSessionSpots(featuredSession, course.maxCapacity);
   const totalSpots = getSessionTotal(featuredSession, course.maxCapacity);
   const usedSpots = Math.max(0, totalSpots - spots);
-  const isFull = sortedSessions.length > 0
-    ? sortedSessions.every((session) => getSessionSpots(session, course.maxCapacity) <= 0)
-    : totalSpots > 0 && spots <= 0;
+  const isFeaturedSessionFull = Boolean(featuredSession) && getSessionSpots(featuredSession, course.maxCapacity) <= 0;
+  const isFull = Boolean(featuredSession) ? isFeaturedSessionFull : totalSpots > 0 && spots <= 0;
   const progress = totalSpots > 0 ? Math.round((usedSpots / totalSpots) * 100) : 0;
   const tags = [
     getLabelByValue(CourseTypes, course.type),
@@ -399,9 +408,7 @@ export default function CourseDetail() {
             ? '登录后预约'
             : isFull
               ? '已约满'
-              : sortedSessions.length > 1
-                ? '选择场次预约'
-                : '立即预约';
+              : '立即预约';
 
   const handleCtaClick = () => {
     if (ctaDisabled) {
@@ -551,49 +558,6 @@ export default function CourseDetail() {
         </View>
       </View>
 
-      {sessionPickerOpen ? (
-        <View className='course-detail-page__session-picker'>
-          <View className='course-detail-page__session-picker-mask' onClick={() => setSessionPickerOpen(false)} />
-          <View className='course-detail-page__session-picker-panel'>
-            <View className='course-detail-page__session-picker-head'>
-              <View>
-                <Text className='course-detail-page__session-picker-title'>选择预约场次</Text>
-                <Text className='course-detail-page__session-picker-desc'>请选择一个可预约时间</Text>
-              </View>
-              <View className='course-detail-page__session-picker-close' onClick={() => setSessionPickerOpen(false)}>
-                关闭
-              </View>
-            </View>
-
-            <ScrollView className='course-detail-page__session-picker-list' scrollY showScrollbar={false}>
-              {sortedSessions.map((session) => {
-                const sessionSpots = getSessionSpots(session, course.maxCapacity);
-                const sessionDisabled = sessionSpots <= 0 || bookingLoading;
-
-                return (
-                  <View
-                    key={session.id}
-                    className={`course-detail-page__session-option ${sessionDisabled ? 'course-detail-page__session-option--disabled' : ''}`}
-                    onClick={() => {
-                      if (sessionDisabled) {
-                        return;
-                      }
-
-                      void handleBooking(session);
-                    }}
-                  >
-                    <View className='course-detail-page__session-option-main'>
-                      <Text className='course-detail-page__session-option-date'>{formatDate(session.startsAt)} · {getDateLabel(session.startsAt)}</Text>
-                      <Text className='course-detail-page__session-option-time'>{formatTimeRange(session.startsAt, session.endsAt)}</Text>
-                    </View>
-                    <Text className='course-detail-page__session-option-spots'>{sessionSpots > 0 ? `余 ${sessionSpots} 位` : '已约满'}</Text>
-                  </View>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </View>
-      ) : null}
     </View>
   );
 }

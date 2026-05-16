@@ -272,12 +272,6 @@ export default function Notifications() {
         subtitle={unreadCount > 0 ? `${unreadCount} 条未读消息` : '所有消息已读'}
         pageKey='notifications'
         fallbackUrl='/pages/profile/index'
-        rightSlot={unreadCount > 0 ? (
-          <AppButton className='notifications-page__header-action' size='small' variant='outline' disabled={markingAllRead} loading={markingAllRead} onClick={handleMarkAllRead}>
-            <Icon name='check' className='notifications-page__header-action-icon' />
-            <Text className='notifications-page__header-action-text'>{markingAllRead ? '标记中' : '一键设为已读'}</Text>
-          </AppButton>
-        ) : undefined}
       />
 
       {loadFailed && notifications.length === 0 ? (
@@ -293,7 +287,13 @@ export default function Notifications() {
         </View>
       ) : unread.length > 0 ? (
         <View className='notifications-page__section'>
-          <SectionTitle title='未读' actionLabel='未读' actionTone='muted' />
+          <View className='notifications-page__section-heading'>
+            <SectionTitle title='未读' actionLabel={`${unreadCount} 条`} actionTone='muted' />
+            <AppButton className='notifications-page__mark-all' size='small' variant='outline' disabled={markingAllRead} loading={markingAllRead} onClick={handleMarkAllRead}>
+              <Icon name='check' className='notifications-page__mark-all-icon' />
+              <Text className='notifications-page__mark-all-text'>{markingAllRead ? '标记中' : '一键已读'}</Text>
+            </AppButton>
+          </View>
           <AppCard className='notifications-list' padding='none'>
             {unread.map((notification, index) => (
               <View key={notification.id}>
