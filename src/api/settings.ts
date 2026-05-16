@@ -7,6 +7,8 @@ export interface StudioSettings {
   email?: string;
   businessHours?: string;
   address?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   imageUrl?: string;
 }
 
@@ -44,6 +46,12 @@ export const settingsApi = {
     skipAuth: true,
     suppressErrorToast: true,
   }),
+  geocodeStudioLocation: (address: string) =>
+    http.get<{ latitude: number; longitude: number; source: string }>('/settings/studio/location', { address }, {
+      showLoading: false,
+      skipAuth: true,
+      suppressErrorToast: true,
+    }),
   getMiniPageImages: (pageKey?: MiniPageImageKey) =>
     http.get<MiniPageImageSetting[]>('/settings/mini-page-images', pageKey ? { pageKey } : { compact: true }, {
       showLoading: false,

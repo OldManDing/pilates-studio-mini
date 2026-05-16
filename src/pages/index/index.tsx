@@ -149,6 +149,31 @@ function formatRefreshTime(date: Date) {
   return `${padNumber(date.getHours())}:${padNumber(date.getMinutes())}`;
 }
 
+function getValidStudioLocation(settings?: StudioSettings | null) {
+  const rawLatitude = settings?.latitude;
+  const rawLongitude = settings?.longitude;
+
+  if (rawLatitude === null || rawLatitude === undefined || rawLongitude === null || rawLongitude === undefined) {
+    return null;
+  }
+
+  const latitude = Number(rawLatitude);
+  const longitude = Number(rawLongitude);
+
+  if (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180
+  ) {
+    return { latitude, longitude };
+  }
+
+  return null;
+}
+
 function toHomeUpcomingItem(booking: Booking, index: number): HomeUpcomingItemData {
   const startsAt = booking.session?.startsAt;
   const endsAt = booking.session?.endsAt;
@@ -584,13 +609,35 @@ export default function Index() {
       return;
     }
 
-    Taro.openLocation({
-      latitude: 39.9242,
-      longitude: 116.4335,
-      name: studioName,
-      address: studioAddress,
-      scale: 16,
-    });
+    const location = getValidStudioLocation(studioSettings);
+    if (location) {
+      Taro.openLocation({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        name: studioName,
+        address: studioAddress,
+        scale: 16,
+      });
+      return;
+    }
+
+    Taro.showLoading({ title: '正在解析地址…', mask: true });
+    void settingsApi.geocodeStudioLocation(studioAddress)
+      .then(({ data }) => {
+        Taro.openLocation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+          name: studioName,
+          address: studioAddress,
+          scale: 16,
+        });
+      })
+      .catch(() => {
+        Taro.showToast({ title: '地址暂未解析为地图坐标', icon: 'none' });
+      })
+      .finally(() => {
+        Taro.hideLoading();
+      });
   };
 
   const handleUpcomingItemClick = (item: HomeUpcomingItemData) => {

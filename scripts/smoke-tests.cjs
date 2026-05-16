@@ -237,6 +237,8 @@ assertIncludes('src/api/auth.ts', '真机无法访问本地接口地址');
 assertIncludes('src/api/auth.ts', '真机请求必须使用 HTTPS 合法域名');
 assertIncludes('src/api/auth.ts', 'if (ALLOW_INSECURE_REAL_DEVICE_API)');
 assertIncludes('src/api/auth.ts', 'shouldUseForcedMiniOpenIdLogin');
+assertIncludes('src/api/auth.ts', 'isDevelopmentApiBaseUrl');
+assertIncludes('src/api/auth.ts', 'PRIVATE_NETWORK_API_BASE_URL_PATTERN');
 assertIncludes('src/api/auth.ts', "data: { openId: MINI_OPEN_ID }");
 assertIncludes('src/api/auth.ts', "platform === 'devtools'");
 assertIncludes('src/api/request.ts', 'getRuntimeApiBaseUrl()');

@@ -58,6 +58,7 @@ let lastAuthFailureMessage = '';
 
 const AUTH_FAILURE_COOLDOWN_MS = 5000;
 const LOCAL_API_BASE_URL_PATTERN = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?(\/|$)/;
+const PRIVATE_NETWORK_API_BASE_URL_PATTERN = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)(\d{1,3}\.){2}\d{1,3}(:\d+)?(\/|$)/;
 const HTTP_API_BASE_URL_PATTERN = /^http:\/\//;
 
 function isWeChatDeveloperTool() {
@@ -122,8 +123,15 @@ function clearIncompleteMiniAuthState(options: MiniProgramAuthOptions) {
   Taro.removeStorageSync(STORAGE_KEYS.miniUser);
 }
 
-function shouldUseForcedMiniOpenIdLogin() {
-  return USE_MINI_OPEN_ID_LOGIN && Boolean(MINI_OPEN_ID) && (isWeChatDeveloperTool() || ALLOW_INSECURE_REAL_DEVICE_API);
+function isDevelopmentApiBaseUrl(apiBaseUrl: string) {
+  return LOCAL_API_BASE_URL_PATTERN.test(apiBaseUrl) || PRIVATE_NETWORK_API_BASE_URL_PATTERN.test(apiBaseUrl);
+}
+
+function shouldUseForcedMiniOpenIdLogin(apiBaseUrl = getRuntimeApiBaseUrl()) {
+  return USE_MINI_OPEN_ID_LOGIN
+    && Boolean(MINI_OPEN_ID)
+    && (isWeChatDeveloperTool() || ALLOW_INSECURE_REAL_DEVICE_API)
+    && isDevelopmentApiBaseUrl(apiBaseUrl);
 }
 
 function persistMiniAuthData(data: NonNullable<MiniAuthPayload['data']>) {
@@ -205,7 +213,7 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
     throw new Error(apiBaseUrlUnavailableMessage);
   }
 
-  const forceMiniOpenIdLogin = shouldUseForcedMiniOpenIdLogin();
+  const forceMiniOpenIdLogin = shouldUseForcedMiniOpenIdLogin(runtimeApiBaseUrl);
 
   if (options.interactive && !forceMiniOpenIdLogin) {
     await confirmLoginAuthorization();
@@ -236,11 +244,11 @@ async function loginWithMiniProgram(options: MiniProgramAuthOptions = {}): Promi
   const loginResult = await Taro.login().catch(() => null);
   const code = loginResult?.code;
 
-  const payload = shouldUseForcedMiniOpenIdLogin()
+  const payload = forceMiniOpenIdLogin
     ? { openId: MINI_OPEN_ID, ...profile }
     : code
       ? { code, ...profile }
-      : MINI_OPEN_ID && isWeChatDeveloperTool()
+      : MINI_OPEN_ID && isWeChatDeveloperTool() && isDevelopmentApiBaseUrl(runtimeApiBaseUrl)
         ? { openId: MINI_OPEN_ID, ...profile }
         : null;
 
